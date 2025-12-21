@@ -1,4 +1,4 @@
-import { supabase } from "@/features/core/infra/db/supabase-client";
+import { supabase } from "./supabase-client";
 
 export const togglesRepository = {
   async getByProject(projectId: string): Promise<Record<string, boolean>> {
@@ -7,7 +7,9 @@ export const togglesRepository = {
       .select("rule_id, enabled")
       .eq("project_id", projectId);
 
-    if (error || !data) return {};
+    if (error || !data) {
+      return {};
+    }
 
     return data.reduce((acc, curr) => {
       acc[curr.rule_id] = curr.enabled;

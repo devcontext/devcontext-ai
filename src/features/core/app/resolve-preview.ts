@@ -1,13 +1,13 @@
-import { projectsRepository } from "@/features/core/infra/db/projects-repository";
-import { togglesRepository } from "@/features/core/infra/db/toggles-repository";
+import { projectsRepository } from "../infra/db/projects-repository";
+import { togglesRepository } from "../infra/db/toggles-repository";
 import { 
   getCommandById, 
   getStackPresetById, 
   getRulesetById, 
   RULE_CATALOG 
-} from "@/features/core/domain/catalogs";
-import { resolve } from "@/features/core/domain/resolver/resolve";
-import { ResolveRequest, ResolveResult } from "@/features/core/domain/types/resolver";
+} from "../domain/catalogs";
+import { resolve } from "../domain/resolver/resolve";
+import { ResolveRequest, ResolveResult } from "../domain/types/resolver";
 
 /**
  * resolvePreview
@@ -31,7 +31,7 @@ export async function resolvePreview(request: ResolveRequest): Promise<ResolveRe
 
   // Load toggles and merge into the project model for the resolver
   const ruleToggles = await togglesRepository.getByProject(project.id);
-  const projectWithToggles = { ...project, ruleToggles };
+  const projectWithToggles = Object.assign({}, project, { ruleToggles: ruleToggles });
 
   // 2. Load Catalogs (Domain)
   const command = getCommandById(request.commandId);
@@ -70,17 +70,23 @@ export async function resolvePreview(request: ResolveRequest): Promise<ResolveRe
   // 3. Resolve (Pure Domain Logic)
   const result = resolve(request, {
     project: projectWithToggles,
-    command,
-    ruleset,
-    stackPreset,
+    command: command,
+    ruleset: ruleset,
+    stackPreset: stackPreset,
     ruleCatalog: RULE_CATALOG
   });
 
   // 4. Enrich Result (App Layer Responsibility)
-  // Here we add the non-deterministic data that the Domain layer is not allowed to touch.
+  // We return a new object to avoid mutating the domain result.
   if (result.status === "ok") {
-    result.contract.id = `rc_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
-    result.contract.meta.generatedAt = new Date().toISOString();
+    const enrichedContract = Object.assign({}, result.contract, {
+      id: `rc_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
+      meta: Object.assign({}, result.contract.meta, {
+        generatedAt: new Date().toISOString()
+      })
+    });
+
+    return Object.assign({}, result, { contract: enrichedContract });
   }
 
   return result;
