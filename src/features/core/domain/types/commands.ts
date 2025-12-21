@@ -1,8 +1,5 @@
-import { IntentId } from "./intents";
+import { IntentId } from "./intent";
 
-/**
- * CommandDefinition
- */
 export type CommandDefinition = {
   id: string; // e.g. "create-component"
   displayName: string;

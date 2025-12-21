@@ -1,4 +1,4 @@
-import { IntentId } from "../types/intents";
+import { IntentId } from "./intent";
 
 export type ResolvedContract = {
   id: string;

@@ -1,4 +1,4 @@
-import { IntentId } from "../types/intents";
+import { IntentId } from "../types/intent";
 import { RuleDefinition } from "../types/rules";
 
 export const RULE_CATALOG: RuleDefinition[] = [

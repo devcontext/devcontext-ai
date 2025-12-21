@@ -1,3 +1,5 @@
+import { ResolvedContract } from "./contracts";
+
 export type ResolveRequest = {
   projectId: string;
   commandId: string; // e.g. "create-component"
@@ -27,3 +29,13 @@ export type BlockedResolution = {
     conflicts?: Array<{ a: string; b: string; why: string }>;
   };
 };
+
+export type ResolveResult =
+  | {
+      status: "ok";
+      contract: ResolvedContract;
+    }
+  | {
+      status: "blocked";
+      blocked: BlockedResolution;
+    };

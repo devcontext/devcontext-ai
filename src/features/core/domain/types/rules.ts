@@ -1,4 +1,4 @@
-import { IntentId } from "./intents";
+import { IntentId } from "./intent";
 
 export type RuleDefinition = {
   id: string;
