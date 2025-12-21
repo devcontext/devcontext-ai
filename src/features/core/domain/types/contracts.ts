@@ -1,7 +1,7 @@
 import { IntentId } from "./intent";
 
 export type ResolvedContract = {
-  id: string;
+  id?: string;
   projectId: string;
   commandId: string;
   intentId: IntentId;
@@ -15,6 +15,6 @@ export type ResolvedContract = {
     rulesApplied: Array<{ id: string; severity: "error" | "warn" | "info" }>;
     constraintsApplied: Record<string, unknown>;
     stopConditions: string[];
-    generatedAt: string; // ISO
+    generatedAt?: string; // ISO
   };
 };

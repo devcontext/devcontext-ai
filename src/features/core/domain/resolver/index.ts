@@ -8,7 +8,5 @@
  * 3. Es SINCRÓNICO: Lógica de compilación pura.
  */
 
-// TODO: Implementar lógica del resolver en Task 1
-export const resolveIntent = () => {
-  throw new Error("Not implemented");
-};
+export * from "./resolve";
+
