@@ -1,0 +1,73 @@
+import { IntentId } from "../types/intents";
+import { RuleDefinition } from "../types/rules";
+
+export const RULE_CATALOG: RuleDefinition[] = [
+  {
+    id: "no-new-dependencies",
+    title: "No New Dependencies",
+    description: "Prevent dependency sprawl and unwanted installs.",
+    severity: "error",
+    appliesToIntents: ["generate", "refactor"],
+    directive: "Do NOT install new dependencies or packages.",
+    contributesConstraints: { allowNewDependencies: false },
+  },
+  {
+    id: "prefer-server-components",
+    title: "Prefer Server Components",
+    description: "Enforce modern Next.js architecture decisions.",
+    severity: "error",
+    appliesToIntents: ["generate", "refactor"],
+    directive: "Prefer Server Components by default. Use Client Components only if strictly required.",
+    conflictsWith: ["force-client-components"],
+    contributesConstraints: { preferServerComponents: true },
+  },
+  {
+    id: "limit-files-changed",
+    title: "Limit Files Changed",
+    description: "Avoid large, risky changes for simple tasks.",
+    severity: "error",
+    appliesToIntents: ["generate", "refactor"],
+    directive: "Limit the solution to a maximum number of files.",
+    contributesConstraints: { maxFilesChanged: 5 },
+  },
+  {
+    id: "use-existing-ui-components",
+    title: "Use Existing UI Components",
+    description: "Encourage reuse over reinvention.",
+    severity: "warn",
+    appliesToIntents: ["generate"],
+    directive: "Prefer existing UI components and patterns before creating new ones.",
+  },
+  {
+    id: "avoid-over-engineering",
+    title: "Avoid Over-Engineering",
+    description: "Prevent unnecessary abstractions and complex patterns.",
+    severity: "error",
+    appliesToIntents: ["generate", "refactor"],
+    directive: "Do not introduce complex architectural patterns unless explicitly required.",
+  },
+  {
+    id: "no-architecture-shifts",
+    title: "No Architecture Shifts",
+    description: "Protect existing architectural decisions.",
+    severity: "error",
+    appliesToIntents: ["generate", "refactor"],
+    directive: "Do not change architectural patterns or project structure.",
+  },
+  {
+    id: "ask-before-guessing",
+    title: "Ask Before Guessing",
+    description: "Avoid silent assumptions.",
+    severity: "error",
+    appliesToIntents: ["generate", "refactor", "review"],
+    directive: "If required information is missing, STOP and ask instead of guessing.",
+  },
+  {
+    id: "keep-changes-readable",
+    title: "Keep Changes Readable",
+    description: "Improve maintainability and reviewability.",
+    severity: "info",
+    appliesToIntents: ["generate", "refactor"],
+    directive: "Keep changes small, clear and easy to review.",
+  },
+];
