@@ -1,167 +1,140 @@
-# PRODUCT_VISION
+# AI Context Control Plane
 
-## Product Name (working)
-
-**AI Context Control Plane**
-
-> *Make AI behave like it understands your project — every time.*
+> *Diseñar, curar y gobernar el contexto de la IA de forma deliberada.*
 
 ---
 
-## 1. The Problem (Real, Not Theoretical)
+## 1. El problema (validado por el mercado)
 
-Solo developers don’t struggle because AI lacks knowledge.
-They struggle because AI **lacks boundaries**.
+Los desarrolladores no tienen problemas porque la IA sea poco inteligente.
+Tienen problemas porque la IA **no tiene contexto estable ni límites claros**.
 
-Today, when using tools like Cursor, ChatGPT or Gemini:
+En proyectos reales:
 
-* The AI generates code that *works* but doesn’t fit the project
-* It installs dependencies you don’t want
-* It ignores architectural decisions you already made
-* It over‑engineers simple tasks
-* You end up rewriting prompts instead of writing code
+* La IA ignora decisiones arquitectónicas previas
+* Sobredimensiona tareas simples
+* Introduce dependencias no deseadas
+* Cambia su comportamiento entre sesiones
 
-The core pain is **not** storing context.
-
-> The real pain is having to *manually teach and re‑teach* the AI how to behave — and still not being able to trust it.
+La causa raíz **no son los malos prompts**.
+Es la ausencia de **contexto explícito, reutilizable y versionado**.
 
 ---
 
-## 2. Target User
+## 2. Usuario objetivo
 
-**Solo Developer** who:
+**Desarrollador individual (solo dev)** que:
 
-* Uses AI daily for coding
-* Works on one or more serious projects
-* Cares about consistency, cleanliness, and maintainability
-* Is tired of prompt‑engineering instead of building
+* Usa herramientas de IA a diario (Cursor, ChatGPT, Gemini)
+* Trabaja en proyectos reales y duraderos
+* Valora la consistencia, limpieza y control
+* Está cansado de reexplicar su proyecto a la IA
 
-This product is **not** designed for teams or enterprises (yet).
-
----
-
-## 3. What This Product Is
-
-AI Context Control Plane is a **behavior governance layer** for AI‑assisted development.
-
-It sits between:
-
-> Your intent → and → the AI model
-
-And ensures that:
-
-* The AI respects your project rules
-* The AI operates within explicit constraints
-* The AI stops instead of guessing when rules are violated
-
-The developer no longer writes prompts.
-They **execute commands**.
+El producto es **solo-dev first** por diseño.
 
 ---
 
-## 4. What This Product Is NOT
+## 3. Qué es este producto
 
-To avoid confusion, this product is explicitly **not**:
+AI Context Control Plane es una **plataforma de ingeniería de contexto**.
 
-* A prompt manager
-* A context storage tool
-* A documentation platform
-* A rules editor playground
-* A general AI wrapper
+Permite a los desarrolladores:
 
-It does not try to make AI smarter.
-It makes AI **predictable**.
+* Crear contexto a partir de fuentes reales (código, documentos, decisiones)
+* Refinar ese contexto con ayuda de la IA
+* Versionarlo, restaurarlo y mantenerlo en el tiempo
+* Exponerlo de forma segura a herramientas de IA mediante MCP
 
----
-
-## 5. Core Value Proposition (One Sentence)
-
-> **Turn AI from an unpredictable assistant into a controlled collaborator that follows your project rules by default.**
+La IA **propone** contexto.
+El humano **decide**.
 
 ---
 
-## 6. Key Insight
+## 4. Qué NO es este producto
 
-AI tools fail because they rely on *interpretation*.
+Este producto NO es:
 
-This product replaces interpretation with **explicit contracts**.
+* Un gestor de prompts
+* Un wrapper de chat
+* Un almacén de memoria sin estructura
+* Una wiki de documentación
 
-Instead of hoping the AI behaves correctly:
-
-> The system tells the AI exactly what it is allowed — and not allowed — to do.
-
----
-
-## 7. Product Principles
-
-1. **Action over configuration**
-   The user should do things, not configure systems.
-
-2. **Opinionated by default**
-   The product makes decisions so the user doesn’t have to.
-
-3. **Explicit over implicit**
-   If a rule matters, it must be enforced, not implied.
-
-4. **Predictability beats flexibility**
-   Consistent behavior is more valuable than endless options.
-
-5. **No prompt engineering**
-   If the user edits prompts, the product has failed.
+Aquí el contexto se **diseña y gobierna**, no se acumula sin control.
 
 ---
 
-## 8. How the Product Is Used (High Level)
+## 5. Propuesta de valor
 
-1. The developer creates a project
-2. Selects a stack preset
-3. Uses predefined commands (e.g. `/create-component`)
-4. The system generates a strict execution contract
-5. The AI executes within those boundaries
-
-The developer never sees prompt internals.
+> **Convertir conocimiento bruto del proyecto en contexto explícito y versionado que la IA pueda respetar de forma fiable.**
 
 ---
 
-## 9. Success Definition (Solo Dev)
+## 6. Insight clave
 
-This product is successful if:
+La memoria no estructurada no escala.
 
-* The developer stops rewriting prompts
-* AI output feels consistent across sessions
-* The developer trusts AI to respect project decisions
-* Commands become muscle memory
+Sin curación:
 
----
+* El contexto se contradice
+* Decisiones antiguas contaminan trabajo nuevo
+* El comportamiento de la IA se vuelve impredecible
 
-## 10. Non‑Goals (Very Important)
-
-For the MVP, the product will **not**:
-
-* Support team collaboration
-* Provide AI‑generated rules
-* Validate or rewrite AI output
-* Offer a marketplace or extensions
-* Compete on number of features
+El contexto debe ser **intencional, versionado y auditable**.
 
 ---
 
-## 11. Long‑Term Direction (Not a Promise)
+## 7. Principios de producto
 
-In the future, this control plane could:
+1. **Contexto antes que comandos**
+   El contexto se crea y valida antes de consumirse.
 
-* Power multiple agents
-* Integrate deeper into CI and PR flows
-* Support teams and shared governance
+2. **La IA asiste, el humano decide**
+   La IA genera borradores, el humano aprueba.
 
-But **none of this is required** to validate the core idea.
+3. **Predictibilidad sobre flexibilidad**
+   Menos opciones, más garantías.
+
+4. **Todo es versionable**
+   El contexto evoluciona y su historia importa.
+
+5. **Explícito mejor que implícito**
+   Si la IA debe respetarlo, debe estar escrito.
 
 ---
 
-## 12. Final Statement
+## 8. Flujo de uso (alto nivel)
 
-> This product exists to let developers focus on building software — not managing AI behavior.
+1. Crear un workspace / proyecto
+2. Añadir fuentes (documentos, código, texto)
+3. Generar un borrador de contexto guiado
+4. Editar y guardar como contexto versionado
+5. Consumirlo desde herramientas de IA vía MCP
 
-If the AI feels boring, predictable, and obedient:
+---
 
-**the product is doing its job.**
+## 9. Rol de los comandos (redefinido)
+
+Los comandos **no son el punto de entrada**.
+Son la **capa de consumo** del contexto.
+
+Una vez el contexto es confiable:
+
+* Los comandos lo aplican de forma consistente
+* El comportamiento de la IA se vuelve repetible
+
+---
+
+## 10. Definición de éxito
+
+El producto tiene éxito si:
+
+* El desarrollador deja de reescribir prompts
+* El contexto se reutiliza entre sesiones
+* La IA se siente predecible, estable y correcta
+
+---
+
+## 11. Declaración final
+
+> La IA no debería recordarlo todo.
+> Debería recordar **lo que importa**, por diseño.

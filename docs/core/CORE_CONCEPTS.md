@@ -247,3 +247,32 @@ AI Model
 
 > Concepts must remain boring and predictable.
 > If a concept becomes flexible, it becomes dangerous.
+
+## 12. Aclaraciones importantes
+
+### Definición canónica (para que la tengas grabada)
+
+El usuario selecciona rulesets predefinidos por el sistema.
+El sistema traduce esos rulesets a reglas ejecutables.
+El Resolver compila un contrato final.
+El agente obedece ese contrato.
+
+Fin. No hay más capas.
+
+### Cómo explicarlo en una frase
+> “El sistema compila intención + contexto técnico en un contrato explícito que cualquier agente de IA debe obedecer.”
+
+O más crudo, para devs senior:
+
+> “No le decimos a la IA qué hacer. Le decimos qué no puede hacer.”
+
+### Regla mental para no desviarte
+Si alguna vez te preguntas:
+
+> “¿Esto lo define el usuario o el sistema?”
+
+La respuesta correcta en este producto es:
+
+> “El sistema define. El usuario elige. El resolver decide.”
+
+Si rompes eso → vuelves al prompt-hell.

@@ -1,214 +1,120 @@
-# MVP.md
+# MVP — Context Composer (Beta)
 
-## MVP Goal
+## Objetivo del MVP
 
-Validate that **solo developers can control AI behavior without writing prompts**, by executing commands that always generate a predictable, rule‑bound AI contract.
+Validar que un **desarrollador individual** puede crear, confiar y reutilizar contexto explícito para IA **sin escribir prompts**.
 
-If the MVP works, the developer should *trust* the AI again.
+El MVP debe demostrar que:
+
+* La creación de contexto es el verdadero punto de entrada
+* El contexto versionado mejora la predictibilidad de la IA
 
 ---
 
-## 1. Target User (Strict)
+## 1. Usuario objetivo
 
 * Solo developer
-* Uses Cursor / ChatGPT / Gemini daily
-* Works on real projects (not demos)
-* Already frustrated with AI over‑generation
+* Usuario diario de IA
+* Proyectos reales
 
-**No teams. No collaboration. No enterprise needs.**
-
----
-
-## 2. Core Use Case (The Only One That Matters)
-
-> “I want to ask the AI to do something in my project, and I want it to respect my rules without me explaining them again.”
-
-Everything in the MVP must support this.
+Sin equipos. Sin colaboración.
 
 ---
 
-## 3. MVP Scope (In‑Scope)
+## 2. Caso de uso principal
 
-### 3.1 Project Setup
-
-* Create a project
-* Select **one stack preset**
-* Automatically assign a default ruleset
-
-Constraints:
-
-* One active ruleset per project
-* No custom rule creation
+> “Quiero que la IA entienda mi proyecto de forma consistente, sin tener que explicarlo cada vez.”
 
 ---
 
-### 3.2 Stack Presets (Fixed List)
+## 3. Alcance del MVP
 
-Initial presets:
+### 3.1 Workspace / Proyecto
 
-* Next.js 16  (App Router)
-* Vite + React (SPA)
-* Node.js (TypeScript)
-
-Each preset defines:
-
-* Language
-* Framework assumptions
-* Default ruleset
+* Crear workspace
+* Múltiples contextos por workspace
 
 ---
 
-### 3.3 Rules (System‑Owned)
+### 3.2 Context Composer Lite (core del MVP)
 
-Rules are **predefined and opinionated**.
+**Paso 1 — Añadir fuente**
 
-MVP rules (initial set):
+* Subir documento (md / txt / pdf)
+* Pegar texto
 
-* No new dependencies
-* Prefer server components
-* Limit number of files changed
-* Prefer existing UI/components
-* Avoid over‑engineering
+**Paso 2 — Elegir modo**
 
-User capabilities:
+* Solo referencia
+* Generar resumen de contexto
+* Ambos
 
-* Enable / disable rules (toggles)
-* Read a short human explanation
+**Paso 3 — Generación guiada**
 
-User **cannot**:
+* Visión general del proyecto
+* Notas de arquitectura
+* Reglas y restricciones
+* Contexto de onboarding
 
-* Create rules
-* Edit rule logic
+**Paso 4 — Editor de borrador**
 
----
-
-### 3.4 Commands (Primary Interaction)
-
-Commands are how the user works with the system.
-
-MVP commands:
-
-* `/create-component`
-* `/refactor-file`
-* `/review-changes`
-
-Each command:
-
-* Maps to a single intent
-* Has a fixed behavior
-* Produces a contract preview
-
-No free‑form prompting.
+* Markdown editable
+* Guardar como versión 1
 
 ---
 
-### 3.5 Resolver (Core Engine)
+### 3.3 Versionado
 
-The Resolver:
-
-* Receives: project + command + user input
-* Resolves applicable rules
-* Generates a **ResolvedContract**
-
-Guarantees:
-
-* Deterministic output
-* No AI involved
-* Same input → same contract
+* Cada guardado crea una nueva versión
+* Posibilidad de restaurar cualquier versión
 
 ---
 
-### 3.6 Contract Preview
+### 3.4 Context Store
 
-Before execution, the user can see:
-
-* Intent (human readable)
-* Active rules (non‑negotiable)
-* Constraints
-* Project stack summary
-
-User actions:
-
-* Copy contract
-* Execute command via MCP
+* Listado de contextos
+* Filtros por tipo y tags
+* Estado vacío claro
 
 ---
 
-### 3.7 MCP Integration (Minimal)
+### 3.5 Integración MCP (mínima)
 
-* API key per user
-* API key scoped to projects
-* One execution endpoint
-
-The MCP:
-
-* Receives the resolved contract
-* Forwards it to the AI tool
+* Servidor MCP propio
+* Acceso por token
+* Setup manual (copiar configuración)
 
 ---
 
-## 4. Explicit Out‑of‑Scope (MVP)
+## 4. Fuera de alcance explícito
 
-The MVP will **not** include:
-
-* Team or multi‑user support
-* Rule creation or editing
-* Rule versioning
-* AI output validation
-* Prompt editing
-* History or analytics
-* Marketplace or extensions
-* Pricing / billing
-
-If it’s not listed in **In‑Scope**, it’s out.
+* Equipos
+* Reglas personalizadas
+* UI de comandos
+* Analíticas
+* Billing
 
 ---
 
-## 5. UX Constraints (Non‑Negotiable)
+## 5. Criterios de validación
 
-* The user must never see raw prompts
-* Internal concepts (intent, resolver) must not be exposed
-* Default setup must work without configuration
-* UI must feel opinionated, not generic
+El MVP está validado si:
 
----
-
-## 6. Definition of Done (MVP)
-
-The MVP is considered complete when:
-
-* A solo dev can create a project in < 1 minute
-* They can execute all MVP commands
-* The AI output consistently respects the rules
-* The user stops rewriting prompts manually
+* Lo usas a diario
+* Reutilizas contextos
+* La IA mejora sin editar prompts
 
 ---
 
-## 7. MVP Validation Criteria
+## 6. Criterios de cancelación
 
-The MVP is **validated** if:
+Parar si:
 
-* The creator (you) uses it daily
-* It replaces manual prompting
-* It reduces frustration, not increases it
-
-No vanity metrics required.
+* Crear contexto no aporta valor
+* Los usuarios solo piden editar prompts
 
 ---
 
-## 8. Kill Criteria (Important)
+## 7. Regla guía
 
-The MVP should be reconsidered if:
-
-* The Resolver becomes complex or fragile
-* Users ask mainly for rule customization
-* The UI drifts toward configuration over action
-
-If any of these happen, stop and reassess.
-
----
-
-## 9. Guiding Rule
-
-> If a feature does not directly improve AI predictability,
-> it does not belong in the MVP.
+> Si no mejora la calidad del contexto, no entra en el MVP.
