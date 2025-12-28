@@ -1,10 +1,10 @@
-import { supabase } from "./supabase-client"
+import { supabase } from "./supabase-client";
 import {
   Context,
   ContextInput,
   ContextVersion,
   ContextVersionInput,
-} from "../../domain/types/contexts"
+} from "../../domain/types/contexts";
 
 /**
  * Maps database row to Context domain entity
@@ -17,7 +17,7 @@ function toContextDomain(row: Record<string, unknown>): Context {
     tags: (row.tags as string[]) || [],
     createdAt: row.created_at as string,
     updatedAt: row.updated_at as string,
-  }
+  };
 }
 
 /**
@@ -29,7 +29,7 @@ function toVersionDomain(row: Record<string, unknown>): ContextVersion {
     contextId: row.context_id as string,
     markdown: row.markdown as string,
     createdAt: row.created_at as string,
-  }
+  };
 }
 
 /**
@@ -40,7 +40,7 @@ function contextToDb(input: ContextInput): Record<string, unknown> {
     project_id: input.projectId,
     name: input.name,
     tags: input.tags,
-  }
+  };
 }
 
 /**
@@ -50,7 +50,7 @@ function versionToDb(input: ContextVersionInput): Record<string, unknown> {
   return {
     context_id: input.contextId,
     markdown: input.markdown,
-  }
+  };
 }
 
 export const contextsRepository = {
@@ -61,10 +61,10 @@ export const contextsRepository = {
       .from("contexts")
       .insert(contextToDb(input))
       .select()
-      .single()
+      .single();
 
-    if (error || !data) return null
-    return toContextDomain(data)
+    if (error || !data) return null;
+    return toContextDomain(data);
   },
 
   async getContextsByProjectId(projectId: string): Promise<Context[]> {
@@ -72,10 +72,10 @@ export const contextsRepository = {
       .from("contexts")
       .select("*")
       .eq("project_id", projectId)
-      .order("updated_at", { ascending: false })
+      .order("updated_at", { ascending: false });
 
-    if (error || !data) return []
-    return data.map(toContextDomain)
+    if (error || !data) return [];
+    return data.map(toContextDomain);
   },
 
   async getContextById(id: string): Promise<Context | null> {
@@ -83,48 +83,48 @@ export const contextsRepository = {
       .from("contexts")
       .select("*")
       .eq("id", id)
-      .single()
+      .single();
 
-    if (error || !data) return null
-    return toContextDomain(data)
+    if (error || !data) return null;
+    return toContextDomain(data);
   },
 
   async updateContext(
     id: string,
-    updates: Partial<ContextInput>
+    updates: Partial<ContextInput>,
   ): Promise<Context | null> {
-    const dbUpdates: Record<string, unknown> = {}
-    if (updates.name !== undefined) dbUpdates.name = updates.name
-    if (updates.tags !== undefined) dbUpdates.tags = updates.tags
+    const dbUpdates: Record<string, unknown> = {};
+    if (updates.name !== undefined) dbUpdates.name = updates.name;
+    if (updates.tags !== undefined) dbUpdates.tags = updates.tags;
 
     const { data, error } = await supabase
       .from("contexts")
       .update(dbUpdates)
       .eq("id", id)
       .select()
-      .single()
+      .single();
 
-    if (error || !data) return null
-    return toContextDomain(data)
+    if (error || !data) return null;
+    return toContextDomain(data);
   },
 
   async deleteContext(id: string): Promise<void> {
-    await supabase.from("contexts").delete().eq("id", id)
+    await supabase.from("contexts").delete().eq("id", id);
   },
 
   // ========== CONTEXT VERSION CRUD ==========
 
   async createContextVersion(
-    input: ContextVersionInput
+    input: ContextVersionInput,
   ): Promise<ContextVersion | null> {
     const { data, error } = await supabase
       .from("context_versions")
       .insert(versionToDb(input))
       .select()
-      .single()
+      .single();
 
-    if (error || !data) return null
-    return toVersionDomain(data)
+    if (error || !data) return null;
+    return toVersionDomain(data);
   },
 
   async getVersionsByContextId(contextId: string): Promise<ContextVersion[]> {
@@ -132,10 +132,10 @@ export const contextsRepository = {
       .from("context_versions")
       .select("*")
       .eq("context_id", contextId)
-      .order("created_at", { ascending: false })
+      .order("created_at", { ascending: false });
 
-    if (error || !data) return []
-    return data.map(toVersionDomain)
+    if (error || !data) return [];
+    return data.map(toVersionDomain);
   },
 
   async getLatestVersion(contextId: string): Promise<ContextVersion | null> {
@@ -145,10 +145,10 @@ export const contextsRepository = {
       .eq("context_id", contextId)
       .order("created_at", { ascending: false })
       .limit(1)
-      .single()
+      .single();
 
-    if (error || !data) return null
-    return toVersionDomain(data)
+    if (error || !data) return null;
+    return toVersionDomain(data);
   },
 
   async getVersionById(id: string): Promise<ContextVersion | null> {
@@ -156,19 +156,20 @@ export const contextsRepository = {
       .from("context_versions")
       .select("*")
       .eq("id", id)
-      .single()
+      .single();
 
-    if (error || !data) return null
-    return toVersionDomain(data)
+    if (error || !data) return null;
+    return toVersionDomain(data);
   },
 
-  async getAllContexts(): Promise<Context[]> {
+  async getContextsByUserId(userId: string): Promise<Context[]> {
     const { data, error } = await supabase
       .from("contexts")
-      .select("*")
-      .order("updated_at", { ascending: false })
+      .select("*, projects!inner(owner_user_id)")
+      .eq("projects.owner_user_id", userId)
+      .order("updated_at", { ascending: false });
 
-    if (error || !data) return []
-    return data.map(toContextDomain)
+    if (error || !data) return [];
+    return data.map(toContextDomain);
   },
-}
+};
