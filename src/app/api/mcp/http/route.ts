@@ -1,65 +1,109 @@
-import { createMcpHandler, withMcpAuth } from "mcp-handler";
+import { NextRequest, NextResponse } from "next/server";
+import { Server } from "@modelcontextprotocol/sdk/server/index.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import { requireApiKey } from "@/features/shared/lib/mcp-auth";
 import { mcpExecute } from "@/features/core/app/mcp-execute";
 import { listMcpResources } from "@/features/core/app/mcp/list-mcp-resources";
 import { readMcpResource } from "@/features/core/app/mcp/read-mcp-resource";
-import { ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
 
 /**
- * MCP HTTP Route Handler
+ * Simple MCP HTTP Handler
  *
- * Dedicated HTTP endpoint for Model Context Protocol.
- * Supports tools and resources with API key authentication.
+ * Handles JSON-RPC 2.0 requests for Model Context Protocol
  */
-const mcpHandler = createMcpHandler(
-  (server) => {
-    // ========== TOOLS ==========
+export async function POST(request: NextRequest) {
+  try {
+    // Authenticate
+    const auth = await requireApiKey(request);
 
-    server.registerTool(
-      "execute_project_context",
-      {
-        description:
-          "Resolves project context and returns a specialized prompt/contract for AI agents.",
-        inputSchema: z.object({
-          projectId: z.string().describe("The UUID of the project"),
-          commandId: z
-            .string()
-            .describe(
-              "The command to execute (e.g., 'create-component', 'refactor')",
-            ),
-          userInput: z
-            .string()
-            .describe("The natural language input from the user"),
-          target: z
-            .object({
-              pathHint: z.string().optional(),
-              files: z.array(z.string()).optional(),
-            })
-            .optional(),
-          contextHints: z
-            .object({
-              currentBranch: z.string().optional(),
-              tool: z
-                .enum(["cursor", "chatgpt", "gemini", "unknown"])
-                .optional(),
-            })
-            .optional(),
-        }),
-      },
-      async (args, extra) => {
-        // Access auth from the request (injected by withMcpAuth)
-        const request = (extra as any).request as Request;
-        const auth = request?.auth as any;
-        const apiKey = auth?.userData?.apiKey;
+    // Parse JSON-RPC request
+    const body = await request.json();
+    const { method, params, id } = body;
 
-        if (!apiKey) {
-          throw new Error("Unauthorized: API Key is required");
-        }
+    // Handle initialize
+    if (method === "initialize") {
+      return NextResponse.json({
+        jsonrpc: "2.0",
+        id,
+        result: {
+          protocolVersion: "2024-11-05",
+          capabilities: {
+            tools: {},
+            resources: {},
+          },
+          serverInfo: {
+            name: "DevContext AI Server",
+            version: "1.0.0",
+          },
+        },
+      });
+    }
 
+    // Handle tools/list
+    if (method === "tools/list") {
+      return NextResponse.json({
+        jsonrpc: "2.0",
+        id,
+        result: {
+          tools: [
+            {
+              name: "execute_project_context",
+              description:
+                "Resolves project context and returns a specialized prompt/contract for AI agents.",
+              inputSchema: {
+                type: "object",
+                properties: {
+                  projectId: {
+                    type: "string",
+                    description: "The UUID of the project",
+                  },
+                  commandId: {
+                    type: "string",
+                    description:
+                      "The command to execute (e.g., 'create-component', 'refactor')",
+                  },
+                  userInput: {
+                    type: "string",
+                    description: "The natural language input from the user",
+                  },
+                  target: {
+                    type: "object",
+                    properties: {
+                      pathHint: { type: "string" },
+                      files: {
+                        type: "array",
+                        items: { type: "string" },
+                      },
+                    },
+                  },
+                  contextHints: {
+                    type: "object",
+                    properties: {
+                      currentBranch: { type: "string" },
+                      tool: {
+                        type: "string",
+                        enum: ["cursor", "chatgpt", "gemini", "unknown"],
+                      },
+                    },
+                  },
+                },
+                required: ["projectId", "commandId", "userInput"],
+              },
+            },
+          ],
+        },
+      });
+    }
+
+    // Handle tools/call
+    if (method === "tools/call") {
+      const { name, arguments: args } = params;
+
+      if (name === "execute_project_context") {
         const result = await mcpExecute({
           projectId: args.projectId,
           commandId: args.commandId,
@@ -69,109 +113,102 @@ const mcpHandler = createMcpHandler(
         });
 
         if (result.status === "blocked") {
-          return {
+          return NextResponse.json({
+            jsonrpc: "2.0",
+            id,
+            result: {
+              content: [
+                {
+                  type: "text",
+                  text: `Execution blocked: ${result.blocked.reason}\\nDetails: ${result.blocked.details}`,
+                },
+              ],
+              isError: true,
+            },
+          });
+        }
+
+        return NextResponse.json({
+          jsonrpc: "2.0",
+          id,
+          result: {
             content: [
               {
                 type: "text",
-                text: `Execution blocked: ${result.blocked.reason}\nDetails: ${result.blocked.details}`,
+                text: result.contract.contractText,
               },
             ],
-            isError: true,
-          };
-        }
-
-        return {
-          content: [
-            {
-              type: "text",
-              text: result.contract.contractText,
-            },
-          ],
-        };
-      },
-    );
-
-    // ========== RESOURCES ==========
-
-    // Define a template for individual contexts
-    const contextTemplate = new ResourceTemplate("context://{id}", {
-      list: async (extra) => {
-        const request = (extra as any).request as Request;
-        const auth = request?.auth as any;
-        const userId = auth?.userData?.userId;
-
-        if (!userId) {
-          throw new Error("Unauthorized: Authentication required");
-        }
-
-        const { resources } = await listMcpResources(userId);
-        return { resources };
-      },
-    });
-
-    server.registerResource(
-      "context-resource",
-      contextTemplate,
-      {},
-      async (uri, variables, extra) => {
-        const request = (extra as any).request as Request;
-        const auth = request?.auth as any;
-        const userId = auth?.userData?.userId;
-
-        if (!userId) {
-          throw new Error("Unauthorized: Authentication required");
-        }
-
-        const { contents } = await readMcpResource(userId, uri.toString());
-        return { contents };
-      },
-    );
-  },
-  {
-    serverInfo: {
-      name: "DevContext AI Server",
-      version: "1.0.0",
-    },
-  },
-  {
-    verboseLogs: true,
-  },
-);
-
-/**
- * Wrap the handler with MCP Auth to support Bearer token verification.
- */
-const authenticatedHandler = withMcpAuth(
-  mcpHandler,
-  async (req) => {
-    try {
-      // Use our existing auth logic
-      const auth = await requireApiKey(req);
-
-      // Return AuthInfo compatible object
-      // We also inject the original apiKey for the execute tool
-      const apiKey =
-        req.headers.get("x-api-key") ||
-        req.headers.get("authorization")?.substring(7);
-
-      return {
-        userData: {
-          userId: auth.userId,
-          apiKey: apiKey,
-        },
-      } as any;
-    } catch (e) {
-      return undefined;
+          },
+        });
+      }
     }
-  },
-  { required: true },
-);
+
+    // Handle resources/list
+    if (method === "resources/list") {
+      const { resources } = await listMcpResources(auth.userId);
+      return NextResponse.json({
+        jsonrpc: "2.0",
+        id,
+        result: { resources },
+      });
+    }
+
+    // Handle resources/read
+    if (method === "resources/read") {
+      const { uri } = params;
+      const { contents } = await readMcpResource(auth.userId, uri);
+      return NextResponse.json({
+        jsonrpc: "2.0",
+        id,
+        result: { contents },
+      });
+    }
+
+    // Method not found
+    return NextResponse.json(
+      {
+        jsonrpc: "2.0",
+        id,
+        error: {
+          code: -32601,
+          message: `Method not found: ${method}`,
+        },
+      },
+      { status: 200 }, // JSON-RPC errors use 200 status
+    );
+  } catch (error: any) {
+    // Authentication or other errors
+    if (error.message?.includes("API Key")) {
+      return NextResponse.json(
+        {
+          error: "invalid_token",
+          error_description: error.message,
+        },
+        { status: 401 },
+      );
+    }
+
+    return NextResponse.json(
+      {
+        jsonrpc: "2.0",
+        error: {
+          code: -32603,
+          message: error.message || "Internal error",
+        },
+      },
+      { status: 500 },
+    );
+  }
+}
 
 /**
- * Export HTTP methods for MCP HTTP transport.
+ * Handle GET requests for server info/health check
  */
-export {
-  authenticatedHandler as GET,
-  authenticatedHandler as POST,
-  authenticatedHandler as DELETE,
-};
+export async function GET() {
+  return NextResponse.json({
+    name: "DevContext AI MCP Server",
+    version: "1.0.0",
+    protocol: "2024-11-05",
+    transport: "http",
+  });
+}
