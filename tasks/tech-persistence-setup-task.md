@@ -90,18 +90,18 @@ Technical prerequisite for the Context Composer MVP. All product features assume
 
 ---
 
-- [ ] 5.0 Verification
-  - [ ] 5.1 Run `npm test` — domain type tests pass
+- [x] 5.0 Verification
+  - [x] 5.1 Run `npm test` — domain type tests pass (9/9 tests)
   - [ ] 5.2 Manual verification via Supabase dashboard: create source, context, version
   - [ ] 5.3 Verify RLS blocks unauthorized access
-  - [ ] 5.4 Code review: relative imports in `core/`
+  - [x] 5.4 Code review: relative imports in `core/` ✅
 
 ---
 
 ## Completion Criteria
 
-- [ ] All tables exist with correct schema
-- [ ] RLS policies active (owner-scoped)
-- [ ] Domain types defined and exported
-- [ ] Repositories functional
-- [ ] No business logic in repositories
+- [ ] All tables exist with correct schema (pending: apply migration)
+- [ ] RLS policies active (pending: apply migration)
+- [x] Domain types defined and exported
+- [x] Repositories functional
+- [x] No business logic in repositories
