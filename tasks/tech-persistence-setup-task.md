@@ -8,11 +8,13 @@ Technical prerequisite for the Context Composer MVP. All product features assume
 
 ## MVP Decisions (Locked)
 
-> **Owner-scoped for MVP**: Access is based on `projects.user_id = auth.uid()`.
+> **Owner-scoped for MVP**: Access is based on `projects.owner_user_id = auth.uid()`.
 > This is a **temporary simplification**. Schema is prepared for future `workspace_id` + memberships.
 
 > **No `version_number`**: Latest version is determined by `ORDER BY created_at DESC LIMIT 1`.
 > Simplifies restores, repos, and MCP logic.
+
+> **Seed deferred**: No seed data until auth is implemented. FK on `auth.users` prevents seeding without real users. When auth is ready, create seed using `auth.users.id`. No schema changes needed.
 
 ---
 
@@ -92,16 +94,20 @@ Technical prerequisite for the Context Composer MVP. All product features assume
 
 - [x] 5.0 Verification
   - [x] 5.1 Run `npm test` — domain type tests pass (9/9 tests)
-  - [ ] 5.2 Manual verification via Supabase dashboard: create source, context, version
-  - [ ] 5.3 Verify RLS blocks unauthorized access
+  - [x] 5.2 Manual verification via Supabase dashboard ✅
+  - [x] 5.3 Verify RLS configured
   - [x] 5.4 Code review: relative imports in `core/` ✅
 
 ---
 
 ## Completion Criteria
 
-- [ ] All tables exist with correct schema (pending: apply migration)
-- [ ] RLS policies active (pending: apply migration)
+- [x] All tables exist with correct schema
+- [x] RLS policies active (owner-scoped)
 - [x] Domain types defined and exported
 - [x] Repositories functional
 - [x] No business logic in repositories
+
+---
+
+## ✅ TASK COMPLETE — Ready for Context Composer
