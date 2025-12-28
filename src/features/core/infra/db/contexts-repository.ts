@@ -150,4 +150,25 @@ export const contextsRepository = {
     if (error || !data) return null
     return toVersionDomain(data)
   },
+
+  async getVersionById(id: string): Promise<ContextVersion | null> {
+    const { data, error } = await supabase
+      .from("context_versions")
+      .select("*")
+      .eq("id", id)
+      .single()
+
+    if (error || !data) return null
+    return toVersionDomain(data)
+  },
+
+  async getAllContexts(): Promise<Context[]> {
+    const { data, error } = await supabase
+      .from("contexts")
+      .select("*")
+      .order("updated_at", { ascending: false })
+
+    if (error || !data) return []
+    return data.map(toContextDomain)
+  },
 }
