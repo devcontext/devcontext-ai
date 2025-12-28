@@ -34,10 +34,10 @@ export default async function ContextsPage({ searchParams }: ContextsPageProps) 
         description="Browse and manage your AI context repository."
       >
         <div className="flex items-center gap-2">
-           <span className="text-xs font-medium text-zinc-500 bg-zinc-900 px-2 py-1 rounded border border-zinc-800">
+           <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-1 rounded border border-border">
               {projects.length} Projects
            </span>
-            <span className="text-xs font-medium text-zinc-500 bg-zinc-900 px-2 py-1 rounded border border-zinc-800">
+            <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-1 rounded border border-border">
               {contexts.length} Contexts
            </span>
         </div>

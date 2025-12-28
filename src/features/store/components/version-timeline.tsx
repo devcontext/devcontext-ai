@@ -20,12 +20,12 @@ export function VersionTimeline({
 }: VersionTimelineProps) {
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-2 text-zinc-400 mb-4 px-2">
+      <div className="flex items-center gap-2 text-muted-foreground mb-4 px-2">
         <History className="w-4 h-4" />
         <span className="text-xs font-semibold uppercase tracking-wider">Version History</span>
       </div>
 
-      <div className="relative ml-4 border-l border-zinc-800 space-y-1">
+      <div className="relative ml-4 border-l border-border space-y-1">
         {versions.map((version, index) => {
           const isLatest = index === 0
           const isSelected = selectedVersionId === version.id
@@ -37,33 +37,33 @@ export function VersionTimeline({
               {/* Dot mapping */}
               <div className={cn(
                 "absolute left-[-5px] top-1.5 w-2.5 h-2.5 rounded-full border-2 transition-all",
-                isLatest ? "bg-blue-500 border-blue-500" : "bg-zinc-950 border-zinc-700 group-hover:border-zinc-500",
-                isSelected && !isLatest && "border-blue-400 bg-blue-400"
+                isLatest ? "bg-primary border-primary" : "bg-muted border-muted-foreground group-hover:border-foreground",
+                isSelected && !isLatest && "border-primary bg-primary"
               )} />
 
               <div 
                 className={cn(
                   "p-4 rounded-xl border transition-all cursor-pointer",
                   isSelected 
-                    ? "bg-zinc-900 border-zinc-700 ring-1 ring-blue-500/20" 
-                    : "bg-transparent border-transparent hover:bg-zinc-900/50 hover:border-zinc-800"
+                    ? "bg-accent border-border ring-1 ring-primary/20" 
+                    : "bg-transparent border-transparent hover:bg-accent/50 hover:border-border"
                 )}
                 onClick={() => onSelectVersion(version.id)}
               >
                 <div className="flex justify-between items-center mb-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-white">v{versionNumber}</span>
+                    <span className="text-sm font-bold text-foreground">v{versionNumber}</span>
                     {isLatest && (
-                      <span className="flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-green-500/10 text-green-400 border border-green-500/20">
+                      <span className="flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-green-500/10 text-green-500 border border-green-500/20">
                         <CheckCircle2 className="w-2.5 h-2.5 mr-1" />
                         LATEST
                       </span>
                     )}
                   </div>
-                  <span className="text-[10px] text-zinc-500">{timestamp}</span>
+                  <span className="text-[10px] text-muted-foreground">{timestamp}</span>
                 </div>
 
-                <div className="text-xs text-zinc-400 mb-4 line-clamp-2">
+                <div className="text-xs text-muted-foreground mb-4 line-clamp-2">
                   {version.markdown.substring(0, 100)}...
                 </div>
 
@@ -74,7 +74,7 @@ export function VersionTimeline({
                       onRestore(version.id)
                     }}
                     disabled={isRestoring}
-                    className="flex items-center gap-1.5 text-[10px] font-bold text-blue-400 hover:text-blue-300 transition-colors uppercase tracking-widest"
+                    className="flex items-center gap-1.5 text-[10px] font-bold text-primary hover:text-primary/80 transition-colors uppercase tracking-widest"
                   >
                     <RotateCcw className={cn("w-3 h-3", isRestoring && "animate-spin")} />
                     {isRestoring ? "Restoring..." : "Restore this version"}

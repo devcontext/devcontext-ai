@@ -2,6 +2,7 @@
 
 import type { ComposerMode } from "../types"
 import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
 type StepSelectModeProps = {
   mode: ComposerMode | null
@@ -37,10 +38,10 @@ export function StepSelectMode({
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-xl font-semibold text-white mb-2">
+        <h2 className="text-xl font-semibold text-foreground mb-2">
           Step 2: Select Mode
         </h2>
-        <p className="text-zinc-400">
+        <p className="text-muted-foreground">
           Choose how you want to use your sources.
         </p>
       </div>
@@ -51,27 +52,29 @@ export function StepSelectMode({
           <button
             key={option.value}
             onClick={() => onSetMode(option.value)}
-            className={`w-full text-left p-4 rounded-lg border transition-colors ${
+            className={cn(
+              "w-full text-left p-4 rounded-lg border transition-colors",
               mode === option.value
                 ? "border-primary bg-primary/10"
-                : "border-zinc-700 bg-zinc-800/50 hover:border-zinc-600"
-            }`}
+                : "border-border bg-card hover:border-sidebar-ring"
+            )}
           >
             <div className="flex items-center gap-3">
               <div
-                className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                className={cn(
+                  "w-4 h-4 rounded-full border-2 flex items-center justify-center",
                   mode === option.value
                     ? "border-primary"
-                    : "border-zinc-500"
-                }`}
+                    : "border-muted-foreground"
+                )}
               >
                 {mode === option.value && (
                   <div className="w-2 h-2 rounded-full bg-primary" />
                 )}
               </div>
               <div>
-                <div className="font-medium text-white">{option.label}</div>
-                <div className="text-sm text-zinc-400">{option.description}</div>
+                <div className="font-medium text-foreground">{option.label}</div>
+                <div className="text-sm text-muted-foreground">{option.description}</div>
               </div>
             </div>
           </button>

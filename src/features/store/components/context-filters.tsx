@@ -38,27 +38,27 @@ export function ContextFilters({ projects, initialValues, onFilterChange }: Cont
   return (
     <form 
       onChange={handleSubmit(onFilterChange)}
-      className="flex flex-wrap items-end gap-4 p-6 bg-zinc-900/50 border border-zinc-800 rounded-xl"
+      className="flex flex-wrap items-end gap-4 p-6 bg-card border border-border rounded-xl"
     >
       {/* Search */}
       <div className="flex-1 min-w-[200px] space-y-2">
-        <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Search</label>
+        <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Search</label>
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input 
             {...register("search")}
             placeholder="Search by name..."
-            className="pl-10 bg-zinc-800 border-zinc-700 focus:ring-blue-500"
+            className="pl-10 bg-background border-border focus:ring-primary"
           />
         </div>
       </div>
 
       {/* Project Filter */}
       <div className="w-full md:w-64 space-y-2">
-        <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Project</label>
+        <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Project</label>
         <select 
           {...register("projectId")}
-          className="w-full h-9 bg-zinc-800 border border-zinc-700 rounded-md px-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="w-full h-9 bg-background border border-border rounded-md px-3 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
         >
           <option value="">All Projects</option>
           {projects.map(p => (
@@ -69,11 +69,11 @@ export function ContextFilters({ projects, initialValues, onFilterChange }: Cont
 
       {/* Tags Filter */}
       <div className="w-full md:w-48 space-y-2">
-        <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Tags</label>
+        <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Tags</label>
         <Input 
           {...register("tags")}
           placeholder="Filtering tags..."
-          className="bg-zinc-800 border-zinc-700"
+          className="bg-background border-border"
         />
       </div>
 
@@ -84,7 +84,7 @@ export function ContextFilters({ projects, initialValues, onFilterChange }: Cont
           variant="ghost" 
           size="sm" 
           onClick={handleClear}
-          className="text-zinc-500 hover:text-white mb-0.5"
+          className="text-muted-foreground hover:text-foreground mb-0.5"
         >
           <X className="w-4 h-4 mr-1.5" />
           Clear

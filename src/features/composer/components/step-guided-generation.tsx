@@ -83,10 +83,10 @@ export function StepGuidedGeneration({
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-xl font-semibold text-white mb-2">
+        <h2 className="text-xl font-semibold text-foreground mb-2">
           Step 3: Generate Draft
         </h2>
-        <p className="text-zinc-400">
+        <p className="text-muted-foreground">
           AI is generating a structured context draft from your sources.
         </p>
       </div>
@@ -99,12 +99,12 @@ export function StepGuidedGeneration({
         </div>
       ) : (
         <div className="space-y-4">
-          <div className="bg-zinc-800/50 border border-zinc-700 rounded-lg p-4 max-h-96 overflow-y-auto">
-            <pre className="text-sm text-zinc-300 whitespace-pre-wrap font-mono">
+          <div className="bg-muted border border-border rounded-lg p-4 max-h-96 overflow-y-auto">
+            <pre className="text-sm text-foreground whitespace-pre-wrap font-mono">
               {draft}
             </pre>
           </div>
-          <p className="text-xs text-zinc-500">
+          <p className="text-xs text-muted-foreground">
             This draft is editable in the next step.
           </p>
         </div>

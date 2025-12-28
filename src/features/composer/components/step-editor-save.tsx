@@ -86,30 +86,30 @@ export function StepEditorSave({
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-xl font-semibold text-white mb-2">
+        <h2 className="text-xl font-semibold text-foreground mb-2">
           Step 4: Edit & Save
         </h2>
-        <p className="text-zinc-400">
+        <p className="text-muted-foreground">
           Review your context, give it a name, and save.
         </p>
       </div>
 
       {/* Context Name */}
       <div className="space-y-2">
-        <label className="text-sm font-medium text-zinc-300">
-          Context Name <span className="text-red-400">*</span>
+        <label className="text-sm font-medium text-foreground">
+          Context Name <span className="text-destructive">*</span>
         </label>
         <Input
           value={contextName}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => onSetContextName(e.target.value)}
           placeholder="e.g., Project Architecture"
-          className="bg-zinc-800/50 border-zinc-700"
+          className="bg-background border-border"
         />
       </div>
 
       {/* Tags */}
       <div className="space-y-2">
-        <label className="text-sm font-medium text-zinc-300">
+        <label className="text-sm font-medium text-foreground">
           Tags (comma-separated)
         </label>
         <Input
@@ -119,23 +119,23 @@ export function StepEditorSave({
             onSetTags(e.target.value.split(",").map((t: string) => t.trim()).filter(Boolean))
           }}
           placeholder="e.g., architecture, rules, onboarding"
-          className="bg-zinc-800/50 border-zinc-700"
+          className="bg-background border-border"
         />
       </div>
 
       {/* Editor */}
       <div className="space-y-2">
-        <label className="text-sm font-medium text-zinc-300">
+        <label className="text-sm font-medium text-foreground">
           Context Content
         </label>
         <Textarea
           value={mode === "reference-only" ? content : draft}
           onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => mode !== "reference-only" && onSetDraft(e.target.value)}
           readOnly={mode === "reference-only"}
-          className="min-h-[300px] bg-zinc-800/50 border-zinc-700 font-mono text-sm"
+          className="min-h-[300px] bg-background border-border font-mono text-sm"
         />
         {mode === "reference-only" && (
-          <p className="text-xs text-zinc-500">
+          <p className="text-xs text-muted-foreground">
             Reference-only mode: content is based on your sources.
           </p>
         )}

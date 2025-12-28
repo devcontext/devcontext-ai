@@ -8,6 +8,7 @@ import { VersionPreview } from "./version-preview"
 import { restoreVersionAction, deleteContextAction } from "../actions/context-actions"
 import { Button } from "@/components/ui/button"
 import { Trash2, AlertCircle } from "lucide-react"
+import { ConfirmationDialog } from "../../shared/components/ui/confirmation-dialog"
 
 interface ContextDetailContainerProps {
   details: ContextDetails
@@ -23,8 +24,6 @@ export function ContextDetailContainer({ details }: ContextDetailContainerProps)
   const selectedVersion = details.versions.find(v => v.id === selectedVersionId) || null
 
   const handleRestore = async (versionId: string) => {
-    if (!confirm("Are you sure you want to restore this version? This will create a new entry in the history.")) return
-    
     setIsRestoring(true)
     setError(null)
     
@@ -42,8 +41,6 @@ export function ContextDetailContainer({ details }: ContextDetailContainerProps)
   }
 
   const handleDelete = async () => {
-    if (!confirm("Are you sure you want to delete this context? This action cannot be undone.")) return
-    
     setIsDeleting(true)
     setError(null)
     
@@ -61,24 +58,38 @@ export function ContextDetailContainer({ details }: ContextDetailContainerProps)
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
       {/* Sidebar: Timeline */}
       <div className="lg:col-span-4 xl:col-span-3 space-y-8">
-        <VersionTimeline 
-          versions={details.versions}
-          selectedVersionId={selectedVersionId}
-          onSelectVersion={setSelectedVersionId}
-          onRestore={handleRestore}
-          isRestoring={isRestoring}
-        />
+        <ConfirmationDialog
+          title="Restore Version"
+          description="Are you sure you want to restore this version? This will create a new entry in the history."
+          confirmText="Restore"
+          onConfirm={() => selectedVersionId && handleRestore(selectedVersionId)}
+        >
+          <VersionTimeline 
+            versions={details.versions}
+            selectedVersionId={selectedVersionId}
+            onSelectVersion={setSelectedVersionId}
+            onRestore={handleRestore}
+            isRestoring={isRestoring}
+          />
+        </ConfirmationDialog>
 
         <div className="pt-8 border-t border-zinc-900">
-          <Button 
-            variant="ghost" 
-            className="w-full justify-start text-red-500 hover:text-red-400 hover:bg-red-500/10 h-10 px-4"
-            onClick={handleDelete}
-            disabled={isDeleting || isRestoring}
+          <ConfirmationDialog
+            title="Delete Context"
+            description="Are you sure you want to delete this context? This action cannot be undone."
+            confirmText="Delete"
+            variant="destructive"
+            onConfirm={handleDelete}
           >
-            <Trash2 className="w-4 h-4 mr-2" />
-            Delete Context
-          </Button>
+            <Button 
+              variant="ghost" 
+              className="w-full justify-start text-red-500 hover:text-red-400 hover:bg-red-500/10 h-10 px-4"
+              disabled={isDeleting || isRestoring}
+            >
+              <Trash2 className="w-4 h-4 mr-2" />
+              Delete Context
+            </Button>
+          </ConfirmationDialog>
         </div>
       </div>
 
