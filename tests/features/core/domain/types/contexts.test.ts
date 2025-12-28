@@ -3,7 +3,7 @@ import type {
   ContextInput,
   ContextVersion,
   ContextVersionInput,
-} from "../../../../src/features/core/domain/types/contexts"
+} from "../../../../../src/features/core/domain/types/contexts"
 
 describe("Context type", () => {
   it("should allow creating a valid Context object", () => {

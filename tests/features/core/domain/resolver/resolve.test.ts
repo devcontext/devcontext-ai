@@ -11,12 +11,15 @@ describe("Resolver Determinism (Strict)", () => {
   const context: ResolveContext = {
     project: {
       id: "p1",
+      ownerUserId: "u1",
       name: "Project 1",
       stackPresetId: "nextjs",
       activeRulesetId: "default",
       ruleToggles: {
         "keep-changes-readable": true,
       },
+      createdAt: "2024-12-28T00:00:00.000Z",
+      updatedAt: "2024-12-28T00:00:00.000Z",
     },
     command: {
       id: "create-component",

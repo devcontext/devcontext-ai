@@ -77,7 +77,12 @@ export default function ControlPlanePage() {
         userInput: userInput || "Drafting component..." 
       },
       {
-        project: domainProject,
+        project: {
+        ...domainProject,
+        ownerUserId: "dev-user",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
         command,
         ruleset,
         stackPreset: stack,

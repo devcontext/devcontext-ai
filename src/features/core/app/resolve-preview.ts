@@ -45,24 +45,26 @@ export async function resolvePreview(request: ResolveRequest): Promise<ResolveRe
     };
   }
 
-  const stackPreset = getStackPresetById(project.stackPresetId);
+  const stackPresetId = project.stackPresetId;
+  const stackPreset = stackPresetId ? getStackPresetById(stackPresetId) : null;
   if (!stackPreset) {
     return {
       status: "blocked",
       blocked: { 
         reason: "invalid_configuration", 
-        message: `The project stack preset "${project.stackPresetId}" is invalid or missing.` 
+        message: `The project stack preset "${stackPresetId}" is invalid or missing.` 
       }
     };
   }
 
-  const ruleset = getRulesetById(project.activeRulesetId);
+  const activeRulesetId = project.activeRulesetId;
+  const ruleset = activeRulesetId ? getRulesetById(activeRulesetId) : null;
   if (!ruleset) {
     return {
       status: "blocked",
       blocked: { 
         reason: "invalid_configuration", 
-        message: `The ruleset "${project.activeRulesetId}" assigned to this project is missing.` 
+        message: `The ruleset "${activeRulesetId}" assigned to this project is missing.` 
       }
     };
   }
