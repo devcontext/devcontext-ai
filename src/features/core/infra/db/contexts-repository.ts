@@ -162,6 +162,16 @@ export const contextsRepository = {
     return toVersionDomain(data);
   },
 
+  async getAllContexts(): Promise<Context[]> {
+    const { data, error } = await supabase
+      .from("contexts")
+      .select("*")
+      .order("updated_at", { ascending: false });
+
+    if (error || !data) return [];
+    return data.map(toContextDomain);
+  },
+
   async getContextsByUserId(userId: string): Promise<Context[]> {
     const { data, error } = await supabase
       .from("contexts")
