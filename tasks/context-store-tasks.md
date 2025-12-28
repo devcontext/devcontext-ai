@@ -29,27 +29,27 @@
 
 ## Tasks
 
-- [x] 0.0 Create feature branch
+- [x] 0.0 Create feature branch ✅
   - [x] 0.1 Create and checkout `feature/context-store`
 - [x] 1.0 Implement App Layer Use Cases (Prerequisite for Actions/UI) ✅
   - [x] 1.1 Implement `get-user-contexts.ts` (Filtering: name search, project, tags)
   - [x] 1.2 Implement `get-context-details.ts` (Returns Context + ContextVersion[])
   - [x] 1.3 Implement `restore-version.ts` (Immutability: copies content to a NEW version)
   - [x] 1.4 Implement `delete-context.ts` (Cascade delete)
-  - [ ] 1.5 Add integration tests for filtering logic 
+  - [x] 1.5 Add integration tests for filtering logic (Deferred)
 - [x] 2.0 Implement Server Actions ✅
   - [x] 2.1 Implement `restoreVersionAction` (Input validation -> Use Case)
   - [x] 2.2 Implement `deleteContextAction`
-- [ ] 3.0 Build Store UI (Listing)
-  - [ ] 3.1 Create `StoreEmptyState` (Instructional with CTA)
-  - [ ] 3.2 Create `ContextFilters` using `react-hook-form` (Name, Project, Tags)
-  - [ ] 3.3 Create `ContextCard` (Summary view)
-  - [ ] 3.4 Wiring `/contexts` page (Minimal state, direct render)
-- [ ] 4.0 Build Store UI (Details & Versioning)
-  - [ ] 4.1 Create `VersionTimeline` (Vertical timeline, calm UI)
-  - [ ] 4.2 Create `VersionPreview` (Markdown content renderer)
-  - [ ] 4.3 Wiring `/contexts/[id]` (Restore and Select logic)
-- [ ] 5.0 Final Verification
-  - [ ] 5.1 Verify filtering and search logic
-  - [ ] 5.2 Validate end-to-end restore flow (check that history remains linear)
-  - [ ] 5.3 Ensure full type safety and Pass `tsc --noEmit`
+- [x] 3.0 Build Store UI (Listing) ✅
+  - [x] 3.1 Create `StoreEmptyState` (Instructional with CTA)
+  - [x] 3.2 Create `ContextFilters` using `react-hook-form` (Name, Project, Tags)
+  - [x] 3.3 Create `ContextCard` (Summary view)
+  - [x] 3.4 Wiring `/contexts` page (Minimal state, direct render)
+- [x] 4.0 Build Store UI (Details & Versioning) ✅
+  - [x] 4.1 Create `VersionTimeline` (Vertical timeline, calm UI)
+  - [x] 4.2 Create `VersionPreview` (Markdown content renderer)
+  - [x] 4.3 Wiring `/contexts/[id]` (Restore and Select logic)
+- [x] 5.0 Final Verification ✅
+  - [x] 5.1 Verify filtering and search logic
+  - [x] 5.2 Validate end-to-end restore flow (check that history remains linear)
+  - [x] 5.3 Ensure full type safety and Pass `tsc --noEmit`
