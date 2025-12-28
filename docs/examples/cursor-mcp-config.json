@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "devcontext-ai": {
+      "transport": "http",
+      "url": "https://dev-context-ai.vercel.app/api/mcp/http",
+      "headers": {
+        "Authorization": "Bearer YOUR_API_KEY_HERE"
+      },
+      "metadata": {
+        "description": "DevContext AI MCP Server - AI Context Control Plane",
+        "version": "1.0.0",
+        "documentation": "https://github.com/your-org/devcontext-ai"
+      }
+    }
+  }
+}

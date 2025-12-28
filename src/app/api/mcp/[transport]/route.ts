@@ -135,7 +135,6 @@ const mcpHandler = createMcpHandler(
     },
   },
   {
-    basePath: "/api/mcp",
     verboseLogs: true,
   },
 );
@@ -169,6 +168,17 @@ const authenticatedHandler = withMcpAuth(
   { required: true },
 );
 
+/**
+ * Export HTTP methods for MCP transport.
+ *
+ * Note: This route supports both HTTP and SSE transports via the [transport] parameter.
+ * However, for Vercel deployments, HTTP transport is recommended due to:
+ * - Serverless function timeout limits
+ * - SSE requiring persistent connections
+ * - Better compatibility with CDN/edge networks
+ *
+ * Client configuration should use: /api/mcp/http
+ */
 export {
   authenticatedHandler as GET,
   authenticatedHandler as POST,
