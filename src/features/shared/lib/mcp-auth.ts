@@ -14,7 +14,9 @@ export type AuthenticatedMcpRequest = {
 export async function requireApiKey(
   request: Request,
 ): Promise<AuthenticatedMcpRequest> {
-  let apiKey = request.headers.get("x-api-key");
+  const url = new URL(request.url);
+  let apiKey =
+    request.headers.get("x-api-key") || url.searchParams.get("x-api-key");
 
   // Support standard Authorization: Bearer <token>
   const authHeader = request.headers.get("authorization");
@@ -23,6 +25,7 @@ export async function requireApiKey(
   }
 
   if (!apiKey) {
+    console.error("Auth Fail: No API Key found in headers or search params");
     throw new Error("Missing API Key");
   }
 
@@ -33,6 +36,10 @@ export async function requireApiKey(
     .single();
 
   if (error || !data) {
+    console.error("Auth Fail: Invalid API Key or DB Error", {
+      error,
+      apiKey: apiKey.substring(0, 4) + "...",
+    });
     throw new Error("Invalid API Key");
   }
 
