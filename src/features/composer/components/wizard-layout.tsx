@@ -2,6 +2,7 @@
 
 import { ReactNode } from "react"
 import type { WizardStep } from "../types"
+import { ContentContainer } from "@/features/shared/components/layout/content-container"
 
 const STEP_LABELS = {
   1: "Add Sources",
@@ -17,8 +18,7 @@ type WizardLayoutProps = {
 
 export function WizardLayout({ currentStep, children }: WizardLayoutProps) {
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-zinc-100">
-      <div className="max-w-4xl mx-auto px-6 py-12">
+    <ContentContainer size="md">
         {/* Header */}
         <div className="mb-12">
           <h1 className="text-3xl font-semibold text-white mb-2">
@@ -70,7 +70,6 @@ export function WizardLayout({ currentStep, children }: WizardLayoutProps) {
         <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-8">
           {children}
         </div>
-      </div>
-    </div>
+    </ContentContainer>
   )
 }

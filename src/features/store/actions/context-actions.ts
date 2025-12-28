@@ -24,7 +24,7 @@ export async function restoreVersionAction(versionId: string): Promise<ActionRes
       return { success: false, error: "Failed to restore version" }
     }
 
-    revalidatePath(`/contexts/${result.contextId}`)
+    revalidatePath(`/dashboard/contexts/${result.contextId}`)
     return { success: true, data: result }
   } catch (error) {
     console.error("[restoreVersionAction]", error)
@@ -49,7 +49,7 @@ export async function deleteContextAction(contextId: string): Promise<ActionResp
       return { success: false, error: "Context not found or failed to delete" }
     }
 
-    revalidatePath("/contexts")
+    revalidatePath("/dashboard/contexts")
     return { success: true }
   } catch (error) {
     console.error("[deleteContextAction]", error)

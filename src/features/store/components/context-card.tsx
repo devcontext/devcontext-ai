@@ -13,7 +13,7 @@ export function ContextCard({ context, projectName }: ContextCardProps) {
 
   return (
     <Link 
-      href={`/contexts/${context.id}`}
+      href={`/dashboard/contexts/${context.id}`}
       className="group block p-5 bg-zinc-900 border border-zinc-800 rounded-xl hover:border-zinc-700 transition-all hover:bg-zinc-800/50"
     >
       <div className="flex justify-between items-start mb-4">

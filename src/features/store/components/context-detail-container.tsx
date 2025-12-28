@@ -50,7 +50,7 @@ export function ContextDetailContainer({ details }: ContextDetailContainerProps)
     const result = await deleteContextAction(details.context.id)
     
     if (result.success) {
-      router.push("/contexts")
+      router.push("/dashboard/contexts")
     } else {
       setError(result.error || "Failed to delete context")
       setIsDeleting(false)

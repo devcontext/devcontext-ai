@@ -29,7 +29,7 @@ export function FilterContainer({ projects, initialValues }: FilterContainerProp
     if (values.tags) params.set("tags", values.tags)
     else params.delete("tags")
 
-    router.push(`/contexts?${params.toString()}`)
+    router.push(`/dashboard/contexts?${params.toString()}`)
   }
 
   return (

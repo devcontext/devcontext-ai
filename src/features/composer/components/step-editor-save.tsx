@@ -75,7 +75,7 @@ export function StepEditorSave({
       }
 
       // Success - redirect to contexts list
-      router.push("/contexts")
+      router.push("/dashboard/contexts")
     } catch (err) {
       onSetError(err instanceof Error ? err.message : "Failed to save context")
     } finally {

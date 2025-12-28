@@ -17,7 +17,7 @@ export function StoreEmptyState() {
       </p>
 
       <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-500 text-white font-semibold">
-        <Link href="/composer">
+        <Link href="/dashboard/composer">
           <FilePlus className="w-4 h-4 mr-2" />
           Create New Context
         </Link>
