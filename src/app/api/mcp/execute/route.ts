@@ -1,24 +1,9 @@
 import { NextResponse } from "next/server";
 import { mcpExecute } from "@/features/core/app/mcp-execute";
 
-type mcpExecuteRequestDTO = {
-  projectId: string;
-  commandId: string;
-  userInput: string;
-  apiKey: string;
-  target?: {
-    pathHint?: string;
-    files?: string[];
-  };
-  contextHints?: {
-    currentBranch?: string;
-    tool?: "cursor" | "chatgpt" | "gemini" | "unknown";
-  };
-};
-
 /**
  * MCP Execute API Adapter
- * 
+ *
  * Exposes the system as an endpoint compatible with MCP clients or general remote execution.
  * This route triggers the persistence of execution logs.
  */
@@ -29,21 +14,28 @@ export async function POST(request: Request) {
     if (!apiKey) {
       return NextResponse.json(
         { error: "Unauthorized", message: "Missing API Key" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
     // 2. Body Validation
     const body = await request.json();
-    
-    const projectId = typeof body.projectId === "string" ? body.projectId.trim() : "";
-    const commandId = typeof body.commandId === "string" ? body.commandId.trim() : "";
-    const userInput = typeof body.userInput === "string" ? body.userInput.trim() : "";
+
+    const projectId =
+      typeof body.projectId === "string" ? body.projectId.trim() : "";
+    const commandId =
+      typeof body.commandId === "string" ? body.commandId.trim() : "";
+    const userInput =
+      typeof body.userInput === "string" ? body.userInput.trim() : "";
 
     if (!projectId || !commandId || !userInput) {
       return NextResponse.json(
-        { error: "Bad Request", message: "Missing or invalid required fields (projectId, commandId, userInput)" },
-        { status: 400 }
+        {
+          error: "Bad Request",
+          message:
+            "Missing or invalid required fields (projectId, commandId, userInput)",
+        },
+        { status: 400 },
       );
     }
 
@@ -67,8 +59,11 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("API Error [mcp/execute]:", error);
     return NextResponse.json(
-      { error: "Internal Server Error", message: "An unexpected error occurred during MCP execution." },
-      { status: 500 }
+      {
+        error: "Internal Server Error",
+        message: "An unexpected error occurred during MCP execution.",
+      },
+      { status: 500 },
     );
   }
 }

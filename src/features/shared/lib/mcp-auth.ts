@@ -14,7 +14,13 @@ export type AuthenticatedMcpRequest = {
 export async function requireApiKey(
   request: Request,
 ): Promise<AuthenticatedMcpRequest> {
-  const apiKey = request.headers.get("x-api-key");
+  let apiKey = request.headers.get("x-api-key");
+
+  // Support standard Authorization: Bearer <token>
+  const authHeader = request.headers.get("authorization");
+  if (!apiKey && authHeader?.startsWith("Bearer ")) {
+    apiKey = authHeader.substring(7);
+  }
 
   if (!apiKey) {
     throw new Error("Missing API Key");
