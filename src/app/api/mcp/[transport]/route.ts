@@ -6,6 +6,9 @@ import { listMcpResources } from "@/features/core/app/mcp/list-mcp-resources";
 import { readMcpResource } from "@/features/core/app/mcp/read-mcp-resource";
 import { ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
 
+export const dynamic = "force-dynamic";
+export const maxDuration = 30; // Standard for Vercel Pro/Hobby
+
 /**
  * Unified MCP Route Handler
  *

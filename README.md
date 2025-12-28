@@ -16,7 +16,7 @@ Este proyecto resuelve la ausencia de contexto explícito convirtiendo el conoci
 
 - **Context Composer**: Crea borradores de contexto guiados a partir de documentos, código o texto plano.
 - **Contextos Versionados**: Cada guardado es una versión. Restaurará cualquier punto en el tiempo y mantén la evolución de tus reglas de arquitectura.
-- **MCP Native**: Servidor MCP integrado y estandarizado (vía `mcp-handler`) para consumo inmediato desde cualquier cliente compatible.
+- **MCP Native**: Servidor MCP integrado y estandarizado (vía `mcp-handler`) para consumo inmediato desde cualquier cliente compatible (URL base: `/api/mcp/sse`).
 - **Discovery Endpoint**: Soporte para `/.well-known/mcp-configuration` (vía rewrite en `next.config.ts`) para autoconfiguración de clientes.
 
 ---
