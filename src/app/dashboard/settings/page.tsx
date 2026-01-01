@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
-import { Plus } from "lucide-react";
 import { createClient } from "@/features/core/infra/supabase-server";
 import { listUserApiKeys } from "@/features/core/app/api-keys/list-user-api-keys";
 import { SettingsContent } from "./settings-content";
