@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { listUserApiKeys } from "@/features/core/app/api-keys/list-user-api-keys";
 import { SettingsContent } from "./settings-content";
-import { DEV_USER_ID } from "@/lib/config-dev";
+import { requireUser } from "@/features/auth/utils/get-user";
 
 export const metadata = {
   title: "Settings | DevContext AI",
@@ -9,8 +9,9 @@ export const metadata = {
 };
 
 export default async function SettingsPage() {
-  // Use DEV_USER_ID for development (same pattern as other dashboard pages)
-  const apiKeys = await listUserApiKeys(DEV_USER_ID);
+  // Get authenticated user (redirects to login if not authenticated)
+  const user = await requireUser();
+  const apiKeys = await listUserApiKeys(user.id);
   const projectUrl =
     process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
