@@ -1,4 +1,4 @@
-import { createClient } from "../supabase-client";
+import { supabase } from "./supabase-client";
 
 import type {
   ApiKey,
@@ -11,8 +11,6 @@ export class ApiKeyRepository {
    * Creates a new API key in the database
    */
   async createApiKey(input: ApiKeyCreateInput): Promise<ApiKey> {
-    const supabase = createClient();
-
     const { data, error } = await supabase
       .from("api_keys")
       .insert({
@@ -34,8 +32,6 @@ export class ApiKeyRepository {
    * Lists all active (non-revoked) API keys for a user
    */
   async listUserApiKeys(userId: string): Promise<ApiKeyListItem[]> {
-    const supabase = createClient();
-
     const { data, error } = await supabase
       .from("api_keys")
       .select("id, name, created_at, last_used_at")
@@ -59,8 +55,6 @@ export class ApiKeyRepository {
    * Finds an API key by its hash (for authentication)
    */
   async findByKeyHash(keyHash: string): Promise<ApiKey | null> {
-    const supabase = createClient();
-
     const { data, error } = await supabase
       .from("api_keys")
       .select()
@@ -83,8 +77,6 @@ export class ApiKeyRepository {
    * Revokes an API key (soft delete)
    */
   async revokeApiKey(id: string, userId: string): Promise<void> {
-    const supabase = createClient();
-
     const { error } = await supabase
       .from("api_keys")
       .update({ revoked_at: new Date().toISOString() })
@@ -100,8 +92,6 @@ export class ApiKeyRepository {
    * Updates the last_used_at timestamp for an API key
    */
   async updateLastUsed(id: string): Promise<void> {
-    const supabase = createClient();
-
     const { error } = await supabase
       .from("api_keys")
       .update({ last_used_at: new Date().toISOString() })
