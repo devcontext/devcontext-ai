@@ -1,4 +1,4 @@
-import { supabase } from "@/features/core/infra/db/supabase-client";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 
 export type AuthenticatedMcpRequest = {
   userId: string;
@@ -29,7 +29,7 @@ export async function requireApiKey(
     throw new Error("Missing API Key");
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from("api_keys")
     .select("user_id, name")
     .eq("key", apiKey)

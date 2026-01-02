@@ -1,10 +1,28 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+/**
+ * Legacy admin client for database repositories.
+ * This uses SECRET_KEY to bypass RLS for repository operations.
+ *
+ * Note: This file is kept for backward compatibility with existing repositories.
+ * New code should use @/lib/supabase/admin instead.
+ */
 
-if (!supabaseUrl || !supabaseServiceKey) {
-  throw new Error("Missing Supabase environment variables (SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)");
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseSecretKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+
+if (!supabaseUrl || !supabaseSecretKey) {
+  throw new Error(
+    "Missing Supabase environment variables (NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY)",
+  );
 }
 
-export const supabase = createClient(supabaseUrl, supabaseServiceKey);
+export const supabase = createClient(supabaseUrl, supabaseSecretKey, {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false,
+  },
+});
+
+// Alias for clarity
+export const supabaseAdmin = supabase;

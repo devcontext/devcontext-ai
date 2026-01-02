@@ -1,12 +1,17 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
-export async function createClient() {
+/**
+ * Creates a Supabase client for server-side user operations.
+ * Uses PUBLISHABLE_KEY to respect Row Level Security (RLS).
+ * For admin operations that need to bypass RLS, use supabaseAdmin from lib/supabase/admin.ts
+ */
+export async function createSupabaseServerClient() {
   const cookieStore = await cookies();
 
   return createServerClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     {
       cookies: {
         getAll() {

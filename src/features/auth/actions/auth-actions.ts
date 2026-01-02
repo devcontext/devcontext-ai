@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@/features/core/infra/supabase-server";
+import { createSupabaseServerClient } from "@/features/core/infra/supabase-server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
@@ -16,7 +16,7 @@ export async function loginAction(
   email: string,
   password: string,
 ): Promise<LoginResult> {
-  const supabase = await createClient();
+  const supabase = await createSupabaseServerClient();
 
   const { error } = await supabase.auth.signInWithPassword({
     email,
@@ -41,7 +41,7 @@ export async function signupAction(
   email: string,
   password: string,
 ): Promise<LoginResult> {
-  const supabase = await createClient();
+  const supabase = await createSupabaseServerClient();
 
   const { error } = await supabase.auth.signUp({
     email,
@@ -63,7 +63,7 @@ export async function signupAction(
  * Server action to log out the current user
  */
 export async function logoutAction() {
-  const supabase = await createClient();
+  const supabase = await createSupabaseServerClient();
 
   await supabase.auth.signOut();
 

@@ -1,4 +1,4 @@
-import { createClient } from "@/features/core/infra/supabase-server";
+import { createSupabaseServerClient } from "@/features/core/infra/supabase-server";
 import { redirect } from "next/navigation";
 
 /**
@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
  * @returns User object or null if not authenticated
  */
 export async function getUser() {
-  const supabase = await createClient();
+  const supabase = await createSupabaseServerClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
