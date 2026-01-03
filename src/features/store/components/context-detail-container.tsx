@@ -1,58 +1,66 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { ContextDetails } from "../../core/app/store/get-context-details"
-import { VersionTimeline } from "./version-timeline"
-import { VersionPreview } from "./version-preview"
-import { restoreVersionAction, deleteContextAction } from "../actions/context-actions"
-import { Button } from "@/components/ui/button"
-import { Trash2, AlertCircle } from "lucide-react"
-import { ConfirmationDialog } from "../../shared/components/ui/confirmation-dialog"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { ContextDetails } from "../../core/app/store/get-context-details";
+import { VersionTimeline } from "./version-timeline";
+import { VersionPreview } from "./version-preview";
+import {
+  restoreVersionAction,
+  deleteContextAction,
+} from "../actions/context-actions";
+import { Button } from "@/features/shared/ui/button";
+import { Trash2, AlertCircle } from "lucide-react";
+import { ConfirmationDialog } from "../../shared/components/ui/confirmation-dialog";
 
 interface ContextDetailContainerProps {
-  details: ContextDetails
+  details: ContextDetails;
 }
 
-export function ContextDetailContainer({ details }: ContextDetailContainerProps) {
-  const router = useRouter()
-  const [selectedVersionId, setSelectedVersionId] = useState<string>(details.versions[0]?.id || "")
-  const [isRestoring, setIsRestoring] = useState(false)
-  const [isDeleting, setIsDeleting] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+export function ContextDetailContainer({
+  details,
+}: ContextDetailContainerProps) {
+  const router = useRouter();
+  const [selectedVersionId, setSelectedVersionId] = useState<string>(
+    details.versions[0]?.id || "",
+  );
+  const [isRestoring, setIsRestoring] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const selectedVersion = details.versions.find(v => v.id === selectedVersionId) || null
+  const selectedVersion =
+    details.versions.find((v) => v.id === selectedVersionId) || null;
 
   const handleRestore = async (versionId: string) => {
-    setIsRestoring(true)
-    setError(null)
-    
-    const result = await restoreVersionAction(versionId)
-    
+    setIsRestoring(true);
+    setError(null);
+
+    const result = await restoreVersionAction(versionId);
+
     if (result.success) {
       // revalidatePath handles data refresh, we just need to select the new latest version
       // In a real app we might want to wait for the refresh or handle it via router.refresh()
-      router.refresh()
+      router.refresh();
     } else {
-      setError(result.error || "Failed to restore version")
+      setError(result.error || "Failed to restore version");
     }
-    
-    setIsRestoring(false)
-  }
+
+    setIsRestoring(false);
+  };
 
   const handleDelete = async () => {
-    setIsDeleting(true)
-    setError(null)
-    
-    const result = await deleteContextAction(details.context.id)
-    
+    setIsDeleting(true);
+    setError(null);
+
+    const result = await deleteContextAction(details.context.id);
+
     if (result.success) {
-      router.push("/dashboard/contexts")
+      router.push("/dashboard/contexts");
     } else {
-      setError(result.error || "Failed to delete context")
-      setIsDeleting(false)
+      setError(result.error || "Failed to delete context");
+      setIsDeleting(false);
     }
-  }
+  };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -62,9 +70,11 @@ export function ContextDetailContainer({ details }: ContextDetailContainerProps)
           title="Restore Version"
           description="Are you sure you want to restore this version? This will create a new entry in the history."
           confirmText="Restore"
-          onConfirm={() => selectedVersionId && handleRestore(selectedVersionId)}
+          onConfirm={() =>
+            selectedVersionId && handleRestore(selectedVersionId)
+          }
         >
-          <VersionTimeline 
+          <VersionTimeline
             versions={details.versions}
             selectedVersionId={selectedVersionId}
             onSelectVersion={setSelectedVersionId}
@@ -81,8 +91,8 @@ export function ContextDetailContainer({ details }: ContextDetailContainerProps)
             variant="destructive"
             onConfirm={handleDelete}
           >
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               className="w-full justify-start text-red-500 hover:text-red-400 hover:bg-red-500/10 h-10 px-4"
               disabled={isDeleting || isRestoring}
             >
@@ -101,9 +111,9 @@ export function ContextDetailContainer({ details }: ContextDetailContainerProps)
             {error}
           </div>
         )}
-        
+
         <VersionPreview version={selectedVersion} />
       </div>
     </div>
-  )
+  );
 }

@@ -1,31 +1,30 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import type { SourceItem, ComposerMode } from "../types"
-import { Button } from "@/components/ui/button"
-import { Loader2 } from "lucide-react"
-import { saveContextAction } from "@/features/composer/actions/save-context"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import type { SourceItem, ComposerMode } from "../types";
+import { Button } from "@/features/shared/ui/button";
+import { Loader2 } from "lucide-react";
+import { saveContextAction } from "@/features/composer/actions/save-context";
+import { Input } from "@/features/shared/ui/input";
+import { Textarea } from "@/features/shared/ui/textarea";
 
 type StepEditorSaveProps = {
-  sources: SourceItem[]
-  mode: ComposerMode | null
-  draft: string
-  contextName: string
-  tags: string[]
-  isSaving: boolean
-  error: string | null
-  onSetDraft: (draft: string) => void
-  onSetContextName: (name: string) => void
-  onSetTags: (tags: string[]) => void
-  onSetIsSaving: (value: boolean) => void
-  onSetError: (error: string | null) => void
-  onBack: () => void
-  projectId: string
-}
+  sources: SourceItem[];
+  mode: ComposerMode | null;
+  draft: string;
+  contextName: string;
+  tags: string[];
+  isSaving: boolean;
+  error: string | null;
+  onSetDraft: (draft: string) => void;
+  onSetContextName: (name: string) => void;
+  onSetTags: (tags: string[]) => void;
+  onSetIsSaving: (value: boolean) => void;
+  onSetError: (error: string | null) => void;
+  onBack: () => void;
+  projectId: string;
+};
 
 export function StepEditorSave({
   sources,
@@ -43,45 +42,48 @@ export function StepEditorSave({
   onBack,
   projectId,
 }: StepEditorSaveProps) {
-  const router = useRouter()
-  const [tagsInput, setTagsInput] = useState(tags.join(", "))
+  const router = useRouter();
+  const [tagsInput, setTagsInput] = useState(tags.join(", "));
 
   // For reference-only mode, use sources as content
-  const content = mode === "reference-only" 
-    ? sources.map((s) => `## ${s.name}\n\n${s.content}`).join("\n\n---\n\n")
-    : draft
+  const content =
+    mode === "reference-only"
+      ? sources.map((s) => `## ${s.name}\n\n${s.content}`).join("\n\n---\n\n")
+      : draft;
 
   const handleSave = async () => {
     if (!contextName.trim()) {
-      onSetError("Context name is required")
-      return
+      onSetError("Context name is required");
+      return;
     }
 
-    onSetIsSaving(true)
-    onSetError(null)
+    onSetIsSaving(true);
+    onSetError(null);
 
-
-// ... inside handleSave
+    // ... inside handleSave
     try {
       const result = await saveContextAction({
         name: contextName.trim(),
         markdown: content,
-        tags: tagsInput.split(",").map((t) => t.trim()).filter(Boolean),
+        tags: tagsInput
+          .split(",")
+          .map((t) => t.trim())
+          .filter(Boolean),
         projectId,
-      })
+      });
 
       if (!result.success) {
-        throw new Error(result.error || "Failed to save context")
+        throw new Error(result.error || "Failed to save context");
       }
 
       // Success - redirect to contexts list
-      router.push("/dashboard/contexts")
+      router.push("/dashboard/contexts");
     } catch (err) {
-      onSetError(err instanceof Error ? err.message : "Failed to save context")
+      onSetError(err instanceof Error ? err.message : "Failed to save context");
     } finally {
-      onSetIsSaving(false)
+      onSetIsSaving(false);
     }
-  }
+  };
 
   return (
     <div className="space-y-8">
@@ -101,7 +103,9 @@ export function StepEditorSave({
         </label>
         <Input
           value={contextName}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => onSetContextName(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            onSetContextName(e.target.value)
+          }
           placeholder="e.g., Project Architecture"
           className="bg-background border-border"
         />
@@ -115,8 +119,13 @@ export function StepEditorSave({
         <Input
           value={tagsInput}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-            setTagsInput(e.target.value)
-            onSetTags(e.target.value.split(",").map((t: string) => t.trim()).filter(Boolean))
+            setTagsInput(e.target.value);
+            onSetTags(
+              e.target.value
+                .split(",")
+                .map((t: string) => t.trim())
+                .filter(Boolean),
+            );
           }}
           placeholder="e.g., architecture, rules, onboarding"
           className="bg-background border-border"
@@ -130,7 +139,9 @@ export function StepEditorSave({
         </label>
         <Textarea
           value={mode === "reference-only" ? content : draft}
-          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => mode !== "reference-only" && onSetDraft(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+            mode !== "reference-only" && onSetDraft(e.target.value)
+          }
           readOnly={mode === "reference-only"}
           className="min-h-[300px] bg-background border-border font-mono text-sm"
         />
@@ -165,5 +176,5 @@ export function StepEditorSave({
         </Button>
       </div>
     </div>
-  )
+  );
 }

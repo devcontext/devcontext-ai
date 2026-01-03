@@ -1,8 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { Trash2 } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
+import { Trash2, RotateCw } from "lucide-react";
 
 interface ApiKeyItemProps {
   id: string;
@@ -10,7 +8,9 @@ interface ApiKeyItemProps {
   createdAt: Date;
   lastUsedAt: Date | null;
   onRevoke: (id: string) => void;
+  onRegenerate: (id: string, name: string) => void;
   isRevoking: boolean;
+  isRegenerating: boolean;
 }
 
 export function ApiKeyItem({
@@ -19,64 +19,50 @@ export function ApiKeyItem({
   createdAt,
   lastUsedAt,
   onRevoke,
+  onRegenerate,
   isRevoking,
+  isRegenerating,
 }: ApiKeyItemProps) {
-  const [showConfirm, setShowConfirm] = useState(false);
-
-  const handleRevoke = () => {
-    onRevoke(id);
-    setShowConfirm(false);
+  const formatDate = (date: Date) => {
+    return new Intl.DateTimeFormat("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    }).format(date);
   };
 
   return (
-    <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+    <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800">
       <div className="flex-1">
         <h3 className="font-medium text-gray-900 dark:text-gray-100">{name}</h3>
-        <div className="flex gap-4 mt-1 text-sm text-gray-500 dark:text-gray-400">
-          <span>
-            Created {formatDistanceToNow(createdAt, { addSuffix: true })}
-          </span>
-          {lastUsedAt && (
-            <span>
-              Last used {formatDistanceToNow(lastUsedAt, { addSuffix: true })}
-            </span>
-          )}
-          {!lastUsedAt && (
-            <span className="text-gray-400 dark:text-gray-500">Never used</span>
-          )}
+        <div className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+          <p>Created: {formatDate(createdAt)}</p>
+          {lastUsedAt && <p>Last used: {formatDate(lastUsedAt)}</p>}
         </div>
       </div>
-
-      {!showConfirm ? (
+      <div className="flex gap-2">
         <button
-          onClick={() => setShowConfirm(true)}
-          disabled={isRevoking}
-          className="flex items-center gap-2 px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors disabled:opacity-50"
+          onClick={() => onRegenerate(id, name)}
+          disabled={isRegenerating || isRevoking}
+          className="flex items-center gap-2 px-3 py-2 text-sm text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          title="Regenerate this API key"
+        >
+          <RotateCw
+            size={16}
+            className={isRegenerating ? "animate-spin" : ""}
+          />
+          {isRegenerating ? "Regenerating..." : "Regenerate"}
+        </button>
+        <button
+          onClick={() => onRevoke(id)}
+          disabled={isRevoking || isRegenerating}
+          className="flex items-center gap-2 px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          title="Revoke this API key"
         >
           <Trash2 size={16} />
-          Revoke
+          {isRevoking ? "Revoking..." : "Revoke"}
         </button>
-      ) : (
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-600 dark:text-gray-400">
-            Are you sure?
-          </span>
-          <button
-            onClick={handleRevoke}
-            disabled={isRevoking}
-            className="px-3 py-1 text-sm bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50"
-          >
-            {isRevoking ? "Revoking..." : "Yes, revoke"}
-          </button>
-          <button
-            onClick={() => setShowConfirm(false)}
-            disabled={isRevoking}
-            className="px-3 py-1 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md disabled:opacity-50"
-          >
-            Cancel
-          </button>
-        </div>
-      )}
+      </div>
     </div>
   );
 }

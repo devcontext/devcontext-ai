@@ -1,17 +1,18 @@
-import { supabase } from "./supabase-client";
-
+import type { SupabaseClient } from "@supabase/supabase-js";
 import type {
   ApiKey,
   ApiKeyCreateInput,
-  ApiKeyListItem,
+  McpKeyListItem,
 } from "../../domain/api-keys/types";
 
 export class ApiKeyRepository {
+  constructor(private supabase: SupabaseClient) {}
+
   /**
    * Creates a new API key in the database
    */
   async createApiKey(input: ApiKeyCreateInput): Promise<ApiKey> {
-    const { data, error } = await supabase
+    const { data, error } = await this.supabase
       .from("api_keys")
       .insert({
         user_id: input.userId,
@@ -22,6 +23,7 @@ export class ApiKeyRepository {
       .single();
 
     if (error) {
+      console.error("[ApiKeyRepository] Insert error:", error);
       throw new Error(`Failed to create API key: ${error.message}`);
     }
 
@@ -31,8 +33,8 @@ export class ApiKeyRepository {
   /**
    * Lists all active (non-revoked) API keys for a user
    */
-  async listUserApiKeys(userId: string): Promise<ApiKeyListItem[]> {
-    const { data, error } = await supabase
+  async listUserApiKeys(userId: string): Promise<McpKeyListItem[]> {
+    const { data, error } = await this.supabase
       .from("api_keys")
       .select("id, name, created_at, last_used_at")
       .eq("user_id", userId)
@@ -55,7 +57,7 @@ export class ApiKeyRepository {
    * Finds an API key by its hash (for authentication)
    */
   async findByKeyHash(keyHash: string): Promise<ApiKey | null> {
-    const { data, error } = await supabase
+    const { data, error } = await this.supabase
       .from("api_keys")
       .select()
       .eq("key_hash", keyHash)
@@ -77,7 +79,7 @@ export class ApiKeyRepository {
    * Revokes an API key (soft delete)
    */
   async revokeApiKey(id: string, userId: string): Promise<void> {
-    const { error } = await supabase
+    const { error } = await this.supabase
       .from("api_keys")
       .update({ revoked_at: new Date().toISOString() })
       .eq("id", id)
@@ -92,7 +94,7 @@ export class ApiKeyRepository {
    * Updates the last_used_at timestamp for an API key
    */
   async updateLastUsed(id: string): Promise<void> {
-    const { error } = await supabase
+    const { error } = await this.supabase
       .from("api_keys")
       .update({ last_used_at: new Date().toISOString() })
       .eq("id", id);
@@ -119,6 +121,3 @@ export class ApiKeyRepository {
     };
   }
 }
-
-// Export singleton instance
-export const apiKeyRepository = new ApiKeyRepository();

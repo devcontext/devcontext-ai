@@ -24,8 +24,8 @@ export function McpConfigSnippet({
         {
           mcpServers: {
             "devcontext-ai": {
-              transport: "http",
               url: `${projectUrl}/api/mcp/http`,
+              transport: "http",
               headers: {
                 Authorization: `Bearer ${apiKey}`,
               },
@@ -36,10 +36,11 @@ export function McpConfigSnippet({
         2,
       ),
       instructions: [
-        "Open Cursor Settings",
-        "Navigate to MCP Servers section",
-        "Add the configuration below",
-        "Restart Cursor to apply changes",
+        "Open Cursor Settings (Cmd/Ctrl + ,)",
+        "Navigate to 'Features' → 'Model Context Protocol'",
+        "Click 'Edit Config'",
+        "Add the configuration below to the mcpServers object",
+        "Save and restart Cursor",
       ],
     },
     claude: {
@@ -64,7 +65,7 @@ export function McpConfigSnippet({
         "  • macOS: ~/Library/Application Support/Claude/claude_desktop_config.json",
         "  • Windows: %APPDATA%\\Claude\\claude_desktop_config.json",
         "  • Linux: ~/.config/Claude/claude_desktop_config.json",
-        "Add the configuration below",
+        "Add the configuration below to the file",
         "Restart Claude Desktop",
       ],
     },
@@ -86,8 +87,9 @@ export function McpConfigSnippet({
       ),
       instructions: [
         "Edit ~/.gemini/antigravity/mcp_config.json",
-        "Add the configuration below",
-        "Restart Antigravity to apply changes",
+        "Add the configuration below to the mcpServers object",
+        "Save the file",
+        "Restart Antigravity",
         'Note: Antigravity uses "serverUrl" instead of "url" + "transport"',
       ],
     },

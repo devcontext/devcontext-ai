@@ -1,17 +1,21 @@
-"use client"
+"use client";
 
-import type { ComposerMode } from "../types"
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
+import type { ComposerMode } from "../types";
+import { Button } from "@/features/shared/ui/button";
+import { cn } from "@/lib/utils";
 
 type StepSelectModeProps = {
-  mode: ComposerMode | null
-  onSetMode: (mode: ComposerMode) => void
-  onContinue: () => void
-  onBack: () => void
-}
+  mode: ComposerMode | null;
+  onSetMode: (mode: ComposerMode) => void;
+  onContinue: () => void;
+  onBack: () => void;
+};
 
-const MODE_OPTIONS: { value: ComposerMode; label: string; description: string }[] = [
+const MODE_OPTIONS: {
+  value: ComposerMode;
+  label: string;
+  description: string;
+}[] = [
   {
     value: "reference-only",
     label: "Reference Only",
@@ -27,7 +31,7 @@ const MODE_OPTIONS: { value: ComposerMode; label: string; description: string }[
     label: "Both",
     description: "Store sources + generate AI draft",
   },
-]
+];
 
 export function StepSelectMode({
   mode,
@@ -56,7 +60,7 @@ export function StepSelectMode({
               "w-full text-left p-4 rounded-lg border transition-colors",
               mode === option.value
                 ? "border-primary bg-primary/10"
-                : "border-border bg-card hover:border-sidebar-ring"
+                : "border-border bg-card hover:border-sidebar-ring",
             )}
           >
             <div className="flex items-center gap-3">
@@ -65,7 +69,7 @@ export function StepSelectMode({
                   "w-4 h-4 rounded-full border-2 flex items-center justify-center",
                   mode === option.value
                     ? "border-primary"
-                    : "border-muted-foreground"
+                    : "border-muted-foreground",
                 )}
               >
                 {mode === option.value && (
@@ -73,8 +77,12 @@ export function StepSelectMode({
                 )}
               </div>
               <div>
-                <div className="font-medium text-foreground">{option.label}</div>
-                <div className="text-sm text-muted-foreground">{option.description}</div>
+                <div className="font-medium text-foreground">
+                  {option.label}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  {option.description}
+                </div>
               </div>
             </div>
           </button>
@@ -91,5 +99,5 @@ export function StepSelectMode({
         </Button>
       </div>
     </div>
-  )
+  );
 }

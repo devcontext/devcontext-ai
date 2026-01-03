@@ -1,4 +1,5 @@
-import { apiKeyRepository } from "../../infra/db/api-key-repository";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { ApiKeyRepository } from "../../infra/db/api-key-repository";
 
 export interface RevokeApiKeyResult {
   success: true;
@@ -14,11 +15,13 @@ export type RevokeApiKeyResponse = RevokeApiKeyResult | RevokeApiKeyError;
 /**
  * Revokes an API key (soft delete)
  * Validates ownership before revoking
+ * @param supabase - Authenticated Supabase client with user session
  * @param keyId - The API key ID to revoke
  * @param userId - The user ID (for ownership validation)
  * @returns Success or error response
  */
 export async function revokeUserApiKey(
+  supabase: SupabaseClient,
   keyId: string,
   userId: string,
 ): Promise<RevokeApiKeyResponse> {
@@ -30,8 +33,9 @@ export async function revokeUserApiKey(
       };
     }
 
+    const repository = new ApiKeyRepository(supabase);
     // Repository method validates ownership via RLS
-    await apiKeyRepository.revokeApiKey(keyId, userId);
+    await repository.revokeApiKey(keyId, userId);
 
     return { success: true };
   } catch (error) {

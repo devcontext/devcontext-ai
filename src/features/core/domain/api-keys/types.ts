@@ -15,7 +15,7 @@ export interface ApiKeyCreateInput {
   keyHash: string;
 }
 
-export interface ApiKeyListItem {
+export interface McpKeyListItem {
   id: string;
   name: string;
   createdAt: Date;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X, Copy, Check, AlertTriangle } from "lucide-react";
 
 interface GenerateKeyDialogProps {
@@ -9,18 +9,27 @@ interface GenerateKeyDialogProps {
   onGenerate: (
     name: string,
   ) => Promise<{ success: boolean; apiKey?: string; error?: string }>;
+  initialName?: string;
 }
 
 export function GenerateKeyDialog({
   isOpen,
   onClose,
   onGenerate,
+  initialName = "",
 }: GenerateKeyDialogProps) {
-  const [name, setName] = useState("");
+  const [name, setName] = useState(initialName);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedKey, setGeneratedKey] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Update name when initialName changes (for regenerate)
+  useEffect(() => {
+    if (initialName) {
+      setName(initialName);
+    }
+  }, [initialName]);
 
   const handleGenerate = async () => {
     if (!name.trim()) {

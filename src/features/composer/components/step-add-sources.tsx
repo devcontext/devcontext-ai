@@ -1,18 +1,18 @@
-"use client"
+"use client";
 
-import { useRef, ChangeEvent, useState } from "react"
-import type { SourceItem } from "../types"
-import { Button } from "@/components/ui/button"
-import { X, Upload, FileText, AlertCircle } from "lucide-react"
+import { useRef, ChangeEvent, useState } from "react";
+import type { SourceItem } from "../types";
+import { Button } from "@/features/shared/ui/button";
+import { X, Upload, FileText, AlertCircle } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
+} from "@/features/shared/ui/dialog";
+import { Input } from "@/features/shared/ui/input";
+import { Textarea } from "@/features/shared/ui/textarea";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,14 +21,14 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
+} from "@/features/shared/ui/alert-dialog";
 
 type StepAddSourcesProps = {
-  sources: SourceItem[]
-  onAddSource: (source: Omit<SourceItem, "id">) => void
-  onRemoveSource: (id: string) => void
-  onContinue: () => void
-}
+  sources: SourceItem[];
+  onAddSource: (source: Omit<SourceItem, "id">) => void;
+  onRemoveSource: (id: string) => void;
+  onContinue: () => void;
+};
 
 export function StepAddSources({
   sources,
@@ -36,19 +36,23 @@ export function StepAddSources({
   onRemoveSource,
   onContinue,
 }: StepAddSourcesProps) {
-  const fileInputRef = useRef<HTMLInputElement>(null)
-  const [isPasteDialogOpen, setIsPasteDialogOpen] = useState(false)
-  const [pastedName, setPastedName] = useState("")
-  const [pastedText, setPastedText] = useState("")
-  const [errorDialog, setErrorDialog] = useState<{ isOpen: boolean; title: string; message: string }>({
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isPasteDialogOpen, setIsPasteDialogOpen] = useState(false);
+  const [pastedName, setPastedName] = useState("");
+  const [pastedText, setPastedText] = useState("");
+  const [errorDialog, setErrorDialog] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+  }>({
     isOpen: false,
     title: "",
     message: "",
-  })
+  });
 
   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
-    if (!files) return
+    const files = e.target.files;
+    if (!files) return;
 
     for (const file of Array.from(files)) {
       if (file.size > 5 * 1024 * 1024) {
@@ -56,33 +60,33 @@ export function StepAddSources({
           isOpen: true,
           title: "File Too Large",
           message: `File ${file.name} is too large. Max size is 5MB.`,
-        })
-        continue
+        });
+        continue;
       }
 
-      const validExtensions = [".md", ".txt", ".pdf"]
-      const ext = file.name.substring(file.name.lastIndexOf(".")).toLowerCase()
+      const validExtensions = [".md", ".txt", ".pdf"];
+      const ext = file.name.substring(file.name.lastIndexOf(".")).toLowerCase();
       if (!validExtensions.includes(ext)) {
         setErrorDialog({
           isOpen: true,
           title: "Invalid File Type",
           message: `File ${file.name} has invalid extension. Use .md, .txt, or .pdf`,
-        })
-        continue
+        });
+        continue;
       }
 
-      const content = await file.text()
+      const content = await file.text();
       onAddSource({
         name: file.name,
         type: "file",
         content,
-      })
+      });
     }
 
     if (fileInputRef.current) {
-      fileInputRef.current.value = ""
+      fileInputRef.current.value = "";
     }
-  }
+  };
 
   const handlePasteSubmit = () => {
     if (pastedText.trim()) {
@@ -90,12 +94,12 @@ export function StepAddSources({
         name: pastedName.trim() || `Pasted text ${sources.length + 1}`,
         type: "text",
         content: pastedText.trim(),
-      })
-      setIsPasteDialogOpen(false)
-      setPastedName("")
-      setPastedText("")
+      });
+      setIsPasteDialogOpen(false);
+      setPastedName("");
+      setPastedText("");
     }
-  }
+  };
 
   return (
     <div className="space-y-8">
@@ -144,7 +148,9 @@ export function StepAddSources({
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Source Name (optional)</label>
+              <label className="text-sm font-medium">
+                Source Name (optional)
+              </label>
               <Input
                 placeholder="e.g., Code Snippet, Tech Spec..."
                 value={pastedName}
@@ -175,7 +181,9 @@ export function StepAddSources({
       {/* Error Alert Dialog */}
       <AlertDialog
         open={errorDialog.isOpen}
-        onOpenChange={(open) => setErrorDialog((prev) => ({ ...prev, isOpen: open }))}
+        onOpenChange={(open) =>
+          setErrorDialog((prev) => ({ ...prev, isOpen: open }))
+        }
       >
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -183,7 +191,9 @@ export function StepAddSources({
               <AlertCircle className="w-5 h-5" />
               {errorDialog.title}
             </AlertDialogTitle>
-            <AlertDialogDescription>{errorDialog.message}</AlertDialogDescription>
+            <AlertDialogDescription>
+              {errorDialog.message}
+            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogAction>OK</AlertDialogAction>
@@ -237,5 +247,5 @@ export function StepAddSources({
         </Button>
       </div>
     </div>
-  )
+  );
 }

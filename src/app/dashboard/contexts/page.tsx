@@ -1,12 +1,11 @@
-import { Suspense } from "react";
 import { getUserContexts } from "@/features/core/app/store/get-user-contexts";
 import { projectsRepository } from "@/features/core/infra/db/projects-repository";
 import { requireUser } from "@/features/auth/utils/get-user";
-import { StoreEmptyState } from "@/features/store/components/store-empty-state";
 import { ContextCard } from "@/features/store/components/context-card";
 import { FilterContainer } from "@/features/store/components/filter-container";
-import { PageHeader } from "@/features/shared/components/layout/page-header";
-import { ContentContainer } from "@/features/shared/components/layout/content-container";
+import { PageContainer } from "@/features/shared/components/page-container";
+import { EmptyState } from "@/features/shared/components/empty-state";
+import { FilePlus } from "lucide-react";
 
 interface ContextsPageProps {
   searchParams: Promise<{
@@ -37,12 +36,27 @@ export default async function ContextsPage({
       : undefined,
   });
 
+  if (contexts.length === 0) {
+    return (
+      <EmptyState
+        title="No Contexts Found"
+        description="Create your first context to start building structured technical documentation."
+        actions={[
+          {
+            text: "Create Context",
+            href: "/dashboard/composer",
+            icon: FilePlus,
+          },
+        ]}
+      />
+    );
+  }
+
   return (
-    <ContentContainer>
-      <PageHeader
-        title="Your AI Contexts"
-        description="Browse and manage your AI context repository."
-      >
+    <PageContainer
+      title="Your AI Contexts"
+      description="Browse and manage your AI context repository."
+      rightContent={
         <div className="flex items-center gap-2">
           <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-1 rounded border border-border">
             {projects.length} Projects
@@ -51,31 +65,25 @@ export default async function ContextsPage({
             {contexts.length} Contexts
           </span>
         </div>
-      </PageHeader>
-
+      }
+    >
       <div className="space-y-8">
         {/* Filters */}
         <FilterContainer projects={projects} initialValues={params} />
 
         {/* Results */}
-        <div className="min-h-[400px]">
-          {contexts.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {contexts.map((context) => (
-                <ContextCard
-                  key={context.id}
-                  context={context}
-                  projectName={
-                    projects.find((p) => p.id === context.projectId)?.name
-                  }
-                />
-              ))}
-            </div>
-          ) : (
-            <StoreEmptyState />
-          )}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {contexts.map((context) => (
+            <ContextCard
+              key={context.id}
+              context={context}
+              projectName={
+                projects.find((p) => p.id === context.projectId)?.name
+              }
+            />
+          ))}
         </div>
       </div>
-    </ContentContainer>
+    </PageContainer>
   );
 }

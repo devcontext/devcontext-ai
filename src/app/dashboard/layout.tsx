@@ -1,9 +1,16 @@
-import { DashboardShell } from "@/features/shared/components/layout/dashboard-shell"
+import { DashboardShell } from "@/features/shared/components/layout/dashboard-shell";
+import { Toaster } from "@/features/shared/ui/sonner";
 
 export default function DashboardLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
-  return <DashboardShell>{children}</DashboardShell>
+  // TODO: add toast provider
+  return (
+    <>
+      <Toaster />
+      <DashboardShell>{children}</DashboardShell>
+    </>
+  );
 }

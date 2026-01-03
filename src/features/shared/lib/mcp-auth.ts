@@ -1,4 +1,5 @@
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { hashApiKey } from "@/features/core/domain/api-keys/hash-api-key";
 
 export type AuthenticatedMcpRequest = {
   userId: string;
@@ -29,16 +30,34 @@ export async function requireApiKey(
     throw new Error("Missing API Key");
   }
 
+  // Hash the API key to compare with stored hash
+  const keyHash = hashApiKey(apiKey);
+
+  // First, let's check if there are ANY api_keys
+  const { data: allKeys, error: countError } = await supabaseAdmin
+    .from("api_keys")
+    .select("id, key_hash, name, revoked_at")
+    .limit(5);
+
   const { data, error } = await supabaseAdmin
     .from("api_keys")
-    .select("user_id, name")
-    .eq("key", apiKey)
+    .select("user_id, name, revoked_at, key_hash")
+    .eq("key_hash", keyHash)
+    .is("revoked_at", null)
     .single();
+
+  console.log("[MCP Auth Result]", {
+    found: !!data,
+    error: error?.message,
+    errorCode: error?.code,
+    revokedAt: data?.revoked_at,
+    foundHashLength: data?.key_hash?.length,
+  });
 
   if (error || !data) {
     console.error("Auth Fail: Invalid API Key or DB Error", {
       error,
-      apiKey: apiKey.substring(0, 4) + "...",
+      apiKey: apiKey.substring(0, 10) + "...",
     });
     throw new Error("Invalid API Key");
   }

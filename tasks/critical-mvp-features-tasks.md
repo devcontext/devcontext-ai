@@ -196,16 +196,20 @@ Update the file after completing each sub-task, not just after completing an ent
   - [x] 6.3 Update `src/features/shared/components/layout/sidebar.tsx`
     - Make Settings link functional (href="/dashboard/settings")
     - Add active state for Settings route
-  - [ ] 6.4 Add proper loading states and error handling
+  - [x] 6.4 Add proper loading states and error handling
+    - Try-catch blocks in server actions
+    - Input validation
+    - Error display in UI
+    - State management for revoke without full page reload
 
 - [ ] 7.0 Feature 1: API Key Management - Testing & Verification
-  - [ ] 7.1 Create `tests/features/core/domain/api-keys/generate-api-key.test.ts`
+  - [x] 7.1 Create `tests/features/core/domain/api-keys/generate-api-key.test.ts`
     - Test key format (prefix + length)
     - Test uniqueness
-  - [ ] 7.2 Create `tests/features/core/domain/api-keys/hash-api-key.test.ts`
+  - [x] 7.2 Create `tests/features/core/domain/api-keys/hash-api-key.test.ts`
     - Test deterministic hashing
     - Test same input = same output
-  - [ ] 7.3 Create `tests/features/core/app/api-keys/generate-user-api-key.test.ts`
+  - [x] 7.3 Create `tests/features/core/app/api-keys/generate-user-api-key.test.ts`
     - Test full flow
     - Test error handling
   - [ ] 7.4 Manual testing: Generate key, list keys, revoke key

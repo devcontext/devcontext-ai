@@ -1,21 +1,21 @@
-"use client"
+"use client";
 
-import { useEffect } from "react"
-import type { ComposerMode, SourceItem } from "../types"
-import { Button } from "@/components/ui/button"
-import { Loader2 } from "lucide-react"
+import { useEffect } from "react";
+import type { ComposerMode, SourceItem } from "../types";
+import { Button } from "@/features/shared/ui/button";
+import { Loader2 } from "lucide-react";
 
 type StepGuidedGenerationProps = {
-  sources: SourceItem[]
-  mode: ComposerMode | null
-  draft: string
-  isGenerating: boolean
-  onSetDraft: (draft: string) => void
-  onSetIsGenerating: (value: boolean) => void
-  onContinue: () => void
-  onBack: () => void
-  onSkip: () => void
-}
+  sources: SourceItem[];
+  mode: ComposerMode | null;
+  draft: string;
+  isGenerating: boolean;
+  onSetDraft: (draft: string) => void;
+  onSetIsGenerating: (value: boolean) => void;
+  onContinue: () => void;
+  onBack: () => void;
+  onSkip: () => void;
+};
 
 export function StepGuidedGeneration({
   sources,
@@ -31,19 +31,19 @@ export function StepGuidedGeneration({
   // Skip this step if mode is "reference-only"
   useEffect(() => {
     if (mode === "reference-only") {
-      onSkip()
+      onSkip();
     }
-  }, [mode, onSkip])
+  }, [mode, onSkip]);
 
   // Generate draft when step loads
   useEffect(() => {
     if (mode !== "reference-only" && !draft && !isGenerating) {
-      generateDraft()
+      generateDraft();
     }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const generateDraft = async () => {
-    onSetIsGenerating(true)
+    onSetIsGenerating(true);
     try {
       const response = await fetch("/api/composer/generate-draft", {
         method: "POST",
@@ -56,28 +56,28 @@ export function StepGuidedGeneration({
           })),
           mode,
         }),
-      })
+      });
 
       if (!response.ok) {
-        throw new Error("Failed to generate draft")
+        throw new Error("Failed to generate draft");
       }
 
-      const data = await response.json()
-      onSetDraft(data.draft || "")
+      const data = await response.json();
+      onSetDraft(data.draft || "");
     } catch (error) {
-      console.error("Draft generation error:", error)
+      console.error("Draft generation error:", error);
       // Fallback to basic template
       const fallbackDraft = sources
         .map((s) => `## ${s.name}\n\n${s.content}`)
-        .join("\n\n---\n\n")
-      onSetDraft(`# Context Draft\n\n${fallbackDraft}`)
+        .join("\n\n---\n\n");
+      onSetDraft(`# Context Draft\n\n${fallbackDraft}`);
     } finally {
-      onSetIsGenerating(false)
+      onSetIsGenerating(false);
     }
-  }
+  };
 
   if (mode === "reference-only") {
-    return null
+    return null;
   }
 
   return (
@@ -120,5 +120,5 @@ export function StepGuidedGeneration({
         </Button>
       </div>
     </div>
-  )
+  );
 }

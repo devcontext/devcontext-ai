@@ -1,6 +1,7 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { generateApiKey } from "../../domain/api-keys/generate-api-key";
 import { hashApiKey } from "../../domain/api-keys/hash-api-key";
-import { apiKeyRepository } from "../../infra/db/api-key-repository";
+import { ApiKeyRepository } from "../../infra/db/api-key-repository";
 
 export interface GenerateApiKeyResult {
   success: true;
@@ -19,11 +20,13 @@ export type GenerateApiKeyResponse = GenerateApiKeyResult | GenerateApiKeyError;
 /**
  * Generates a new API key for a user
  * This is the ONLY place where the plain text key is returned
+ * @param supabase - Authenticated Supabase client with user session
  * @param userId - The user ID
  * @param name - A descriptive name for the key
  * @returns The generated key and metadata, or an error
  */
 export async function generateUserApiKey(
+  supabase: SupabaseClient,
   userId: string,
   name: string,
 ): Promise<GenerateApiKeyResponse> {
@@ -42,8 +45,11 @@ export async function generateUserApiKey(
     // Hash the key for storage
     const keyHash = hashApiKey(plainKey);
 
+    // Create repository with authenticated client
+    const repository = new ApiKeyRepository(supabase);
+
     // Store in database
-    const apiKey = await apiKeyRepository.createApiKey({
+    const apiKey = await repository.createApiKey({
       userId,
       name: name.trim(),
       keyHash,

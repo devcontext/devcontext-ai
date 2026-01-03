@@ -1,16 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import type { ApiKeyListItem } from "@/features/core/domain/api-keys/types";
+import type { McpKeyListItem } from "@/features/core/domain/api-keys/types";
 import { ApiKeyItem } from "./api-key-item";
 
 interface ApiKeyListProps {
-  apiKeys: ApiKeyListItem[];
+  apiKeys: McpKeyListItem[];
   onRevoke: (id: string) => Promise<void>;
+  onRegenerate: (id: string, name: string) => Promise<void>;
 }
 
-export function ApiKeyList({ apiKeys, onRevoke }: ApiKeyListProps) {
+export function ApiKeyList({
+  apiKeys,
+  onRevoke,
+  onRegenerate,
+}: ApiKeyListProps) {
   const [revokingId, setRevokingId] = useState<string | null>(null);
+  const [regeneratingId, setRegeneratingId] = useState<string | null>(null);
 
   const handleRevoke = async (id: string) => {
     setRevokingId(id);
@@ -18,6 +24,15 @@ export function ApiKeyList({ apiKeys, onRevoke }: ApiKeyListProps) {
       await onRevoke(id);
     } finally {
       setRevokingId(null);
+    }
+  };
+
+  const handleRegenerate = async (id: string, name: string) => {
+    setRegeneratingId(id);
+    try {
+      await onRegenerate(id, name);
+    } finally {
+      setRegeneratingId(null);
     }
   };
 
@@ -41,7 +56,9 @@ export function ApiKeyList({ apiKeys, onRevoke }: ApiKeyListProps) {
           createdAt={apiKey.createdAt}
           lastUsedAt={apiKey.lastUsedAt}
           onRevoke={handleRevoke}
+          onRegenerate={handleRegenerate}
           isRevoking={revokingId === apiKey.id}
+          isRegenerating={regeneratingId === apiKey.id}
         />
       ))}
     </div>
