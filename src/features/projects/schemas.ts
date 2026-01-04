@@ -1,6 +1,11 @@
 import { z } from "zod";
 
 /**
+ * Validation schema for a project ID
+ */
+export const projectIdSchema = z.string().uuid("Invalid project ID format");
+
+/**
  * Validation schema for creating a new project.
  * Used on both client (react-hook-form) and server (action validation).
  */

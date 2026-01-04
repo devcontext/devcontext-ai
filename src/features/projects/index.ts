@@ -5,5 +5,5 @@ export {
   listProjectsAction,
   createProjectAction,
   getProjectAction,
-  type ActionResponse,
+  type ApiResponse,
 } from "./actions/project-actions";

@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/features/shared/lib/utils";
+import { cn } from "@/features/shared/utils/tailwind-utils";
 import type { FieldWrapperProps } from "../types";
 
 /**

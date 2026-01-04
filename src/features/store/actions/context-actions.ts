@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache"
 import { restoreVersion } from "../../core/app/store/restore-version"
 import { deleteContext } from "../../core/app/store/delete-context"
 
-export type ActionResponse<T = any> = {
+export type ApiResponse<T = any> = {
   success: boolean
   error?: string
   data?: T
@@ -16,7 +16,7 @@ export type ActionResponse<T = any> = {
  * Server Action to restore a past version.
  * Revalidates the context detail page after a new version is created.
  */
-export async function restoreVersionAction(versionId: string): Promise<ActionResponse> {
+export async function restoreVersionAction(versionId: string): Promise<ApiResponse> {
   try {
     const result = await restoreVersion(versionId)
     
@@ -41,7 +41,7 @@ export async function restoreVersionAction(versionId: string): Promise<ActionRes
  * Server Action to delete a context.
  * Revalidates the main contexts listing.
  */
-export async function deleteContextAction(contextId: string): Promise<ActionResponse> {
+export async function deleteContextAction(contextId: string): Promise<ApiResponse> {
   try {
     const success = await deleteContext(contextId)
     

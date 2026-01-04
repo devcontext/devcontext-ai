@@ -1,7 +1,7 @@
 "use client";
 
 import { FormProvider } from "react-hook-form";
-import { cn } from "@/features/shared/lib/utils";
+import { cn } from "@/features/shared/utils/tailwind-utils";
 import type { FormWrapperProps } from "../types";
 
 /**

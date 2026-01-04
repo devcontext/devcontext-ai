@@ -11,7 +11,7 @@ import {
 } from "@/features/shared/ui/dropdown-menu";
 import { Input } from "@/features/shared/ui/input";
 import { ProjectList } from "./project-list";
-import { cn } from "@/features/shared/lib/utils";
+import { cn } from "@/features/shared/utils/tailwind-utils";
 import { useApp } from "@/features/shared/providers/app-provider";
 import { CreateProjectModal } from "@/features/projects/components/create-project-modal";
 import type { Project } from "@/features/core/domain/types/projects";

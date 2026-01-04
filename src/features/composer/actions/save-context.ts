@@ -2,7 +2,7 @@
 
 import { saveContextVersion } from "@/features/core/app/composer/save-context-version";
 
-export type SaveContextActionResponse = {
+export type SaveContextApiResponse = {
   success: boolean;
   error?: string;
   data?: any;
@@ -18,7 +18,7 @@ export async function saveContextAction(params: {
   markdown: string;
   tags: string[];
   projectId: string;
-}): Promise<SaveContextActionResponse> {
+}): Promise<SaveContextApiResponse> {
   try {
     const result = await saveContextVersion(params);
 

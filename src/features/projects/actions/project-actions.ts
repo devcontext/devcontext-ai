@@ -1,38 +1,30 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireUser } from "@/features/auth/utils/get-user";
-import { projectsRepository } from "@/features/core/infra/db/projects-repository";
-import { createProjectSchema } from "@/features/core/domain/validation/project-validation";
+import { listProjects } from "@/features/projects/services/list-projects";
+import { createProject } from "@/features/projects/services/create-project";
+import { getProject } from "@/features/projects/services/get-project";
+import {
+  createProjectSchema,
+  projectIdSchema,
+} from "@/features/projects/schemas";
 import type { Project } from "@/features/core/domain/types/projects";
-
-export type ActionResponse<T = any> = {
-  success: boolean;
-  error?: string;
-  data?: T;
-};
+import {
+  errorResponse,
+  handleErrorResponse,
+  successResponse,
+} from "@/features/shared/utils/error-handler";
+import type { ApiResponse } from "@/features/shared/types/api-response";
 
 /**
  * Server action to list all projects for the authenticated user
  */
-export async function listProjectsAction(): Promise<ActionResponse<Project[]>> {
+export async function listProjectsAction(): Promise<ApiResponse<Project[]>> {
   try {
-    // Get authenticated user (redirects to login if not authenticated)
-    const user = await requireUser();
-
-    // Fetch projects for this user
-    const projects = await projectsRepository.getByOwnerId(user.id);
-
-    return {
-      success: true,
-      data: projects,
-    };
+    const projects = await listProjects();
+    return successResponse(projects);
   } catch (error) {
-    console.error("Error listing projects:", error);
-    return {
-      success: false,
-      error: "Failed to load projects. Please try again.",
-    };
+    return handleErrorResponse(error);
   }
 }
 
@@ -41,58 +33,34 @@ export async function listProjectsAction(): Promise<ActionResponse<Project[]>> {
  */
 export async function createProjectAction(
   input: unknown,
-): Promise<ActionResponse<Project>> {
+): Promise<ApiResponse<Project>> {
   try {
-    // Get authenticated user (redirects to login if not authenticated)
-    const user = await requireUser();
-
-    // Validate input with Zod schema
+    // 1. Validate input with Zod schema
     const validation = createProjectSchema.safeParse(input);
 
     if (!validation.success) {
       const firstError = validation.error.issues[0];
-      return {
-        success: false,
-        error: firstError?.message || "Invalid project data",
-      };
+      return errorResponse(firstError?.message || "Invalid project data");
     }
 
     const validatedData = validation.data;
 
-    // Create project input with user ID
-    const projectInput = {
-      ownerUserId: user.id,
+    // 2. Call service
+    const project = await createProject({
       name: validatedData.name,
       stackPresetId: validatedData.stackPresetId ?? null,
       activeRulesetId: validatedData.activeRulesetId ?? null,
       ruleToggles: (validatedData.ruleToggles ?? {}) as Record<string, boolean>,
-    };
+    });
 
-    // Create project in database
-    const project = await projectsRepository.create(projectInput);
-
-    if (!project) {
-      return {
-        success: false,
-        error: "Failed to create project. Please try again.",
-      };
-    }
-
-    // Revalidate paths that display projects
+    // 3. Revalidate paths
     revalidatePath("/dashboard");
     revalidatePath("/dashboard/contexts");
     revalidatePath("/dashboard/settings");
 
-    return {
-      success: true,
-      data: project,
-    };
+    return successResponse(project);
   } catch (error) {
-    console.error("Error creating project:", error);
-    return {
-      success: false,
-      error: "An unexpected error occurred while creating the project.",
-    };
+    return handleErrorResponse(error);
   }
 }
 
@@ -101,46 +69,16 @@ export async function createProjectAction(
  */
 export async function getProjectAction(
   projectId: string,
-): Promise<ActionResponse<Project>> {
+): Promise<ApiResponse<Project>> {
   try {
-    // Get authenticated user
-    const user = await requireUser();
-
-    // Validate input
-    if (!projectId || projectId.trim().length === 0) {
-      return {
-        success: false,
-        error: "Project ID is required",
-      };
+    const validation = projectIdSchema.safeParse(projectId);
+    if (!validation.success) {
+      return errorResponse("Invalid project ID");
     }
 
-    // Fetch project
-    const project = await projectsRepository.getById(projectId);
-
-    if (!project) {
-      return {
-        success: false,
-        error: "Project not found",
-      };
-    }
-
-    // Verify ownership (RLS should handle this, but extra check)
-    if (project.ownerUserId !== user.id) {
-      return {
-        success: false,
-        error: "You do not have access to this project",
-      };
-    }
-
-    return {
-      success: true,
-      data: project,
-    };
+    const project = await getProject(validation.data);
+    return successResponse(project);
   } catch (error) {
-    console.error("Error fetching project:", error);
-    return {
-      success: false,
-      error: "Failed to load project. Please try again.",
-    };
+    return handleErrorResponse(error);
   }
 }

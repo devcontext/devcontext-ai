@@ -1,5 +1,6 @@
-import { createSupabaseServerClient } from "../supabase-server";
+import { SupabaseClient } from "@supabase/supabase-js";
 import { Project, ProjectInput } from "../../domain/types/projects";
+import { NotFoundError, UnexpectedError } from "../../domain/errors";
 
 /**
  * Maps database row (snake_case) to domain entity (camelCase)
@@ -32,83 +33,137 @@ function toDb(input: ProjectInput): Record<string, unknown> {
 
 /**
  * Projects repository
- * Creates authenticated Supabase client internally for all operations.
- * All methods must be called from server context (server actions, server components, API routes).
+ *
+ * DATA FETCHING PATTERN (Rule #6-10):
+ * - Receives Supabase client via constructor (NOT created internally)
+ * - Client is created ONCE per request in withAppContext
+ * - Repository is instantiated by services with the shared client
  */
-export const projectsRepository = {
-  async getById(id: string): Promise<Project | null> {
-    const supabase = await createSupabaseServerClient();
+export class ProjectsRepository {
+  constructor(private readonly supabase: SupabaseClient) {}
 
-    const { data, error } = await supabase
-      .from("projects")
-      .select("*")
-      .eq("id", id)
-      .single();
+  async getById(id: string): Promise<Project> {
+    try {
+      const { data, error } = await this.supabase
+        .from("projects")
+        .select("*")
+        .eq("id", id)
+        .single();
 
-    if (error || !data) return null;
-    return toDomain(data);
-  },
+      if (error || !data) {
+        throw new NotFoundError(`Project with ID ${id} not found`, {
+          projectId: id,
+        });
+      }
+
+      return toDomain(data);
+    } catch (error) {
+      if (error instanceof NotFoundError) throw error;
+      throw new UnexpectedError("Failed to fetch project by ID", {
+        projectId: id,
+        originalError: error,
+      });
+    }
+  }
 
   async getByOwnerId(ownerUserId: string): Promise<Project[]> {
-    const supabase = await createSupabaseServerClient();
+    try {
+      const { data, error } = await this.supabase
+        .from("projects")
+        .select("*")
+        .eq("owner_user_id", ownerUserId)
+        .order("created_at", { ascending: false });
 
-    const { data, error } = await supabase
-      .from("projects")
-      .select("*")
-      .eq("owner_user_id", ownerUserId)
-      .order("created_at", { ascending: false });
-    console.log(error);
+      if (error) {
+        throw new UnexpectedError("Failed to fetch projects by owner ID", {
+          ownerUserId,
+          error,
+        });
+      }
 
-    if (error || !data) return [];
-    return data.map(toDomain);
-  },
-
-  async create(input: ProjectInput): Promise<Project | null> {
-    const supabase = await createSupabaseServerClient();
-
-    const { data, error } = await supabase
-      .from("projects")
-      .insert(toDb(input))
-      .select()
-      .single();
-
-    if (error) {
-      console.error("Error creating project:", error);
-      return null;
+      return data?.map(toDomain) || [];
+    } catch (error) {
+      if (error instanceof UnexpectedError) throw error;
+      throw new UnexpectedError(
+        "An unexpected error occurred while fetching projects",
+        { originalError: error },
+      );
     }
+  }
 
-    if (!data) return null;
-    return toDomain(data);
-  },
+  async create(input: ProjectInput): Promise<Project> {
+    try {
+      const { data, error } = await this.supabase
+        .from("projects")
+        .insert(toDb(input))
+        .select()
+        .single();
 
-  async update(
-    id: string,
-    updates: Partial<ProjectInput>,
-  ): Promise<Project | null> {
-    const supabase = await createSupabaseServerClient();
+      if (error || !data) {
+        throw new UnexpectedError("Error creating project", { input, error });
+      }
 
-    const dbUpdates: Record<string, unknown> = {};
-    if (updates.name !== undefined) dbUpdates.name = updates.name;
-    if (updates.stackPresetId !== undefined)
-      dbUpdates.stack_preset_id = updates.stackPresetId;
-    if (updates.activeRulesetId !== undefined)
-      dbUpdates.active_ruleset_id = updates.activeRulesetId;
-    if (updates.ruleToggles !== undefined)
-      dbUpdates.rule_toggles = updates.ruleToggles;
+      return toDomain(data);
+    } catch (error) {
+      if (error instanceof UnexpectedError) throw error;
+      throw new UnexpectedError(
+        "An unexpected error occurred during project creation",
+        { originalError: error },
+      );
+    }
+  }
 
-    const { data, error } = await supabase
-      .from("projects")
-      .update(dbUpdates)
-      .eq("id", id)
-      .select()
-      .single();
+  async update(id: string, updates: Partial<ProjectInput>): Promise<Project> {
+    try {
+      const dbUpdates: Record<string, unknown> = {};
+      if (updates.name !== undefined) dbUpdates.name = updates.name;
+      if (updates.stackPresetId !== undefined)
+        dbUpdates.stack_preset_id = updates.stackPresetId;
+      if (updates.activeRulesetId !== undefined)
+        dbUpdates.active_ruleset_id = updates.activeRulesetId;
+      if (updates.ruleToggles !== undefined)
+        dbUpdates.rule_toggles = updates.ruleToggles;
 
-    if (error || !data) return null;
-    return toDomain(data);
-  },
+      const { data, error } = await this.supabase
+        .from("projects")
+        .update(dbUpdates)
+        .eq("id", id)
+        .select()
+        .single();
+
+      if (error || !data) {
+        throw new UnexpectedError("Error updating project", {
+          id,
+          updates,
+          error,
+        });
+      }
+
+      return toDomain(data);
+    } catch (error) {
+      if (error instanceof UnexpectedError) throw error;
+      throw new UnexpectedError(
+        "An unexpected error occurred during project update",
+        { originalError: error },
+      );
+    }
+  }
 
   async delete(id: string): Promise<void> {
-    const supabase = await createSupabaseServerClient();
-    await supabase.from("projects").delete().eq("id", id);
-  },
-};
+    try {
+      const { error } = await this.supabase
+        .from("projects")
+        .delete()
+        .eq("id", id);
+      if (error) {
+        throw new UnexpectedError("Error deleting project", { id, error });
+      }
+    } catch (error) {
+      if (error instanceof UnexpectedError) throw error;
+      throw new UnexpectedError(
+        "An unexpected error occurred during project deletion",
+        { originalError: error },
+      );
+    }
+  }
+}

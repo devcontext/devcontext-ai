@@ -1,7 +1,7 @@
 import { LayoutGrid, LucideIcon } from "lucide-react";
 
 import { EmptyStateActions } from "@/features/shared/components/empty-state/empty-state-actions";
-import { cn } from "@/features/shared/lib/utils";
+import { cn } from "@/features/shared/utils/tailwind-utils";
 
 type ActionType = React.ComponentProps<typeof EmptyStateActions>;
 

@@ -1,7 +1,7 @@
 import { Column } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp, ChevronsUpDown, EyeOff } from "lucide-react";
 
-import { cn } from "@/features/shared/lib/utils";
+import { cn } from "@/features/shared/utils/tailwind-utils";
 import { Button } from "@/features/shared/ui/button";
 import {
   DropdownMenu,

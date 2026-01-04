@@ -8,7 +8,7 @@ import { FormWrapper, FormField } from "@/features/shared/components/form";
 import {
   createProjectSchema,
   type CreateProjectInput,
-} from "@/features/core/domain/validation/project-validation";
+} from "@/features/projects/schemas";
 import { useCreateProject } from "../hooks/use-create-project";
 import { useApp } from "@/features/shared/providers/app-provider";
 import type { Project } from "@/features/core/domain/types/projects";
