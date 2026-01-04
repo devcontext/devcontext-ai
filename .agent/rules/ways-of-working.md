@@ -64,7 +64,8 @@ La estructura interna de Domain e Infra **siempre es la misma**, sea monolito o 
 src/features/<feature>/
 ├── components/
 ├── hooks/
-├── state/
+├── actions/
+├── service/
 ├── types/
 ├── utils/
 └── routes.ts
