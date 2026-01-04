@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
-import { getContextDetails } from "@/features/core/app/store/get-context-details";
-import { getProjectAction } from "@/features/projects/actions/project-actions";
-import { ContextDetailContainer } from "@/features/store/components/context-detail-container";
+import { getContextAction } from "@/features/contexts/actions/context-actions";
+import { ContextDetailContainer } from "@/features/contexts/components/viewer/context-detail-container";
 import { ContentContainer } from "@/features/shared/components/layout/content-container";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import Link from "next/link";
@@ -12,14 +11,16 @@ export default async function ContextDetailPage({
 }: PageParamsType<{ id: string }>) {
   const { id } = await params;
 
-  const details = await getContextDetails(id);
+  // Use the server action which now includes the project in ContextDetails
+  const result = await getContextAction(id);
 
-  if (!details) {
+  // Unified validation: if not success or no data, it's a 404/Forbidden
+  if (!result.success || !result.data) {
     notFound();
   }
 
-  const projectResult = await getProjectAction(details.context.projectId);
-  const project = projectResult.success ? projectResult.data : null;
+  const details = result.data;
+  const { project } = details;
 
   return (
     <ContentContainer>
@@ -36,11 +37,11 @@ export default async function ContextDetailPage({
           <div>
             <div className="flex items-center gap-3 mb-1">
               <span className="text-xs font-bold text-primary uppercase tracking-widest px-2 py-0.5 bg-primary/10 border border-primary/20 rounded">
-                {project?.name || "Unknown Project"}
+                {project.name}
               </span>
             </div>
             <h1 className="text-3xl font-bold text-foreground tracking-tight">
-              {details.context.name}
+              {details.name}
             </h1>
           </div>
         </div>

@@ -1,5 +1,6 @@
-import { projectsRepository } from "../infra/db/projects-repository";
-import { togglesRepository } from "../infra/db/toggles-repository";
+import { type SupabaseClient } from "@supabase/supabase-js";
+import { ProjectsRepository } from "../infra/db/projects-repository";
+import { TogglesRepository } from "../infra/db/toggles-repository";
 import {
   getCommandById,
   getStackPresetById,
@@ -17,7 +18,11 @@ import { ResolveRequest, ResolveResult } from "../domain/types/resolver";
  */
 export async function resolvePreview(
   request: ResolveRequest,
+  supabase: SupabaseClient,
 ): Promise<ResolveResult> {
+  const projectsRepository = new ProjectsRepository(supabase);
+  const togglesRepository = new TogglesRepository(supabase);
+
   // 1. Load Data (Infra)
   const project = await projectsRepository.getById(request.projectId);
 
@@ -33,9 +38,10 @@ export async function resolvePreview(
 
   // Load toggles and merge into the project model for the resolver
   const ruleToggles = await togglesRepository.getByProject(project.id);
-  const projectWithToggles = Object.assign({}, project, {
-    ruleToggles: ruleToggles,
-  });
+  const projectWithToggles = {
+    ...project,
+    ruleToggles,
+  };
 
   // 2. Load Catalogs (Domain)
   const command = getCommandById(request.commandId);
@@ -76,23 +82,24 @@ export async function resolvePreview(
   // 3. Resolve (Pure Domain Logic)
   const result = resolve(request, {
     project: projectWithToggles,
-    command: command,
-    ruleset: ruleset,
-    stackPreset: stackPreset,
+    command,
+    ruleset,
+    stackPreset,
     ruleCatalog: RULE_CATALOG,
   });
 
   // 4. Enrich Result (App Layer Responsibility)
-  // We return a new object to avoid mutating the domain result.
   if (result.status === "ok") {
-    const enrichedContract = Object.assign({}, result.contract, {
+    const enrichedContract = {
+      ...result.contract,
       id: `rc_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
-      meta: Object.assign({}, result.contract.meta, {
+      meta: {
+        ...result.contract.meta,
         generatedAt: new Date().toISOString(),
-      }),
-    });
+      },
+    };
 
-    return Object.assign({}, result, { contract: enrichedContract });
+    return { ...result, contract: enrichedContract };
   }
 
   return result;

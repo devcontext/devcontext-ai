@@ -28,7 +28,7 @@ export function CreateProjectForm({
   } = useApp();
 
   const methods = useForm<CreateProjectInput>({
-    mode: "onTouched",
+    mode: "onSubmit",
     resolver: zodResolver(createProjectSchema),
     defaultValues: {
       name: "",

@@ -1,4 +1,4 @@
-import { supabase } from "./supabase-client";
+import { type SupabaseClient } from "@supabase/supabase-js";
 
 export type ResolveLogEntry = {
   project_id: string;
@@ -10,19 +10,19 @@ export type ResolveLogEntry = {
   metadata: Record<string, unknown>;
 };
 
-export const resolveLogsRepository = {
+export class ResolveLogsRepository {
+  constructor(private readonly supabase: SupabaseClient) {}
+
   async log(entry: ResolveLogEntry): Promise<void> {
-    const { error } = await supabase
-      .from("resolve_logs")
-      .insert(entry);
+    const { error } = await this.supabase.from("resolve_logs").insert(entry);
 
     if (error) {
       console.error("Error saving resolve log:", error);
     }
-  },
+  }
 
   async getRecent(limit = 10): Promise<ResolveLogEntry[]> {
-    const { data, error } = await supabase
+    const { data, error } = await this.supabase
       .from("resolve_logs")
       .select("*")
       .order("created_at", { ascending: false })
@@ -30,5 +30,5 @@ export const resolveLogsRepository = {
 
     if (error || !data) return [];
     return data as ResolveLogEntry[];
-  },
-};
+  }
+}

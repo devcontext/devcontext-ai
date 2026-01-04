@@ -1,5 +1,26 @@
+import { ZodError } from "zod";
 import { DomainError, isDomainError } from "@/features/core/domain/errors";
 import { ApiResponse } from "../types/api-response";
+
+/**
+ * Maps Zod issues to a simple Record<field, message>
+ */
+export function validationErrorResponse<T>(error: ZodError): ApiResponse<T> {
+  const fieldErrors: Record<string, string> = {};
+
+  error.issues.forEach((issue) => {
+    const path = issue.path.join(".");
+    if (!fieldErrors[path]) {
+      fieldErrors[path] = issue.message;
+    }
+  });
+
+  return {
+    success: false,
+    error: "Validation failed",
+    fieldErrors,
+  };
+}
 
 /**
  * Centralized error handler for Server Actions.
@@ -27,6 +48,9 @@ export function handleErrorResponse(error: unknown): ApiResponse {
   };
 }
 
+/**
+ * Helper to return an error response with a manual message
+ */
 export function errorResponse<T>(message: string): ApiResponse<T> {
   return {
     success: false,

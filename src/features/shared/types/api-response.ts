@@ -3,4 +3,5 @@ export type ApiResponse<T = any> = {
   error?: string;
   code?: string;
   data?: T;
+  fieldErrors?: Partial<Record<string, string>>;
 };

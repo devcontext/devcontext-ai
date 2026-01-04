@@ -1,7 +1,7 @@
-import { getUserContexts } from "@/features/core/app/store/get-user-contexts";
+import { listContexts } from "@/features/contexts/services";
 import { listProjectsAction } from "@/features/projects/actions/project-actions";
-import { ContextCard } from "@/features/store/components/context-card";
-import { FilterContainer } from "@/features/store/components/filter-container";
+import { ContextCard } from "@/features/contexts/components/viewer/context-card";
+import { FilterContainer } from "@/features/contexts/components/viewer/filter-container";
 import { PageContainer } from "@/features/shared/components/page-container";
 import { EmptyState } from "@/features/shared/components/empty-state";
 import { FilePlus } from "lucide-react";
@@ -22,7 +22,7 @@ export default async function ContextsPage({
   // Fetch data in parallel (eliminates waterfall)
   const [projectsResult, contexts] = await Promise.all([
     listProjectsAction(),
-    getUserContexts({
+    listContexts({
       search: params.search,
       projectId: params.projectId,
       tags: params.tags
@@ -34,9 +34,14 @@ export default async function ContextsPage({
     }),
   ]);
 
-  const projects = projectsResult.success ? projectsResult.data! : [];
+  const projects = projectsResult.success ? projectsResult.data || [] : [];
 
-  if (contexts.length === 0) {
+  if (
+    contexts.length === 0 &&
+    !params.search &&
+    !params.projectId &&
+    !params.tags
+  ) {
     return (
       <EmptyState
         title="No Contexts Found"
@@ -72,17 +77,25 @@ export default async function ContextsPage({
         <FilterContainer projects={projects} initialValues={params} />
 
         {/* Results */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {contexts.map((context) => (
-            <ContextCard
-              key={context.id}
-              context={context}
-              projectName={
-                projects.find((p) => p.id === context.projectId)?.name
-              }
-            />
-          ))}
-        </div>
+        {contexts.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {contexts.map((context) => (
+              <ContextCard
+                key={context.id}
+                context={context}
+                projectName={
+                  projects.find((p) => p.id === context.projectId)?.name
+                }
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-20 bg-muted/30 border border-dashed border-border rounded-xl">
+            <p className="text-muted-foreground">
+              No contexts match your filters.
+            </p>
+          </div>
+        )}
       </div>
     </PageContainer>
   );

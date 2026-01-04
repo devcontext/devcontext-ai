@@ -35,13 +35,13 @@ export function SettingsContent({
     setError(null);
     const result = await generateApiKeyAction(name);
 
-    if (result.success && "apiKey" in result && result.apiKey) {
+    if (result.success && result.data?.key) {
       // Store the first generated key for MCP config display
-      setFirstApiKey(result.apiKey);
+      setFirstApiKey(result.data.key);
 
       // Don't reload immediately - let the dialog show the key
       // The dialog will handle closing and then we can refresh
-    } else if (!result.success && "error" in result) {
+    } else if (!result.success) {
       setError(result.error || "Failed to generate API key");
     }
 
@@ -56,11 +56,7 @@ export function SettingsContent({
     const revokeResult = await revokeApiKeyAction(id);
 
     if (!revokeResult.success) {
-      setError(
-        "error" in revokeResult
-          ? revokeResult.error || "Failed to revoke old key"
-          : "Failed to revoke old key",
-      );
+      setError(revokeResult.error || "Failed to revoke old key");
       setRegeneratingKeyId(null);
       return;
     }
@@ -88,7 +84,7 @@ export function SettingsContent({
     if (result.success) {
       // Remove the revoked key from the list
       setApiKeys((prev) => prev.filter((key) => key.id !== id));
-    } else if ("error" in result) {
+    } else {
       setError(result.error || "Failed to revoke API key");
     }
   };

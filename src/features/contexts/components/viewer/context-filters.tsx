@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { Input } from "@/features/shared/ui/input";
 import { Search, Filter, X } from "lucide-react";
 import { Button } from "@/features/shared/ui/button";
-import { Project } from "../../core/domain/types/projects";
+import { Project } from "../../../core/domain/types/projects";
 
 export type FilterValues = {
   search: string;

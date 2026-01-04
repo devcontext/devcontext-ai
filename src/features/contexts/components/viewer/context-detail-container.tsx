@@ -2,16 +2,16 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ContextDetails } from "../../core/app/store/get-context-details";
+import { type ContextDetails } from "../../services/get-context";
 import { VersionTimeline } from "./version-timeline";
 import { VersionPreview } from "./version-preview";
 import {
   restoreVersionAction,
   deleteContextAction,
-} from "../actions/context-actions";
+} from "../../actions/context-actions";
 import { Button } from "@/features/shared/ui/button";
 import { Trash2, AlertCircle } from "lucide-react";
-import { ConfirmationDialog } from "../../shared/components/ui/confirmation-dialog";
+import { ConfirmationDialog } from "@/features/shared/components/ui/confirmation-dialog";
 
 interface ContextDetailContainerProps {
   details: ContextDetails;
@@ -52,7 +52,7 @@ export function ContextDetailContainer({
     setIsDeleting(true);
     setError(null);
 
-    const result = await deleteContextAction(details.context.id);
+    const result = await deleteContextAction(details.id);
 
     if (result.success) {
       router.push("/dashboard/contexts");

@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import type { SourceItem, ComposerMode } from "../types";
+import type { SourceItem, ComposerMode } from "../../types";
 import { Button } from "@/features/shared/ui/button";
 import { Loader2 } from "lucide-react";
-import { saveContextAction } from "@/features/composer/actions/save-context";
+import { createContextAction } from "@/features/contexts/actions/context-actions";
 import { Input } from "@/features/shared/ui/input";
 import { Textarea } from "@/features/shared/ui/textarea";
 
@@ -62,7 +62,7 @@ export function StepEditorSave({
 
     // ... inside handleSave
     try {
-      const result = await saveContextAction({
+      const result = await createContextAction({
         name: contextName.trim(),
         markdown: content,
         tags: tagsInput
@@ -143,7 +143,7 @@ export function StepEditorSave({
             mode !== "reference-only" && onSetDraft(e.target.value)
           }
           readOnly={mode === "reference-only"}
-          className="min-h-[300px] bg-background border-border font-mono text-sm"
+          className="min-h-75 bg-background border-border font-mono text-sm"
         />
         {mode === "reference-only" && (
           <p className="text-xs text-muted-foreground">

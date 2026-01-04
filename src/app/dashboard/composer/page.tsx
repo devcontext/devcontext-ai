@@ -1,12 +1,12 @@
 "use client"
 
 import { useCallback } from "react"
-import { WizardLayout } from "@/features/composer/components/wizard-layout"
-import { StepAddSources } from "@/features/composer/components/step-add-sources"
-import { StepSelectMode } from "@/features/composer/components/step-select-mode"
-import { StepGuidedGeneration } from "@/features/composer/components/step-guided-generation"
-import { StepEditorSave } from "@/features/composer/components/step-editor-save"
-import { useWizardState } from "@/features/composer/hooks/use-wizard-state"
+import { WizardLayout } from "@/features/contexts/components/composer/wizard-layout"
+import { StepAddSources } from "@/features/contexts/components/composer/step-add-sources"
+import { StepSelectMode } from "@/features/contexts/components/composer/step-select-mode"
+import { StepGuidedGeneration } from "@/features/contexts/components/composer/step-guided-generation"
+import { StepEditorSave } from "@/features/contexts/components/composer/step-editor-save"
+import { useWizardState } from "@/features/contexts/hooks/use-wizard-state"
 
 import { DEV_PROJECT_ID } from "@/lib/config-dev"
 

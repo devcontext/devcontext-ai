@@ -5,21 +5,26 @@ import { generateUserApiKey } from "@/features/core/app/api-keys/generate-user-a
 import { revokeUserApiKey } from "@/features/core/app/api-keys/revoke-user-api-key";
 import { requireUser } from "@/features/auth/utils/get-user";
 import { createSupabaseServerClient } from "@/features/core/infra/supabase-server";
+import {
+  errorResponse,
+  handleErrorResponse,
+  successResponse,
+} from "@/features/shared/utils/error-handler";
+import type { ApiResponse } from "@/features/shared/types/api-response";
 
 /**
  * Server action to generate a new API key
  */
-export async function generateApiKeyAction(name: string) {
+export async function generateApiKeyAction(
+  name: string,
+): Promise<ApiResponse<{ key: string }>> {
   try {
     // Get authenticated user (redirects to login if not authenticated)
     const user = await requireUser();
 
     // Validate input
     if (!name || name.trim().length === 0) {
-      return {
-        success: false,
-        error: "API key name is required",
-      };
+      return errorResponse("API key name is required");
     }
 
     // Create authenticated Supabase client
@@ -29,32 +34,28 @@ export async function generateApiKeyAction(name: string) {
 
     if (result.success) {
       revalidatePath("/dashboard/settings");
+      return successResponse({ key: result.apiKey });
     }
 
-    return result;
+    return errorResponse(result.error || "Failed to generate API key");
   } catch (error) {
-    console.error("Error generating API key:", error);
-    return {
-      success: false,
-      error: "An unexpected error occurred while generating the API key",
-    };
+    return handleErrorResponse(error);
   }
 }
 
 /**
  * Server action to revoke an API key
  */
-export async function revokeApiKeyAction(keyId: string) {
+export async function revokeApiKeyAction(
+  keyId: string,
+): Promise<ApiResponse<void>> {
   try {
     // Get authenticated user (redirects to login if not authenticated)
     const user = await requireUser();
 
     // Validate input
     if (!keyId || keyId.trim().length === 0) {
-      return {
-        success: false,
-        error: "API key ID is required",
-      };
+      return errorResponse("API key ID is required");
     }
 
     // Create authenticated Supabase client
@@ -64,14 +65,11 @@ export async function revokeApiKeyAction(keyId: string) {
 
     if (result.success) {
       revalidatePath("/dashboard/settings");
+      return successResponse(undefined);
     }
 
-    return result;
+    return errorResponse(result.error || "Failed to revoke API key");
   } catch (error) {
-    console.error("Error revoking API key:", error);
-    return {
-      success: false,
-      error: "An unexpected error occurred while revoking the API key",
-    };
+    return handleErrorResponse(error);
   }
 }

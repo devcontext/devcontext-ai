@@ -13,6 +13,7 @@ import {
   errorResponse,
   handleErrorResponse,
   successResponse,
+  validationErrorResponse,
 } from "@/features/shared/utils/error-handler";
 import type { ApiResponse } from "@/features/shared/types/api-response";
 
@@ -39,8 +40,7 @@ export async function createProjectAction(
     const validation = createProjectSchema.safeParse(input);
 
     if (!validation.success) {
-      const firstError = validation.error.issues[0];
-      return errorResponse(firstError?.message || "Invalid project data");
+      return validationErrorResponse(validation.error);
     }
 
     const validatedData = validation.data;

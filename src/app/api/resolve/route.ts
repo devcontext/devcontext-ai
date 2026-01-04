@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server";
 import { resolvePreview } from "@/features/core/app/resolve-preview";
+import { supabaseAdmin } from "@/lib/supabase/admin";
+import { NextResponse } from "next/server";
 
 type ResolveRequestDTO = {
   projectId: string;
@@ -51,14 +52,17 @@ export async function POST(request: Request) {
     // 3. Call App Layer
     // We pass apiKey as requested. Since we are restricted to this file,
     // we use a cast if the app layer type hasn't been updated yet.
-    const result = await resolvePreview({
-      projectId,
-      commandId,
-      userInput,
-      apiKey,
-      target: body.target,
-      contextHints: body.contextHints,
-    } as any);
+    const result = await resolvePreview(
+      {
+        projectId,
+        commandId,
+        userInput,
+        apiKey,
+        target: body.target,
+        contextHints: body.contextHints,
+      } as any,
+      supabaseAdmin,
+    );
 
     // 4. Return Result
     if (result.status === "blocked") {

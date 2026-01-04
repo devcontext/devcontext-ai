@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { createProjectAction } from "../actions/project-actions";
 import type { Project } from "@/features/core/domain/types/projects";
-import type { CreateProjectInput } from "@/features/core/domain/validation/project-validation";
+import type { CreateProjectInput } from "../schemas";
 
 interface UseCreateProjectReturn {
   createProject: (input: CreateProjectInput) => Promise<Project | null>;

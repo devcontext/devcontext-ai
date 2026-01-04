@@ -1,5 +1,6 @@
+import { type SupabaseClient } from "@supabase/supabase-js";
 import { resolvePreview } from "./resolve-preview";
-import { resolveLogsRepository } from "../infra/db/resolve-logs-repository";
+import { ResolveLogsRepository } from "../infra/db/resolve-logs-repository";
 import { ResolveRequest, ResolveResult } from "../domain/types/resolver";
 
 /**
@@ -10,12 +11,14 @@ import { ResolveRequest, ResolveResult } from "../domain/types/resolver";
  */
 export async function mcpExecute(
   request: ResolveRequest,
+  supabase: SupabaseClient,
 ): Promise<ResolveResult> {
+  const resolveLogsRepository = new ResolveLogsRepository(supabase);
+
   // 1. Orchestrate resolution
-  const result = await resolvePreview(request);
+  const result = await resolvePreview(request, supabase);
 
   // 2. Persist Logs (Infra)
-  // We log both successful and blocked resolutions for observability.
   await resolveLogsRepository.log({
     project_id: request.projectId,
     command_id: request.commandId,

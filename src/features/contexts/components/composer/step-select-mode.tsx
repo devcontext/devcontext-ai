@@ -1,6 +1,6 @@
 "use client";
 
-import type { ComposerMode } from "../types";
+import type { ComposerMode } from "../../types";
 import { Button } from "@/features/shared/ui/button";
 import { cn } from "@/lib/utils";
 

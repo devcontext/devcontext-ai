@@ -8,7 +8,7 @@ interface GenerateKeyDialogProps {
   onClose: () => void;
   onGenerate: (
     name: string,
-  ) => Promise<{ success: boolean; apiKey?: string; error?: string }>;
+  ) => Promise<{ success: boolean; data?: { key: string }; error?: string }>;
   initialName?: string;
 }
 
@@ -44,8 +44,8 @@ export function GenerateKeyDialog({
 
     setIsGenerating(false);
 
-    if (result.success && result.apiKey) {
-      setGeneratedKey(result.apiKey);
+    if (result.success && result.data?.key) {
+      setGeneratedKey(result.data.key);
     } else {
       setError(result.error || "Failed to generate API key");
     }

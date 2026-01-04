@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import type { ComposerMode, SourceItem } from "../types";
+import type { ComposerMode, SourceItem } from "../../types";
 import { Button } from "@/features/shared/ui/button";
 import { Loader2 } from "lucide-react";
 

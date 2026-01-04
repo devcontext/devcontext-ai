@@ -1,4 +1,4 @@
-import { ContextVersion } from "../../core/domain/types/contexts";
+import { ContextVersion } from "../../../core/domain/types/contexts";
 import { Copy, FileText } from "lucide-react";
 import { Button } from "@/features/shared/ui/button";
 

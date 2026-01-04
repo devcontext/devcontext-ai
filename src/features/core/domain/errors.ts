@@ -55,3 +55,11 @@ export class UnexpectedError extends DomainError {
 export function isDomainError(error: unknown): error is DomainError {
   return error instanceof DomainError;
 }
+
+export function isNotFoundError(error: unknown): error is NotFoundError {
+  return error instanceof NotFoundError;
+}
+
+export function isForbiddenError(error: unknown): error is ForbiddenError {
+  return error instanceof ForbiddenError;
+}

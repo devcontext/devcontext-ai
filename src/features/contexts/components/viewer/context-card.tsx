@@ -1,18 +1,20 @@
-import { Context } from "../../core/domain/types/contexts"
-import Link from "next/link"
-import { formatDistanceToNow } from "date-fns"
-import { Tag, Clock, Folder } from "lucide-react"
+import { Context } from "../../../core/domain/types/contexts";
+import Link from "next/link";
+import { formatDistanceToNow } from "date-fns";
+import { Tag, Clock, Folder } from "lucide-react";
 
 interface ContextCardProps {
-  context: Context
-  projectName?: string
+  context: Context;
+  projectName?: string;
 }
 
 export function ContextCard({ context, projectName }: ContextCardProps) {
-  const lastUpdated = formatDistanceToNow(new Date(context.updatedAt), { addSuffix: true })
+  const lastUpdated = formatDistanceToNow(new Date(context.updatedAt), {
+    addSuffix: true,
+  });
 
   return (
-    <Link 
+    <Link
       href={`/dashboard/contexts/${context.id}`}
       className="group block p-5 bg-card border border-border rounded-xl hover:border-sidebar-ring transition-all hover:bg-accent/50 hover:shadow-sm"
     >
@@ -30,9 +32,9 @@ export function ContextCard({ context, projectName }: ContextCardProps) {
 
       <div className="flex flex-wrap gap-2 mb-6">
         {context.tags.length > 0 ? (
-          context.tags.map(tag => (
-            <span 
-              key={tag} 
+          context.tags.map((tag) => (
+            <span
+              key={tag}
               className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-primary/10 text-primary border border-primary/20"
             >
               <Tag className="w-2.5 h-2.5 mr-1" />
@@ -40,7 +42,9 @@ export function ContextCard({ context, projectName }: ContextCardProps) {
             </span>
           ))
         ) : (
-          <span className="text-muted-foreground text-[10px] italic">No tags</span>
+          <span className="text-muted-foreground text-[10px] italic">
+            No tags
+          </span>
         )}
       </div>
 
@@ -49,5 +53,5 @@ export function ContextCard({ context, projectName }: ContextCardProps) {
         Updated {lastUpdated}
       </div>
     </Link>
-  )
+  );
 }

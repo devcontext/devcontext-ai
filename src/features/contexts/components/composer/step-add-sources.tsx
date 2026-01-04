@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, ChangeEvent, useState } from "react";
-import type { SourceItem } from "../types";
+import type { SourceItem } from "../../types";
 import { Button } from "@/features/shared/ui/button";
 import { X, Upload, FileText, AlertCircle } from "lucide-react";
 import {
