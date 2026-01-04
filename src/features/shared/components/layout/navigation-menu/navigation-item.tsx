@@ -11,7 +11,7 @@ interface NavigationItemProps {
 
 export function NavigationItem({ item }: NavigationItemProps) {
   const pathname = usePathname();
-  const isActive = pathname?.startsWith(item.href);
+  const isActive = pathname === item.href;
 
   const Icon = item.icon;
 

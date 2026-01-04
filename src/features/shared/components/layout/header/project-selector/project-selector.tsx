@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, Plus, Search } from "lucide-react";
+import { ChevronDown, ChevronUp, Plus, Search } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,6 +12,7 @@ import {
 import { Input } from "@/features/shared/ui/input";
 import { ProjectList } from "./project-list";
 import type { ProjectSelectorProps, Project } from "./types";
+import { cn } from "@/features/shared/lib/utils";
 
 // Mock data - replace with actual data source
 const MOCK_PROJECTS: Project[] = [
@@ -49,12 +50,23 @@ export function ProjectSelector({
 
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
-      <DropdownMenuTrigger className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-accent/50 transition-colors text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring">
+      <DropdownMenuTrigger
+        className={cn(
+          "flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-accent cursor-pointer transition-colors text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          {
+            "bg-accent": isOpen,
+          },
+        )}
+      >
         <span>{displayProject?.name || "Select Project"}</span>
-        <ChevronDown className="w-4 h-4 text-muted-foreground" />
+        {isOpen ? (
+          <ChevronUp className="w-4 h-4 text-muted-foreground" />
+        ) : (
+          <ChevronDown className="w-4 h-4 text-muted-foreground" />
+        )}
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-[280px]">
-        <div className="px-2 py-2">
+      <DropdownMenuContent align="start" className="w-70">
+        <div className="p-1">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
@@ -66,22 +78,20 @@ export function ProjectSelector({
           </div>
         </div>
 
-        <div className="px-1">
-          <div className="text-xs font-semibold text-muted-foreground uppercase px-2 py-1.5">
-            Projects
+        <small className="text-xs font-semibold text-muted-foreground uppercase px-2">
+          Projects
+        </small>
+        {filteredProjects.length > 0 ? (
+          <ProjectList
+            projects={filteredProjects}
+            currentProjectId={currentProject?.id}
+            onProjectSelect={handleProjectSelect}
+          />
+        ) : (
+          <div className="px-3 py-6 text-center text-sm text-muted-foreground">
+            No projects found
           </div>
-          {filteredProjects.length > 0 ? (
-            <ProjectList
-              projects={filteredProjects}
-              currentProjectId={currentProject?.id}
-              onProjectSelect={handleProjectSelect}
-            />
-          ) : (
-            <div className="px-3 py-6 text-center text-sm text-muted-foreground">
-              No projects found
-            </div>
-          )}
-        </div>
+        )}
 
         <DropdownMenuSeparator />
         <DropdownMenuItem

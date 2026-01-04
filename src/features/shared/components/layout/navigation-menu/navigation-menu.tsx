@@ -33,7 +33,7 @@ export function NavigationMenu({
   return (
     <nav
       className={cn(
-        "border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
+        "border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60",
         className,
       )}
       aria-label="Main navigation"
