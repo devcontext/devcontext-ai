@@ -4,11 +4,13 @@ import { ResolveRequest, ResolveResult } from "../domain/types/resolver";
 
 /**
  * mcpExecute
- * 
+ *
  * Executes the resolution process and persists the execution logs.
  * This is the primary entry point for the MCP adapter.
  */
-export async function mcpExecute(request: ResolveRequest): Promise<ResolveResult> {
+export async function mcpExecute(
+  request: ResolveRequest,
+): Promise<ResolveResult> {
   // 1. Orchestrate resolution
   const result = await resolvePreview(request);
 
@@ -19,11 +21,17 @@ export async function mcpExecute(request: ResolveRequest): Promise<ResolveResult
     command_id: request.commandId,
     intent_id: result.status === "ok" ? result.contract.intentId : "unknown",
     status: result.status,
-    blocked_reason: result.status === "blocked" ? result.blocked.reason : undefined,
-    contract_text: result.status === "ok" ? result.contract.contractText : undefined,
-    metadata: result.status === "ok" ? (result.contract.meta as any) : {
-      error_details: result.status === "blocked" ? result.blocked.details : undefined
-    }
+    blocked_reason:
+      result.status === "blocked" ? result.blocked.reason : undefined,
+    contract_text:
+      result.status === "ok" ? result.contract.contractText : undefined,
+    metadata:
+      result.status === "ok"
+        ? (result.contract.meta as any)
+        : {
+            error_details:
+              result.status === "blocked" ? result.blocked.details : undefined,
+          },
   });
 
   return result;

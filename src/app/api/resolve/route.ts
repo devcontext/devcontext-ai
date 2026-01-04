@@ -23,26 +23,33 @@ export async function POST(request: Request) {
     if (!apiKey) {
       return NextResponse.json(
         { error: "Unauthorized", message: "Missing API Key" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
     // 2. Validation
     const body = await request.json();
-    
-    const projectId = typeof body.projectId === "string" ? body.projectId.trim() : "";
-    const commandId = typeof body.commandId === "string" ? body.commandId.trim() : "";
-    const userInput = typeof body.userInput === "string" ? body.userInput.trim() : "";
+
+    const projectId =
+      typeof body.projectId === "string" ? body.projectId.trim() : "";
+    const commandId =
+      typeof body.commandId === "string" ? body.commandId.trim() : "";
+    const userInput =
+      typeof body.userInput === "string" ? body.userInput.trim() : "";
 
     if (!projectId || !commandId || !userInput) {
       return NextResponse.json(
-        { error: "Bad Request", message: "Missing or invalid required fields (projectId, commandId, userInput)" },
-        { status: 400 }
+        {
+          error: "Bad Request",
+          message:
+            "Missing or invalid required fields (projectId, commandId, userInput)",
+        },
+        { status: 400 },
       );
     }
 
     // 3. Call App Layer
-    // We pass apiKey as requested. Since we are restricted to this file, 
+    // We pass apiKey as requested. Since we are restricted to this file,
     // we use a cast if the app layer type hasn't been updated yet.
     const result = await resolvePreview({
       projectId,
@@ -62,8 +69,11 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("API Error [resolve]:", error);
     return NextResponse.json(
-      { error: "Internal Server Error", message: "An unexpected error occurred." },
-      { status: 500 }
+      {
+        error: "Internal Server Error",
+        message: "An unexpected error occurred.",
+      },
+      { status: 500 },
     );
   }
 }
