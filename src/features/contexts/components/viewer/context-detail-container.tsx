@@ -15,10 +15,12 @@ import { ConfirmationDialog } from "@/features/shared/components/ui/confirmation
 
 interface ContextDetailContainerProps {
   details: ContextDetails;
+  projectSlug: string;
 }
 
 export function ContextDetailContainer({
   details,
+  projectSlug,
 }: ContextDetailContainerProps) {
   const router = useRouter();
   const [selectedVersionId, setSelectedVersionId] = useState<string>(
@@ -55,7 +57,7 @@ export function ContextDetailContainer({
     const result = await deleteContextAction(details.id);
 
     if (result.success) {
-      router.push("/dashboard/contexts");
+      router.push(`/app/projects/${projectSlug}/contexts`);
     } else {
       setError(result.error || "Failed to delete context");
       setIsDeleting(false);

@@ -4,14 +4,17 @@ import { ContextDetailContainer } from "@/features/contexts/components/viewer/co
 import { ContentContainer } from "@/features/shared/components/layout/content-container";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import Link from "next/link";
-import { PageParamsType } from "@/features/shared/types/page-params-type";
+
+interface ContextDetailPageProps {
+  params: Promise<{ projectSlug: string; id: string }>;
+}
 
 export default async function ContextDetailPage({
   params,
-}: PageParamsType<{ id: string }>) {
-  const { id } = await params;
+}: ContextDetailPageProps) {
+  const { projectSlug, id } = await params;
 
-  // Use the server action which now includes the project in ContextDetails
+  // Use the server action which includes the project in ContextDetails
   const result = await getContextAction(id);
 
   // Unified validation: if not success or no data, it's a 404/Forbidden
@@ -28,7 +31,7 @@ export default async function ContextDetailPage({
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div className="flex items-center gap-4">
           <Link
-            href="/dashboard/contexts"
+            href={`/app/projects/${projectSlug}/contexts`}
             className="p-2 -ml-2 text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -47,7 +50,7 @@ export default async function ContextDetailPage({
         </div>
 
         <Link
-          href="/dashboard/composer"
+          href={`/app/projects/${projectSlug}/composer`}
           className="text-xs font-semibold text-muted-foreground hover:text-foreground flex items-center gap-1.5 transition-colors"
         >
           Open Composer
@@ -56,7 +59,7 @@ export default async function ContextDetailPage({
       </div>
 
       {/* Detailed Container (Client Component) */}
-      <ContextDetailContainer details={details} />
+      <ContextDetailContainer details={details} projectSlug={projectSlug} />
     </ContentContainer>
   );
 }

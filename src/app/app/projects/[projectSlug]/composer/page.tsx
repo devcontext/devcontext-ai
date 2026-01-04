@@ -1,22 +1,22 @@
-"use client"
+"use client";
 
-import { useCallback } from "react"
-import { WizardLayout } from "@/features/contexts/components/composer/wizard-layout"
-import { StepAddSources } from "@/features/contexts/components/composer/step-add-sources"
-import { StepSelectMode } from "@/features/contexts/components/composer/step-select-mode"
-import { StepGuidedGeneration } from "@/features/contexts/components/composer/step-guided-generation"
-import { StepEditorSave } from "@/features/contexts/components/composer/step-editor-save"
-import { useWizardState } from "@/features/contexts/hooks/use-wizard-state"
-
-import { DEV_PROJECT_ID } from "@/lib/config-dev"
+import { useCallback } from "react";
+import { WizardLayout } from "@/features/contexts/components/composer/wizard-layout";
+import { StepAddSources } from "@/features/contexts/components/composer/step-add-sources";
+import { StepSelectMode } from "@/features/contexts/components/composer/step-select-mode";
+import { StepGuidedGeneration } from "@/features/contexts/components/composer/step-guided-generation";
+import { StepEditorSave } from "@/features/contexts/components/composer/step-editor-save";
+import { useWizardState } from "@/features/contexts/hooks/use-wizard-state";
+import { useCurrentProject } from "@/features/projects/providers/project-provider";
 
 export default function ComposerPage() {
-  const wizard = useWizardState()
+  const wizard = useWizardState();
+  const project = useCurrentProject();
 
   const handleSkipStep3 = useCallback(() => {
     // Skip directly to step 4
-    wizard.nextStep()
-  }, [wizard])
+    wizard.nextStep();
+  }, [wizard]);
 
   return (
     <WizardLayout currentStep={wizard.currentStep}>
@@ -64,9 +64,9 @@ export default function ComposerPage() {
           onSetIsSaving={wizard.setIsSaving}
           onSetError={wizard.setError}
           onBack={wizard.prevStep}
-          projectId={DEV_PROJECT_ID}
+          projectId={project.id}
         />
       )}
     </WizardLayout>
-  )
+  );
 }

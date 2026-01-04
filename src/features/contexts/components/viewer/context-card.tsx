@@ -5,17 +5,22 @@ import { Tag, Clock, Folder } from "lucide-react";
 
 interface ContextCardProps {
   context: Context;
+  projectSlug: string;
   projectName?: string;
 }
 
-export function ContextCard({ context, projectName }: ContextCardProps) {
+export function ContextCard({
+  context,
+  projectSlug,
+  projectName,
+}: ContextCardProps) {
   const lastUpdated = formatDistanceToNow(new Date(context.updatedAt), {
     addSuffix: true,
   });
 
   return (
     <Link
-      href={`/dashboard/contexts/${context.id}`}
+      href={`/app/projects/${projectSlug}/contexts/${context.id}`}
       className="group block p-5 bg-card border border-border rounded-xl hover:border-sidebar-ring transition-all hover:bg-accent/50 hover:shadow-sm"
     >
       <div className="flex justify-between items-start mb-4">

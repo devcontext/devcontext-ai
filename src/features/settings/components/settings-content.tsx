@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import type { McpKeyListItem } from "@/features/core/domain/api-keys/types";
-import { ApiKeyList } from "@/features/settings/components/api-key-list";
-import { GenerateKeyDialog } from "@/features/settings/components/generate-key-dialog";
-import { McpConfigSnippet } from "@/features/settings/components/mcp-config-snippet";
+import { ApiKeyList } from "./api-key-list";
+import { GenerateKeyDialog } from "./generate-key-dialog";
+import { McpConfigSnippet } from "./mcp-config-snippet";
 import {
   generateApiKeyAction,
   revokeApiKeyAction,

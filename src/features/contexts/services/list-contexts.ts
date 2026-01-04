@@ -4,6 +4,7 @@ import { type Context } from "@/features/core/domain/types/contexts";
 
 export interface ListContextsFilters {
   projectId?: string;
+  projectSlug?: string;
   search?: string;
   tags?: string[];
 }
@@ -21,6 +22,7 @@ export async function listContexts(
     return repository.searchContexts({
       userId,
       projectId: filters?.projectId,
+      projectSlug: filters?.projectSlug,
       search: filters?.search,
       tags: filters?.tags,
     });

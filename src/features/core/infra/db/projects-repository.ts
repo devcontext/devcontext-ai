@@ -8,6 +8,7 @@ import { NotFoundError, UnexpectedError } from "../../domain/errors";
 function toDomain(row: Record<string, unknown>): Project {
   return {
     id: row.id as string,
+    slug: row.slug as string,
     ownerUserId: row.owner_user_id as string,
     name: row.name as string,
     stackPresetId: row.stack_preset_id as string | null,
@@ -21,14 +22,20 @@ function toDomain(row: Record<string, unknown>): Project {
 /**
  * Maps domain entity (camelCase) to database row (snake_case)
  */
-function toDb(input: ProjectInput): Record<string, unknown> {
-  return {
+function toDb(
+  input: ProjectInput & { slug?: string },
+): Record<string, unknown> {
+  const result: Record<string, unknown> = {
     owner_user_id: input.ownerUserId,
     name: input.name,
     stack_preset_id: input.stackPresetId,
     active_ruleset_id: input.activeRulesetId,
     rule_toggles: input.ruleToggles,
   };
+  if (input.slug !== undefined) {
+    result.slug = input.slug;
+  }
+  return result;
 }
 
 /**
@@ -66,6 +73,33 @@ export class ProjectsRepository {
     }
   }
 
+  async getBySlug(slug: string, ownerUserId: string): Promise<Project> {
+    try {
+      const { data, error } = await this.supabase
+        .from("projects")
+        .select("*")
+        .eq("slug", slug)
+        .eq("owner_user_id", ownerUserId)
+        .single();
+
+      if (error || !data) {
+        throw new NotFoundError(`Project with slug "${slug}" not found`, {
+          slug,
+          ownerUserId,
+        });
+      }
+
+      return toDomain(data);
+    } catch (error) {
+      if (error instanceof NotFoundError) throw error;
+      throw new UnexpectedError("Failed to fetch project by slug", {
+        slug,
+        ownerUserId,
+        originalError: error,
+      });
+    }
+  }
+
   async getByOwnerId(ownerUserId: string): Promise<Project[]> {
     try {
       const { data, error } = await this.supabase
@@ -91,7 +125,7 @@ export class ProjectsRepository {
     }
   }
 
-  async create(input: ProjectInput): Promise<Project> {
+  async create(input: ProjectInput & { slug?: string }): Promise<Project> {
     try {
       const { data, error } = await this.supabase
         .from("projects")

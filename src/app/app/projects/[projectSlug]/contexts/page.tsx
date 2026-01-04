@@ -1,32 +1,36 @@
 import { listContexts } from "@/features/contexts/services";
-import { listProjectsAction } from "@/features/projects/actions/project-actions";
 import { ContextCard } from "@/features/contexts/components/viewer/context-card";
 import { FilterContainer } from "@/features/contexts/components/viewer/filter-container";
 import { PageContainer } from "@/features/shared/components/page-container";
 import { EmptyState } from "@/features/shared/components/empty-state";
 import { FilePlus } from "lucide-react";
+import { getProjectBySlug } from "@/features/projects/services/get-project-by-slug";
+import { listProjectsAction } from "@/features/projects/actions/project-actions";
 
 interface ContextsPageProps {
+  params: Promise<{ projectSlug: string }>;
   searchParams: Promise<{
     search?: string;
-    projectId?: string;
     tags?: string;
   }>;
 }
 
 export default async function ContextsPage({
+  params,
   searchParams,
 }: ContextsPageProps) {
-  const params = await searchParams;
+  const { projectSlug } = await params;
+  const searchParamsData = await searchParams;
 
-  // Fetch data in parallel (eliminates waterfall)
-  const [projectsResult, contexts] = await Promise.all([
+  // Fetch project and contexts
+  const [project, projectsResult, contexts] = await Promise.all([
+    getProjectBySlug(projectSlug),
     listProjectsAction(),
     listContexts({
-      search: params.search,
-      projectId: params.projectId,
-      tags: params.tags
-        ? params.tags
+      projectSlug,
+      search: searchParamsData.search,
+      tags: searchParamsData.tags
+        ? searchParamsData.tags
             .split(",")
             .map((t) => t.trim())
             .filter(Boolean)
@@ -38,9 +42,8 @@ export default async function ContextsPage({
 
   if (
     contexts.length === 0 &&
-    !params.search &&
-    !params.projectId &&
-    !params.tags
+    !searchParamsData.search &&
+    !searchParamsData.tags
   ) {
     return (
       <EmptyState
@@ -49,7 +52,7 @@ export default async function ContextsPage({
         actions={[
           {
             text: "Create Context",
-            href: "/dashboard/composer",
+            href: `/app/projects/${projectSlug}/composer`,
             icon: FilePlus,
           },
         ]}
@@ -59,22 +62,17 @@ export default async function ContextsPage({
 
   return (
     <PageContainer
-      title="Your AI Contexts"
+      title={`${project.name} - Contexts`}
       description="Browse and manage your AI context repository."
       rightContent={
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-1 rounded border border-border">
-            {projects.length} Projects
-          </span>
-          <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-1 rounded border border-border">
-            {contexts.length} Contexts
-          </span>
-        </div>
+        <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-1 rounded border border-border">
+          {contexts.length} Contexts
+        </span>
       }
     >
       <div className="space-y-8">
         {/* Filters */}
-        <FilterContainer projects={projects} initialValues={params} />
+        <FilterContainer projects={projects} initialValues={searchParamsData} />
 
         {/* Results */}
         {contexts.length > 0 ? (
@@ -83,9 +81,8 @@ export default async function ContextsPage({
               <ContextCard
                 key={context.id}
                 context={context}
-                projectName={
-                  projects.find((p) => p.id === context.projectId)?.name
-                }
+                projectSlug={projectSlug}
+                projectName={project.name}
               />
             ))}
           </div>

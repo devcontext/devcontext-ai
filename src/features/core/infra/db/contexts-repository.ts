@@ -359,17 +359,22 @@ export class ContextsRepository {
   async searchContexts(filters: {
     userId: string;
     projectId?: string;
+    projectSlug?: string;
     search?: string;
     tags?: string[];
   }): Promise<Context[]> {
     try {
       let query = this.supabase
         .from("contexts")
-        .select("*, projects!inner(owner_user_id)")
+        .select("*, projects!inner(owner_user_id, slug)")
         .eq("projects.owner_user_id", filters.userId);
 
       if (filters.projectId) {
         query = query.eq("project_id", filters.projectId);
+      }
+
+      if (filters.projectSlug) {
+        query = query.eq("projects.slug", filters.projectSlug);
       }
 
       if (filters.search) {
