@@ -13,6 +13,12 @@ interface UseCreateProjectReturn {
 
 /**
  * Hook to create a new project
+ *
+ * CLIENT COMPONENT JUSTIFICATION (Data Fetching Rule #5):
+ * - Depends on user interaction (form submission)
+ * - Requires local state management (loading, error)
+ * - Executes in response to user event (onClick/onSubmit)
+ * - Cannot be executed on server (needs client-side form state)
  */
 export function useCreateProject(): UseCreateProjectReturn {
   const [loading, setLoading] = useState(false);

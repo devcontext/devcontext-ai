@@ -1,16 +1,23 @@
 import { DashboardShell } from "@/features/shared/components/layout/dashboard-shell";
 import { Toaster } from "@/features/shared/ui/sonner";
+import { AppProvider } from "@/features/shared/providers/app-provider";
+import { listProjectsAction } from "@/features/projects/actions/project-actions";
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // TODO: add toast provider
+  // Load initial projects on server
+  const projectsResult = await listProjectsAction();
+  const initialProjects = projectsResult.success ? projectsResult.data! : [];
+
   return (
     <>
       <Toaster />
-      <DashboardShell>{children}</DashboardShell>
+      <AppProvider initialProjects={initialProjects}>
+        <DashboardShell>{children}</DashboardShell>
+      </AppProvider>
     </>
   );
 }

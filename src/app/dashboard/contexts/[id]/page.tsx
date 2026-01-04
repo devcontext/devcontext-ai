@@ -1,27 +1,25 @@
 import { notFound } from "next/navigation";
 import { getContextDetails } from "@/features/core/app/store/get-context-details";
-import { projectsRepository } from "@/features/core/infra/db/projects-repository";
+import { getProjectAction } from "@/features/projects/actions/project-actions";
 import { ContextDetailContainer } from "@/features/store/components/context-detail-container";
 import { ContentContainer } from "@/features/shared/components/layout/content-container";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import Link from "next/link";
-
-interface ContextDetailPageProps {
-  params: Promise<{ id: string }>;
-}
+import { PageParamsType } from "@/features/shared/types/page-params-type";
 
 export default async function ContextDetailPage({
   params,
-}: ContextDetailPageProps) {
+}: PageParamsType<{ id: string }>) {
   const { id } = await params;
 
-  // 1. Fetch data
   const details = await getContextDetails(id);
+
   if (!details) {
     notFound();
   }
 
-  const project = await projectsRepository.getById(details.context.projectId);
+  const projectResult = await getProjectAction(details.context.projectId);
+  const project = projectResult.success ? projectResult.data : null;
 
   return (
     <ContentContainer>

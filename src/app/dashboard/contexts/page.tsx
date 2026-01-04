@@ -1,6 +1,5 @@
 import { getUserContexts } from "@/features/core/app/store/get-user-contexts";
-import { projectsRepository } from "@/features/core/infra/db/projects-repository";
-import { requireUser } from "@/features/auth/utils/get-user";
+import { listProjectsAction } from "@/features/projects/actions/project-actions";
 import { ContextCard } from "@/features/store/components/context-card";
 import { FilterContainer } from "@/features/store/components/filter-container";
 import { PageContainer } from "@/features/shared/components/page-container";
@@ -20,21 +19,22 @@ export default async function ContextsPage({
 }: ContextsPageProps) {
   const params = await searchParams;
 
-  // Get authenticated user (redirects to login if not authenticated)
-  const user = await requireUser();
+  // Fetch data in parallel (eliminates waterfall)
+  const [projectsResult, contexts] = await Promise.all([
+    listProjectsAction(),
+    getUserContexts({
+      search: params.search,
+      projectId: params.projectId,
+      tags: params.tags
+        ? params.tags
+            .split(",")
+            .map((t) => t.trim())
+            .filter(Boolean)
+        : undefined,
+    }),
+  ]);
 
-  // 1. Fetch data on the server
-  const projects = await projectsRepository.getByOwnerId(user.id);
-  const contexts = await getUserContexts({
-    search: params.search,
-    projectId: params.projectId,
-    tags: params.tags
-      ? params.tags
-          .split(",")
-          .map((t) => t.trim())
-          .filter(Boolean)
-      : undefined,
-  });
+  const projects = projectsResult.success ? projectsResult.data! : [];
 
   if (contexts.length === 0) {
     return (

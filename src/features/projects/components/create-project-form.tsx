@@ -10,9 +10,11 @@ import {
   type CreateProjectInput,
 } from "@/features/core/domain/validation/project-validation";
 import { useCreateProject } from "../hooks/use-create-project";
+import { useApp } from "@/features/shared/providers/app-provider";
+import type { Project } from "@/features/core/domain/types/projects";
 
 interface CreateProjectFormProps {
-  onSuccess?: (projectId: string) => void;
+  onSuccess?: (project: Project) => void;
   onCancel?: () => void;
 }
 
@@ -21,6 +23,9 @@ export function CreateProjectForm({
   onCancel,
 }: CreateProjectFormProps) {
   const { createProject, loading } = useCreateProject();
+  const {
+    projects: { addProject },
+  } = useApp();
 
   const methods = useForm<CreateProjectInput>({
     mode: "onTouched",
@@ -42,7 +47,8 @@ export function CreateProjectForm({
     const project = await createProject(data);
 
     if (project) {
-      onSuccess?.(project.id);
+      addProject(project);
+      onSuccess?.(project);
     } else {
       setError("root", {
         message: "Failed to create project. Please try again.",

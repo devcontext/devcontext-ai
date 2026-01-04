@@ -8,11 +8,12 @@ import {
   DialogTitle,
 } from "@/features/shared/ui/dialog";
 import { CreateProjectForm } from "./create-project-form";
+import type { Project } from "@/features/core/domain/types/projects";
 
 interface CreateProjectModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSuccess?: () => void;
+  onSuccess?: (project: Project) => void;
 }
 
 export function CreateProjectModal({
@@ -20,9 +21,9 @@ export function CreateProjectModal({
   onOpenChange,
   onSuccess,
 }: CreateProjectModalProps) {
-  const handleSuccess = () => {
+  const handleSuccess = (project: Project) => {
     onOpenChange(false);
-    onSuccess?.();
+    onSuccess?.(project);
   };
 
   const handleCancel = () => {

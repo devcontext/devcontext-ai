@@ -63,16 +63,148 @@ trigger: always_on
 
 ---
 
-## 3. BOUNDARY CORRECTO
+## 3. CONTEXTO DE DATOS (SUPABASE CLIENT)
 
-6. `page.tsx` y `layout.tsx` pueden:
-   - llamar a **actions** o **services**
+6. **El cliente de Supabase NO se crea en cada método del repositorio.**
+7. El cliente se crea **una vez por request** dentro de un contexto server-side.
+8. Punto recomendado de creación:
+   - `withUserContext()` (o equivalente) crea `supabase` + resuelve `userId`.
 
-7. Está prohibido:
-   - importar repositorios directamente
-   - acceder a DB o SDKs de infra
+9. El `service` recibe `{ userId, supabase }` (o `db`) desde el contexto.
+10. El repositorio recibe el client por parámetro/constructor (por request), **nunca lo construye**.
+
+**Anti-patterns:**
+
+- `createServerClient()` dentro de cada método del repo
+- pasar `userId` desde el cliente como input confiable
 
 ---
+
+## 4. CAPAS (ACTION → SERVICE → REPO)
+
+11. **Actions (Server Actions):** adaptador.
+
+- `try/catch` obligatorio.
+- retorna `ApiResponse<T>` usando helpers (`successApiResponse`, `handleApiResponseError`).
+
+12. **Services:** orquestan.
+
+- validan autenticación/permisos vía `withUserContext`.
+- NO formatean respuestas.
+- NO hacen `try/catch` salvo que rewrapeen errores a errores controlados.
+
+13. **Repos (infra):** acceso a datos.
+
+- hablan con Supabase/DB.
+- lanzan **errores controlados** (DomainError) o wrappean errores externos.
+
+---
+
+## 5. ERRORES CONTROLADOS (DOMAIN)
+
+14. Debe existir un set de errores de dominio (ej. `DomainError`) con:
+
+- `code` (estable)
+- `message`
+- `field?`
+- `context?`
+
+15. Repositorios lanzan:
+
+- `NotFoundError`, `UnauthorizedError`, `ForbiddenError`, `ConflictError`, `ValidationError`, `UnexpectedError`.
+
+16. Actions convierten errores a `ApiResponse` de forma consistente mediante el handler global.
+
+**Regla:** los componentes de UI no interpretan errores crudos de infra.
+
+---
+
+## 6. BOUNDARY CORRECTO
+
+17. `page.tsx` y `layout.tsx` pueden:
+
+- llamar a **actions** o **services**
+
+18. Está prohibido:
+
+- importar repositorios directamente
+- acceder a DB o SDKs de infra
+
+---
+
+## 7. COMPOSICIÓN POR PROPS
+
+19. La page prepara el "view model" necesario para renderizar.
+20. Los componentes de UI:
+
+- no deciden cómo se cargan los datos
+- no ejecutan lógica de fetch primaria
+
+---
+
+## 8. PARALELIZACIÓN (ENFORCED)
+
+21. Si se requieren múltiples entidades independientes:
+    - las llamadas deben ejecutarse en paralelo (`Promise.all` o promesas adelantadas)
+
+22. Prohibido encadenar awaits sin dependencia real.
+
+---
+
+## 9. EVITAR WATERFALLS
+
+23. No hacer:
+
+```ts
+await a();
+await b();
+await c();
+```
+
+Si `a`, `b`, `c` son independientes.
+
+24. El agente debe detectar y refactorizar waterfalls automáticamente.
+
+---
+
+## 10. MANEJO DE ERRORES
+
+25. Las pages no implementan manejo de errores ad-hoc.
+26. Los errores deben:
+
+- mapearse a `ApiResponse` (actions) o
+- ser gestionados por `error.tsx` / boundary global
+
+---
+
+## 11. CACHE Y REVALIDACIÓN (SI APLICA)
+
+27. Si se usa cache/revalidate:
+
+- debe declararse explícitamente
+- nunca confiar en defaults implícitos
+
+28. Cada query define su política (o ninguna).
+
+---
+
+## ANTI-PATTERNS (PROHIBIDOS)
+
+- Fetch en cliente por costumbre
+- Repo importado en page/layout
+- Cliente Supabase creado por método de repo
+- Waterfalls de awaits
+- UI decidiendo data access
+- Manejo de errores por pantalla
+
+---
+
+## REGLA FINAL
+
+> Si un dato puede cargarse en servidor, **debe cargarse en servidor**.
+> El cliente es una excepción, no la norma.
+
+> El acceso a datos es: **Action → Service → Repo**, con errores controlados y respuesta consistente.
 
 ## 4. COMPOSICIÓN POR PROPS
 
