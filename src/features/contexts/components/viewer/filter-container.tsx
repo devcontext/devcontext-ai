@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { ContextFilters, FilterValues } from "./context-filters";
 import { Project } from "../../../core/domain/types/projects";
+import { appRoutes } from "@/features/routes";
 
 interface FilterContainerProps {
   projects: Project[];
@@ -11,11 +12,13 @@ interface FilterContainerProps {
     projectId?: string;
     tags?: string;
   };
+  projectSlug: string;
 }
 
 export function FilterContainer({
   projects,
   initialValues,
+  projectSlug,
 }: FilterContainerProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -32,7 +35,8 @@ export function FilterContainer({
     if (values.tags) params.set("tags", values.tags);
     else params.delete("tags");
 
-    router.push(`/dashboard/contexts?${params.toString()}`);
+    const basePath = appRoutes.contexts.list.generatePath({ projectSlug });
+    router.push(`${basePath}?${params.toString()}`);
   };
 
   return (

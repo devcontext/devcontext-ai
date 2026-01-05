@@ -21,7 +21,7 @@ export function Sidebar() {
   };
 
   return (
-    <div className="w-64 border-r border-sidebar-border bg-sidebar flex flex-col h-full hidden md:flex fixed left-0 top-0">
+    <div className="w-64 border-r border-sidebar-border bg-sidebar flex-col h-full hidden md:flex fixed left-0 top-0">
       {/* Brand */}
       <Link
         href="/dashboard/contexts"

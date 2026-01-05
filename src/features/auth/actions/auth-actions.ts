@@ -8,6 +8,7 @@ import {
   successResponse,
 } from "@/features/shared/utils/error-handler";
 import type { ApiResponse } from "@/features/shared/types/api-response";
+import { appRoutes } from "@/features/routes";
 
 /**
  * Server action to log in a user
@@ -31,9 +32,9 @@ export async function loginAction(
       };
     }
 
-    // Redirect to dashboard on success
-    revalidatePath("/dashboard", "layout");
-    redirect("/dashboard/contexts");
+    // Redirect to app on success
+    revalidatePath(appRoutes.home.path, "layout");
+    redirect(appRoutes.home.path);
   } catch (error) {
     if (error instanceof Error && error.message === "NEXT_REDIRECT") {
       throw error;
@@ -64,9 +65,9 @@ export async function signupAction(
       };
     }
 
-    // Redirect to dashboard on success
-    revalidatePath("/dashboard", "layout");
-    redirect("/dashboard/contexts");
+    // Redirect to app on success
+    revalidatePath(appRoutes.home.path, "layout");
+    redirect(appRoutes.home.path);
   } catch (error) {
     if (error instanceof Error && error.message === "NEXT_REDIRECT") {
       throw error;
@@ -84,5 +85,5 @@ export async function logoutAction(): Promise<void> {
   await supabase.auth.signOut();
 
   revalidatePath("/", "layout");
-  redirect("/login");
+  redirect(appRoutes.auth.login.path);
 }

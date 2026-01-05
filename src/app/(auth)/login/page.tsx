@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { loginAction } from "@/features/auth/actions/auth-actions";
+import { appRoutes } from "@/features/routes";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -90,7 +91,7 @@ export default function LoginPage() {
       <p className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
         Don&apos;t have an account?{" "}
         <Link
-          href="/signup"
+          href={appRoutes.auth.signup.path}
           className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
         >
           Sign up

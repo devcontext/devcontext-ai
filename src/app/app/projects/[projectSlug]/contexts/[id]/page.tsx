@@ -4,6 +4,7 @@ import { ContextDetailContainer } from "@/features/contexts/components/viewer/co
 import { ContentContainer } from "@/features/shared/components/layout/content-container";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import Link from "next/link";
+import { appRoutes } from "@/features/routes";
 
 interface ContextDetailPageProps {
   params: Promise<{ projectSlug: string; id: string }>;
@@ -31,7 +32,7 @@ export default async function ContextDetailPage({
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div className="flex items-center gap-4">
           <Link
-            href={`/app/projects/${projectSlug}/contexts`}
+            href={appRoutes.contexts.list.generatePath({ projectSlug })}
             className="p-2 -ml-2 text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -50,7 +51,7 @@ export default async function ContextDetailPage({
         </div>
 
         <Link
-          href={`/app/projects/${projectSlug}/composer`}
+          href={appRoutes.contexts.composer.generatePath({ projectSlug })}
           className="text-xs font-semibold text-muted-foreground hover:text-foreground flex items-center gap-1.5 transition-colors"
         >
           Open Composer

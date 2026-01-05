@@ -6,6 +6,7 @@ import { EmptyState } from "@/features/shared/components/empty-state";
 import { FilePlus } from "lucide-react";
 import { getProjectBySlug } from "@/features/projects/services/get-project-by-slug";
 import { listProjectsAction } from "@/features/projects/actions/project-actions";
+import { appRoutes } from "@/features/routes";
 
 interface ContextsPageProps {
   params: Promise<{ projectSlug: string }>;
@@ -52,7 +53,7 @@ export default async function ContextsPage({
         actions={[
           {
             text: "Create Context",
-            href: `/app/projects/${projectSlug}/composer`,
+            href: appRoutes.contexts.composer.generatePath({ projectSlug }),
             icon: FilePlus,
           },
         ]}
@@ -72,7 +73,11 @@ export default async function ContextsPage({
     >
       <div className="space-y-8">
         {/* Filters */}
-        <FilterContainer projects={projects} initialValues={searchParamsData} />
+        <FilterContainer
+          projects={projects}
+          initialValues={searchParamsData}
+          projectSlug={projectSlug}
+        />
 
         {/* Results */}
         {contexts.length > 0 ? (

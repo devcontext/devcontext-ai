@@ -12,6 +12,7 @@ import {
 import { Button } from "@/features/shared/ui/button";
 import { Trash2, AlertCircle } from "lucide-react";
 import { ConfirmationDialog } from "@/features/shared/components/ui/confirmation-dialog";
+import { appRoutes } from "@/features/routes";
 
 interface ContextDetailContainerProps {
   details: ContextDetails;
@@ -57,7 +58,7 @@ export function ContextDetailContainer({
     const result = await deleteContextAction(details.id);
 
     if (result.success) {
-      router.push(`/app/projects/${projectSlug}/contexts`);
+      router.push(appRoutes.contexts.list.generatePath({ projectSlug }));
     } else {
       setError(result.error || "Failed to delete context");
       setIsDeleting(false);
@@ -104,9 +105,8 @@ export function ContextDetailContainer({
           </ConfirmationDialog>
         </div>
       </div>
-
       {/* Main content: Preview */}
-      <div className="lg:col-span-8 xl:col-span-9 h-[calc(100vh-300px)] min-h-[500px] flex flex-col gap-4">
+      <div className="lg:col-span-8 xl:col-span-9 h-[calc(100vh-300px)] min-h-125 flex flex-col gap-4">
         {error && (
           <div className="flex items-center gap-2 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm mb-4">
             <AlertCircle className="w-4 h-4" />

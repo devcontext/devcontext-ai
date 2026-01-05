@@ -34,6 +34,7 @@ import {
   saveVersion,
   deleteContext,
 } from "@/features/contexts/services";
+import { appRoutes } from "@/features/routes";
 
 /**
  * Action to list contexts
@@ -82,8 +83,7 @@ export async function createContextAction(
 
     const result = await createContext(validation.data);
 
-    revalidatePath("/dashboard/contexts");
-    revalidatePath(`/dashboard/projects/${result.projectId}`);
+    revalidatePath(appRoutes.home.path, "layout");
 
     return successResponse(result);
   } catch (error) {
@@ -105,7 +105,7 @@ export async function saveVersionAction(
 
     const version = await saveVersion(validation.data);
 
-    revalidatePath(`/dashboard/contexts/${validation.data.contextId}`);
+    revalidatePath(appRoutes.home.path, "layout");
 
     return successResponse(version);
   } catch (error) {
@@ -127,7 +127,7 @@ export async function restoreVersionAction(
 
     const version = await restoreVersion(validation.data);
 
-    revalidatePath(`/dashboard/contexts/${version.contextId}`);
+    revalidatePath(appRoutes.home.path, "layout");
 
     return successResponse(version);
   } catch (error) {
@@ -149,7 +149,7 @@ export async function deleteContextAction(
 
     await deleteContext(validation.data);
 
-    revalidatePath("/dashboard/contexts");
+    revalidatePath(appRoutes.home.path, "layout");
     return successResponse(undefined);
   } catch (error) {
     return handleErrorResponse(error);

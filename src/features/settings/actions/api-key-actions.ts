@@ -11,6 +11,7 @@ import {
   successResponse,
 } from "@/features/shared/utils/error-handler";
 import type { ApiResponse } from "@/features/shared/types/api-response";
+import { appRoutes } from "@/features/routes";
 
 /**
  * Server action to generate a new API key
@@ -33,7 +34,7 @@ export async function generateApiKeyAction(
     const result = await generateUserApiKey(supabase, user.id, name.trim());
 
     if (result.success) {
-      revalidatePath("/dashboard/settings");
+      revalidatePath(appRoutes.settings.root.path);
       return successResponse({ key: result.apiKey });
     }
 
@@ -64,7 +65,7 @@ export async function revokeApiKeyAction(
     const result = await revokeUserApiKey(supabase, keyId, user.id);
 
     if (result.success) {
-      revalidatePath("/dashboard/settings");
+      revalidatePath(appRoutes.settings.root.path);
       return successResponse(undefined);
     }
 

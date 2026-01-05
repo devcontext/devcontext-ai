@@ -3,6 +3,7 @@
 import { LayoutDashboard, LayoutGrid, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NavigationItem } from "./navigation-item";
+import { appRoutes } from "@/features/routes";
 import type {
   NavigationMenuProps,
   NavigationItem as NavigationItemType,
@@ -11,17 +12,12 @@ import type {
 const DEFAULT_ITEMS: NavigationItemType[] = [
   {
     label: "Overview",
-    href: "/dashboard",
+    href: appRoutes.home.path,
     icon: LayoutDashboard,
   },
   {
-    label: "Contexts",
-    href: "/dashboard/contexts",
-    icon: LayoutGrid,
-  },
-  {
     label: "Settings",
-    href: "/dashboard/settings",
+    href: appRoutes.settings.root.path,
     icon: Settings,
   },
 ];

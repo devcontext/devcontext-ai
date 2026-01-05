@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { appRoutes } from "@/features/routes";
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
@@ -36,25 +37,27 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Protect dashboard routes
-  if (request.nextUrl.pathname.startsWith("/dashboard")) {
+  // Protect app routes
+  if (request.nextUrl.pathname.startsWith(appRoutes.home.path)) {
     if (!user) {
-      return NextResponse.redirect(new URL("/login", request.url));
+      return NextResponse.redirect(
+        new URL(appRoutes.auth.login.path, request.url),
+      );
     }
   }
 
-  // Redirect to dashboard if already logged in and trying to access auth pages
+  // Redirect to app if already logged in and trying to access auth pages
   if (
-    (request.nextUrl.pathname === "/login" ||
-      request.nextUrl.pathname === "/signup") &&
+    (request.nextUrl.pathname === appRoutes.auth.login.path ||
+      request.nextUrl.pathname === appRoutes.auth.signup.path) &&
     user
   ) {
-    return NextResponse.redirect(new URL("/dashboard/contexts", request.url));
+    return NextResponse.redirect(new URL(appRoutes.home.path, request.url));
   }
 
   return response;
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/login", "/signup"],
+  matcher: ["/app/:path*", "/login", "/signup"],
 };

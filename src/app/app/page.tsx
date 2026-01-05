@@ -3,6 +3,7 @@ import { listContexts } from "@/features/contexts/services";
 import { PageContainer } from "@/features/shared/components/page-container";
 import { LayoutGrid, FolderOpen, FilePlus, Settings } from "lucide-react";
 import Link from "next/link";
+import { appRoutes } from "@/features/routes";
 
 export default async function OverviewPage() {
   const [projectsResult, contexts] = await Promise.all([
@@ -35,7 +36,9 @@ export default async function OverviewPage() {
           </div>
           {defaultProject && (
             <Link
-              href={`/app/projects/${defaultProject.slug}/contexts`}
+              href={appRoutes.contexts.list.generatePath({
+                projectSlug: defaultProject.slug,
+              })}
               className="text-sm text-primary hover:underline"
             >
               Go to {defaultProject.name} →
@@ -58,7 +61,9 @@ export default async function OverviewPage() {
           </div>
           {defaultProject && (
             <Link
-              href={`/app/projects/${defaultProject.slug}/contexts`}
+              href={appRoutes.contexts.list.generatePath({
+                projectSlug: defaultProject.slug,
+              })}
               className="text-sm text-primary hover:underline"
             >
               View contexts →
@@ -79,14 +84,16 @@ export default async function OverviewPage() {
           <div className="space-y-2">
             {defaultProject && (
               <Link
-                href={`/app/projects/${defaultProject.slug}/composer`}
+                href={appRoutes.contexts.composer.generatePath({
+                  projectSlug: defaultProject.slug,
+                })}
                 className="block text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 + Create new context
               </Link>
             )}
             <Link
-              href="/app/settings"
+              href={appRoutes.settings.root.path}
               className="block text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               <Settings className="w-3 h-3 inline mr-1" />
@@ -106,7 +113,9 @@ export default async function OverviewPage() {
             {projects.map((project) => (
               <Link
                 key={project.id}
-                href={`/app/projects/${project.slug}/contexts`}
+                href={appRoutes.contexts.list.generatePath({
+                  projectSlug: project.slug,
+                })}
                 className="group p-4 bg-card border border-border rounded-lg hover:border-primary transition-all"
               >
                 <h3 className="font-medium text-card-foreground group-hover:text-primary transition-colors">

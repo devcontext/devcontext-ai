@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/features/shared/ui/dropdown-menu";
 import { ThemeToggle } from "../../theme-toggle";
+import { appRoutes } from "@/features/routes";
 import type { UserMenuProps } from "./types";
 
 export function UserMenu({
@@ -47,7 +48,7 @@ export function UserMenu({
         <DropdownMenuSeparator />
 
         <DropdownMenuItem
-          onClick={() => handleNavigate("/dashboard")}
+          onClick={() => handleNavigate(appRoutes.home.path)}
           className="gap-2 cursor-pointer"
         >
           <LayoutDashboard className="w-4 h-4" />
@@ -55,7 +56,7 @@ export function UserMenu({
         </DropdownMenuItem>
 
         <DropdownMenuItem
-          onClick={() => handleNavigate("/dashboard/settings")}
+          onClick={() => handleNavigate(appRoutes.settings.root.path)}
           className="gap-2 cursor-pointer"
         >
           <Settings className="w-4 h-4" />

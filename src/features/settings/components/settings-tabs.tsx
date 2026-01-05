@@ -14,13 +14,13 @@ interface Tab {
 const tabs: Tab[] = [
   {
     id: "general",
-    label: settingsRoutes.general.title,
-    href: settingsRoutes.general.path,
+    label: settingsRoutes.root.title,
+    href: settingsRoutes.root.path,
   },
   {
     id: "api-keys",
-    label: settingsRoutes.mcpKeys.root.title,
-    href: settingsRoutes.mcpKeys.root.path,
+    label: settingsRoutes.apiKeys.title,
+    href: settingsRoutes.apiKeys.path,
   },
 ];
 

@@ -1,24 +1,18 @@
 import { BaseRoute } from "@/features/shared/types/routes";
-import { mcpKeysRoutes } from "./mcp-keys/routes";
-
-const basePath = "/dashboard/settings";
-
-interface RouteParams {
-  id: string;
-  teamId?: string;
-  slug: string;
-}
 
 /**
- * Rutas de jugadores con patrón multi-club usando clubId directamente
+ * Settings routes
  */
 export const settingsRoutes = {
-  general: {
-    path: basePath,
+  root: {
+    path: "/app/settings",
     title: "Settings",
     description: "Manage your settings",
-  } as BaseRoute,
+  } satisfies BaseRoute,
 
-  // KEYS
-  mcpKeys: mcpKeysRoutes,
-};
+  apiKeys: {
+    path: "/app/settings/api-keys",
+    title: "API Keys",
+    description: "Manage your API keys",
+  } satisfies BaseRoute,
+} as const;

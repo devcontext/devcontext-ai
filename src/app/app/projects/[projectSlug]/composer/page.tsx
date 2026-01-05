@@ -65,6 +65,7 @@ export default function ComposerPage() {
           onSetError={wizard.setError}
           onBack={wizard.prevStep}
           projectId={project.id}
+          projectSlug={project.slug}
         />
       )}
     </WizardLayout>

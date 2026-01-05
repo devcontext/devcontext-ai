@@ -1,13 +1,14 @@
 import Link from "next/link";
 import { Database } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { appRoutes } from "@/features/routes";
 
 interface LogoProps {
   className?: string;
   href?: string;
 }
 
-export function Logo({ className, href = "/dashboard" }: LogoProps) {
+export function Logo({ className, href = appRoutes.home.path }: LogoProps) {
   return (
     <Link
       href={href}

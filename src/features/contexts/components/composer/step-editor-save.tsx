@@ -8,6 +8,7 @@ import { Loader2 } from "lucide-react";
 import { createContextAction } from "@/features/contexts/actions/context-actions";
 import { Input } from "@/features/shared/ui/input";
 import { Textarea } from "@/features/shared/ui/textarea";
+import { appRoutes } from "@/features/routes";
 
 type StepEditorSaveProps = {
   sources: SourceItem[];
@@ -24,6 +25,7 @@ type StepEditorSaveProps = {
   onSetError: (error: string | null) => void;
   onBack: () => void;
   projectId: string;
+  projectSlug: string;
 };
 
 export function StepEditorSave({
@@ -41,6 +43,7 @@ export function StepEditorSave({
   onSetError,
   onBack,
   projectId,
+  projectSlug,
 }: StepEditorSaveProps) {
   const router = useRouter();
   const [tagsInput, setTagsInput] = useState(tags.join(", "));
@@ -77,7 +80,7 @@ export function StepEditorSave({
       }
 
       // Success - redirect to contexts list
-      router.push("/dashboard/contexts");
+      router.push(appRoutes.contexts.list.generatePath({ projectSlug }));
     } catch (err) {
       onSetError(err instanceof Error ? err.message : "Failed to save context");
     } finally {

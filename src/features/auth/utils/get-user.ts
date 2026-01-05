@@ -1,5 +1,6 @@
 import { createSupabaseServerClient } from "@/features/core/infra/supabase-server";
 import { redirect } from "next/navigation";
+import { appRoutes } from "@/features/routes";
 
 /**
  * Get the currently authenticated user (server-side)
@@ -22,7 +23,7 @@ export async function requireUser() {
   const user = await getUser();
 
   if (!user) {
-    redirect("/login");
+    redirect(appRoutes.auth.login.path);
   }
 
   return user;

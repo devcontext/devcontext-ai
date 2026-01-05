@@ -16,6 +16,7 @@ import {
   validationErrorResponse,
 } from "@/features/shared/utils/error-handler";
 import type { ApiResponse } from "@/features/shared/types/api-response";
+import { appRoutes } from "@/features/routes";
 
 /**
  * Server action to list all projects for the authenticated user
@@ -54,9 +55,8 @@ export async function createProjectAction(
     });
 
     // 3. Revalidate paths
-    revalidatePath("/dashboard");
-    revalidatePath("/dashboard/contexts");
-    revalidatePath("/dashboard/settings");
+    revalidatePath(appRoutes.home.path);
+    revalidatePath(appRoutes.settings.root.path);
 
     return successResponse(project);
   } catch (error) {
