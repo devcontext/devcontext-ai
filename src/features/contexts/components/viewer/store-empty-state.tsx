@@ -14,15 +14,15 @@ export function StoreEmptyState() {
       </h2>
 
       <p className="text-muted-foreground max-w-md mb-8 leading-relaxed">
-        Contexts are curated technical guidelines and architectural rules that
-        guide AI assistants. Create your first context to start building
-        structured technical documentation.
+        Contexts are explicit context declarations that guide AI assistants.
+        Create your first context to start building structured technical
+        documentation.
       </p>
 
       <Button asChild size="lg" className="font-semibold">
-        <Link href="/dashboard/composer">
+        <Link href="#">
           <FilePlus className="w-4 h-4 mr-2" />
-          Create New Context
+          Create Context
         </Link>
       </Button>
     </div>

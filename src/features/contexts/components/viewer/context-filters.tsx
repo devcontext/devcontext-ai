@@ -53,7 +53,7 @@ export function ContextFilters({
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
             {...register("search")}
-            placeholder="Search by name..."
+            placeholder="Search your memory..."
             className="pl-10 bg-background border-border focus:ring-primary"
           />
         </div>

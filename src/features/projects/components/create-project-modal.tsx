@@ -36,7 +36,7 @@ export function CreateProjectModal({
         <DialogHeader>
           <DialogTitle>Create New Project</DialogTitle>
           <DialogDescription>
-            Projects help you organize your contexts, rules, and configurations.
+            Projects help you organize your contexts and configurations.
           </DialogDescription>
         </DialogHeader>
 

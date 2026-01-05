@@ -1,12 +1,14 @@
 import { listContexts } from "@/features/contexts/services";
-import { ContextCard } from "@/features/contexts/components/viewer/context-card";
+import { ContextTable } from "@/features/contexts/components/viewer/context-table";
 import { FilterContainer } from "@/features/contexts/components/viewer/filter-container";
 import { PageContainer } from "@/features/shared/components/page-container";
 import { EmptyState } from "@/features/shared/components/empty-state";
-import { FilePlus } from "lucide-react";
+import { FilePlus, Plus } from "lucide-react";
 import { getProjectBySlug } from "@/features/projects/services/get-project-by-slug";
 import { listProjectsAction } from "@/features/projects/actions/project-actions";
 import { appRoutes } from "@/features/routes";
+import Link from "next/link";
+import { Button } from "@/features/shared/ui/button";
 
 interface ContextsPageProps {
   params: Promise<{ projectSlug: string }>;
@@ -48,8 +50,8 @@ export default async function ContextsPage({
   ) {
     return (
       <EmptyState
-        title="No Contexts Found"
-        description="Create your first context to start building structured technical documentation."
+        title="No Context Defined"
+        description="Declare the specific rules and technical guidelines that the AI must respect within this project."
         actions={[
           {
             text: "Create Context",
@@ -61,43 +63,31 @@ export default async function ContextsPage({
     );
   }
 
+  // Listing - show table
   return (
     <PageContainer
-      title={`${project.name} - Contexts`}
-      description="Browse and manage your AI context repository."
+      title={`${project.name} · Contexts`}
+      description="Explicit context declarations that define what the AI must respect within this project."
       rightContent={
-        <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-1 rounded border border-border">
-          {contexts.length} Contexts
-        </span>
+        <div className="flex items-center gap-3">
+          <Button
+            size="sm"
+            className="h-9 px-4 shadow-sm active:scale-95 transition-all"
+            asChild
+          >
+            <Link
+              href={appRoutes.contexts.composer.generatePath({ projectSlug })}
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Create Context
+            </Link>
+          </Button>
+        </div>
       }
     >
-      <div className="space-y-8">
-        {/* Filters */}
-        <FilterContainer
-          projects={projects}
-          initialValues={searchParamsData}
-          projectSlug={projectSlug}
-        />
-
-        {/* Results */}
-        {contexts.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {contexts.map((context) => (
-              <ContextCard
-                key={context.id}
-                context={context}
-                projectSlug={projectSlug}
-                projectName={project.name}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center py-20 bg-muted/30 border border-dashed border-border rounded-xl">
-            <p className="text-muted-foreground">
-              No contexts match your filters.
-            </p>
-          </div>
-        )}
+      <div className="space-y-6">
+        {/* Results Table */}
+        <ContextTable contexts={contexts} projectSlug={projectSlug} />
       </div>
     </PageContainer>
   );

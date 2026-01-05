@@ -1,51 +1,47 @@
 "use client";
 
 import { Header } from "./header";
-import { NavigationMenu } from "./navigation-menu";
 import { Sidebar } from "./sidebar";
 import { Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/features/shared/ui/sheet";
 import { Button } from "@/features/shared/ui/button";
-import { useState } from "react";
+import { useApp } from "@/features/shared/providers/app-provider";
 
 interface DashboardShellProps {
   children: React.ReactNode;
 }
 
 export function DashboardShell({ children }: DashboardShellProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const {
+    ui: { isMobileMenuOpen, setIsMobileMenuOpen },
+  } = useApp();
 
   return (
-    <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary/30">
-      {/* New Header */}
+    <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary/30 flex flex-col">
+      {/* Top Header */}
       <Header />
 
-      {/* Navigation Menu */}
-      <NavigationMenu />
+      <div className="flex flex-1">
+        {/* Persistent Sidebar (Vertical) - Desktop */}
+        <Sidebar />
 
-      {/* Mobile Menu - Temporary fallback using old sidebar */}
-      <div className="md:hidden fixed bottom-4 right-4 z-50">
-        <Sheet open={isOpen} onOpenChange={setIsOpen}>
-          <SheetTrigger asChild>
-            <Button
-              size="icon"
-              className="rounded-full shadow-lg"
-              aria-label="Open menu"
-            >
-              <Menu className="w-5 h-5" />
-            </Button>
-          </SheetTrigger>
+        {/* Mobile Menu - Side Drawer */}
+        <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
           <SheetContent
             side="left"
-            className="p-0 border-r border-sidebar-border w-64 bg-sidebar"
+            className="p-0 border-r w-80 bg-background flex flex-col"
           >
-            <Sidebar />
+            <div className="flex-1 overflow-y-auto">
+              <Sidebar isMobile />
+            </div>
           </SheetContent>
         </Sheet>
-      </div>
 
-      {/* Main Content Area */}
-      <main className="min-h-screen flex flex-col">{children}</main>
+        {/* Main Content Area */}
+        <main className="flex-1 w-full min-w-0">
+          <div className="h-full min-h-[calc(100vh-4rem)]">{children}</div>
+        </main>
+      </div>
     </div>
   );
 }

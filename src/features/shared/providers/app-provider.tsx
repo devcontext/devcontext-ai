@@ -6,6 +6,7 @@ import {
   useState,
   useCallback,
   ReactNode,
+  useEffect,
 } from "react";
 import { listProjectsAction } from "@/features/projects/actions/project-actions";
 import type { Project } from "@/features/core/domain/types/projects";
@@ -15,14 +16,17 @@ interface AppContextValue {
   projects: {
     list: Project[];
     loading: boolean;
+    activeProject: Project | null;
+    setActiveProject: (project: Project | null) => void;
     addProject: (project: Project) => void;
     refreshProjects: () => Promise<void>;
   };
 
-  // Space for future global state:
-  // user?: User;
-  // settings?: Settings;
-  // notifications?: Notification[];
+  // UI state
+  ui: {
+    isMobileMenuOpen: boolean;
+    setIsMobileMenuOpen: (open: boolean) => void;
+  };
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -35,6 +39,35 @@ interface AppProviderProps {
 export function AppProvider({ children, initialProjects }: AppProviderProps) {
   const [projects, setProjects] = useState<Project[]>(initialProjects);
   const [loading, setLoading] = useState(false);
+  const [activeProject, setActiveProject] = useState<Project | null>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Load from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem("devcontext_active_project");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed && typeof parsed === "object" && "id" in parsed) {
+          setActiveProject(parsed as Project);
+        }
+      } catch (e) {
+        console.error("Failed to parse active project from storage", e);
+      }
+    }
+  }, []);
+
+  // Save to localStorage whenever activeProject changes
+  useEffect(() => {
+    if (activeProject) {
+      localStorage.setItem(
+        "devcontext_active_project",
+        JSON.stringify(activeProject),
+      );
+    } else {
+      localStorage.removeItem("devcontext_active_project");
+    }
+  }, [activeProject]);
 
   const addProject = useCallback((project: Project) => {
     setProjects((prev) => [...prev, project]);
@@ -58,8 +91,14 @@ export function AppProvider({ children, initialProjects }: AppProviderProps) {
     projects: {
       list: projects,
       loading,
+      activeProject,
+      setActiveProject,
       addProject,
       refreshProjects,
+    },
+    ui: {
+      isMobileMenuOpen,
+      setIsMobileMenuOpen,
     },
   };
 

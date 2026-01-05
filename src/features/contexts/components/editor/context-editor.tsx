@@ -47,8 +47,8 @@ export function ContextEditor({
   const isEdit = mode === "edit";
   const pageTitle = isEdit ? "Edit Context" : "Create Context";
   const pageDescription = isEdit
-    ? "Update your context content. Saving will create a new version."
-    : "Create a new AI context with structured markdown content.";
+    ? "Review and modify existing context declarations to ensure the AI has the most accurate information."
+    : "Declare the explicit context that the AI must respect within this project.";
 
   const parseTags = (input: string): string[] => {
     return input
@@ -59,7 +59,7 @@ export function ContextEditor({
 
   const handleSave = async () => {
     if (!name.trim()) {
-      setError("Context name is required");
+      setError("Name is required");
       return;
     }
 
@@ -81,7 +81,7 @@ export function ContextEditor({
         });
 
         if (!result.success) {
-          throw new Error(result.error || "Failed to update context");
+          throw new Error(result.error || "Failed to save changes");
         }
 
         router.push(
@@ -145,16 +145,16 @@ export function ContextEditor({
           <div className="h-6 w-px bg-border" />
           <div>
             <div className="flex items-center gap-3 mb-1">
-              <span className="text-xs font-bold text-primary uppercase tracking-widest px-2 py-0.5 bg-primary/10 border border-primary/20 rounded">
-                {projectName}
+              <span className="text-[10px] font-bold text-primary uppercase tracking-widest px-2 py-0.5 bg-primary/10 border border-primary/20 rounded">
+                Scope · {projectName}
               </span>
             </div>
-            <h1 className="text-3xl font-semibold text-foreground">
+            <h1 className="text-3xl font-semibold text-foreground tracking-tight">
               {pageTitle}
             </h1>
           </div>
         </div>
-        <p className="text-muted-foreground">{pageDescription}</p>
+        <p className="text-muted-foreground text-sm">{pageDescription}</p>
       </div>
 
       {/* Form */}
@@ -163,7 +163,7 @@ export function ContextEditor({
         <div className="space-y-2">
           <label
             htmlFor="context-name"
-            className="text-sm font-medium text-foreground"
+            className="text-xs font-semibold text-muted-foreground uppercase tracking-wider"
           >
             Context Name <span className="text-destructive">*</span>
           </label>
@@ -174,8 +174,8 @@ export function ContextEditor({
               setName(e.target.value);
               setError(null);
             }}
-            placeholder="e.g., Project Architecture, Authentication Rules"
-            className="bg-background border-border"
+            placeholder="e.g., Architecture Constraints, Auth Patterns"
+            className="bg-background border-border h-11"
             disabled={isSaving}
           />
         </div>
@@ -184,10 +184,10 @@ export function ContextEditor({
         <div className="space-y-2">
           <label
             htmlFor="context-tags"
-            className="text-sm font-medium text-foreground"
+            className="text-xs font-semibold text-muted-foreground uppercase tracking-wider"
           >
             Tags{" "}
-            <span className="text-muted-foreground font-normal">
+            <span className="text-[10px] opacity-60 font-normal">
               (comma-separated)
             </span>
           </label>
@@ -195,7 +195,7 @@ export function ContextEditor({
             id="context-tags"
             value={tagsInput}
             onChange={(e) => setTagsInput(e.target.value)}
-            placeholder="e.g., architecture, rules, onboarding"
+            placeholder="architecture, backend, etc."
             className="bg-background border-border"
             disabled={isSaving}
           />
@@ -204,7 +204,7 @@ export function ContextEditor({
               {parseTags(tagsInput).map((tag, index) => (
                 <span
                   key={index}
-                  className="text-xs px-2 py-1 bg-muted text-muted-foreground rounded-md border border-border"
+                  className="text-[10px] px-2 py-0.5 bg-muted text-muted-foreground rounded border border-border font-medium"
                 >
                   {tag}
                 </span>
@@ -217,9 +217,9 @@ export function ContextEditor({
         <div className="space-y-2">
           <label
             htmlFor="context-content"
-            className="text-sm font-medium text-foreground"
+            className="text-xs font-semibold text-muted-foreground uppercase tracking-wider"
           >
-            Content <span className="text-destructive">*</span>
+            Context <span className="text-destructive">*</span>
           </label>
           <Textarea
             id="context-content"
@@ -228,39 +228,44 @@ export function ContextEditor({
               setMarkdown(e.target.value);
               setError(null);
             }}
-            placeholder="Write your context content in markdown..."
-            className="min-h-80 bg-background border-border font-mono text-sm"
+            placeholder="Declare the explicit context here..."
+            className="min-h-80 bg-background border-border font-mono text-sm leading-relaxed"
             disabled={isSaving}
           />
-          <p className="text-xs text-muted-foreground">
-            Supports markdown formatting. This content will be versioned
-            automatically on each save.
+          <p className="text-[11px] text-muted-foreground/60 italic">
+            Use Markdown to define your declarations clearly.
           </p>
         </div>
 
         {/* Error */}
         {error && (
-          <div className="text-sm text-red-400 bg-red-900/20 border border-red-800 rounded-lg px-4 py-3">
+          <div className="text-xs text-red-500 bg-red-500/5 border border-red-500/10 rounded-lg px-4 py-3">
             {error}
           </div>
         )}
 
         {/* Actions */}
-        <div className="flex justify-between pt-4 border-t border-border">
-          <Button variant="outline" onClick={handleCancel} disabled={isSaving}>
-            Cancel
+        <div className="flex justify-between pt-6 border-t border-border/60">
+          <Button
+            variant="ghost"
+            onClick={handleCancel}
+            disabled={isSaving}
+            className="text-xs"
+          >
+            Discard
           </Button>
           <Button
             onClick={handleSave}
             disabled={isSaving || !name.trim() || !markdown.trim()}
+            className="px-8 shadow-lg shadow-primary/20"
           >
             {isSaving ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                {isEdit ? "Saving..." : "Creating..."}
+                Processing...
               </>
             ) : isEdit ? (
-              "Save Changes"
+              "Save Context"
             ) : (
               "Create Context"
             )}

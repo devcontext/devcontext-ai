@@ -19,4 +19,12 @@ export const projectsRoutes = {
     generatePath: (params: ProjectParams) =>
       `/app/projects/${params.projectSlug}`,
   } satisfies DynamicRoute<ProjectParams>,
+
+  settings: {
+    path: "/app/projects/:projectSlug/settings",
+    title: "Project Settings",
+    description: "Project settings",
+    generatePath: (params: ProjectParams) =>
+      `/app/projects/${params.projectSlug}/settings`,
+  } satisfies DynamicRoute<ProjectParams>,
 } as const;

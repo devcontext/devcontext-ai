@@ -3,7 +3,7 @@ import { listProjectsAction } from "@/features/projects/actions/project-actions"
 import { PageContainer } from "@/features/shared/components/page-container";
 import { EmptyState } from "@/features/shared/components/empty-state";
 import { FolderPlus } from "lucide-react";
-import Link from "next/link";
+import { ProjectCardList } from "@/features/projects/components/project-card-list";
 
 export default async function ProjectsPage() {
   const projectsResult = await listProjectsAction();
@@ -18,12 +18,12 @@ export default async function ProjectsPage() {
   if (projects.length === 0) {
     return (
       <EmptyState
-        title="No Projects Found"
-        description="Create your first project to start organizing your AI contexts."
+        title="No Scopes Defined"
+        description="Define a new scope to start organizing the explicit context that the AI must respect."
         actions={[
           {
-            text: "Create Project",
-            href: "#", // Would open a modal or separate page
+            text: "Define Scope",
+            href: "#", // Flow to be implemented
             icon: FolderPlus,
           },
         ]}
@@ -34,25 +34,10 @@ export default async function ProjectsPage() {
   // Multiple projects - show list
   return (
     <PageContainer
-      title="Your Projects"
-      description="Select a project to view its contexts."
+      title="Active Scopes"
+      description="Select a scope to manage its requirements and constraints."
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {projects.map((project) => (
-          <Link
-            key={project.id}
-            href={`/app/projects/${project.slug}/contexts`}
-            className="group block p-6 bg-card border border-border rounded-xl hover:border-primary transition-all hover:shadow-lg"
-          >
-            <h3 className="text-lg font-semibold text-card-foreground group-hover:text-primary transition-colors">
-              {project.name}
-            </h3>
-            <p className="text-sm text-muted-foreground mt-2">
-              /{project.slug}
-            </p>
-          </Link>
-        ))}
-      </div>
+      <ProjectCardList projects={projects} />
     </PageContainer>
   );
 }

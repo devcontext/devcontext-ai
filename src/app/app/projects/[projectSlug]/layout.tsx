@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 import { getProjectBySlug } from "@/features/projects/services/get-project-by-slug";
 import { ProjectProvider } from "@/features/projects/providers/project-provider";
 
@@ -20,9 +20,9 @@ export default async function ProjectScopedLayout({
   // Load current project by slug
   const currentProject = await getProjectBySlug(projectSlug).catch(() => null);
 
-  // If project not found, show 404
+  // If project not found, redirect to projects list
   if (!currentProject) {
-    notFound();
+    redirect("/app/projects");
   }
 
   return <ProjectProvider project={currentProject}>{children}</ProjectProvider>;

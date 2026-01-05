@@ -66,6 +66,7 @@ export class ContextsRepository {
         .insert(contextToDb(input))
         .select()
         .single();
+      console.log(error);
 
       if (error) {
         throw new UnexpectedError(`Failed to create context: ${error.message}`);

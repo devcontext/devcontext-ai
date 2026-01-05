@@ -28,7 +28,7 @@ export interface ActionConfig<TData> {
   isLoading?: boolean;
   label: string;
   url?: string | ((data: TData) => string);
-  onClick: (data: TData) => void;
+  onClick: (data: TData) => void | Promise<void>;
   variant?: "default" | "destructive";
   type?: "confirm" | "default";
 }

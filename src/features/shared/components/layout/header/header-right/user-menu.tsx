@@ -47,22 +47,6 @@ export function UserMenu({
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem
-          onClick={() => handleNavigate(appRoutes.home.path)}
-          className="gap-2 cursor-pointer"
-        >
-          <LayoutDashboard className="w-4 h-4" />
-          Dashboard
-        </DropdownMenuItem>
-
-        <DropdownMenuItem
-          onClick={() => handleNavigate(appRoutes.settings.root.path)}
-          className="gap-2 cursor-pointer"
-        >
-          <Settings className="w-4 h-4" />
-          Settings
-        </DropdownMenuItem>
-
         <DropdownMenuItem className="gap-2 cursor-pointer">
           <Command className="w-4 h-4" />
           Command Menu

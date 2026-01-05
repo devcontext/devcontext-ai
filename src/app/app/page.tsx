@@ -18,7 +18,7 @@ export default async function OverviewPage() {
   return (
     <PageContainer
       title="Overview"
-      description="Your AI Context Control Plane at a glance."
+      description="Manage the scopes and contexts that guide your AI."
     >
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Projects Summary */}
@@ -28,10 +28,10 @@ export default async function OverviewPage() {
               <FolderOpen className="w-5 h-5 text-primary" />
             </div>
             <div>
-              <h3 className="font-semibold text-card-foreground">Projects</h3>
-              <p className="text-sm text-muted-foreground">
-                {projects.length} total
-              </p>
+              <h3 className="font-semibold text-card-foreground text-sm uppercase tracking-wider opacity-60">
+                Scopes
+              </h3>
+              <p className="text-xl font-bold">{projects.length}</p>
             </div>
           </div>
           {defaultProject && (
@@ -39,9 +39,9 @@ export default async function OverviewPage() {
               href={appRoutes.contexts.list.generatePath({
                 projectSlug: defaultProject.slug,
               })}
-              className="text-sm text-primary hover:underline"
+              className="text-xs text-primary hover:underline font-medium"
             >
-              Go to {defaultProject.name} →
+              Enter {defaultProject.name} →
             </Link>
           )}
         </div>
@@ -53,10 +53,10 @@ export default async function OverviewPage() {
               <LayoutGrid className="w-5 h-5 text-primary" />
             </div>
             <div>
-              <h3 className="font-semibold text-card-foreground">Contexts</h3>
-              <p className="text-sm text-muted-foreground">
-                {totalContexts} total across all projects
-              </p>
+              <h3 className="font-semibold text-card-foreground text-sm uppercase tracking-wider opacity-60">
+                Contexts
+              </h3>
+              <p className="text-xl font-bold">{totalContexts}</p>
             </div>
           </div>
           {defaultProject && (
@@ -64,9 +64,9 @@ export default async function OverviewPage() {
               href={appRoutes.contexts.list.generatePath({
                 projectSlug: defaultProject.slug,
               })}
-              className="text-sm text-primary hover:underline"
+              className="text-xs text-primary hover:underline font-medium"
             >
-              View contexts →
+              Manage contexts →
             </Link>
           )}
         </div>
@@ -77,27 +77,27 @@ export default async function OverviewPage() {
             <div className="p-2 bg-primary/10 rounded-lg">
               <FilePlus className="w-5 h-5 text-primary" />
             </div>
-            <h3 className="font-semibold text-card-foreground">
-              Quick Actions
+            <h3 className="font-semibold text-card-foreground text-sm uppercase tracking-wider opacity-60">
+              Actions
             </h3>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-3">
             {defaultProject && (
               <Link
                 href={appRoutes.contexts.composer.generatePath({
                   projectSlug: defaultProject.slug,
                 })}
-                className="block text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className="block text-sm text-muted-foreground hover:text-foreground transition-colors font-medium"
               >
-                + Create new context
+                + Create context
               </Link>
             )}
             <Link
               href={appRoutes.settings.root.path}
-              className="block text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="block text-sm text-muted-foreground hover:text-foreground transition-colors font-medium"
             >
-              <Settings className="w-3 h-3 inline mr-1" />
-              Manage API keys
+              <Settings className="w-3.5 h-3.5 inline mr-2 opacity-60 text-foreground" />
+              API Settings
             </Link>
           </div>
         </div>
