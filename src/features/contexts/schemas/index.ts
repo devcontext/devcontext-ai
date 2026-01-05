@@ -36,3 +36,23 @@ export const saveVersionSchema = z.object({
  * Inferred type from save version schema
  */
 export type SaveVersionInput = z.infer<typeof saveVersionSchema>;
+
+/**
+ * Validation schema for updating a context (name, tags, and content).
+ * Creates a new version on save.
+ */
+export const updateContextSchema = z.object({
+  contextId: z.string().uuid("Invalid context ID format"),
+  name: z
+    .string()
+    .min(1, "Context name is required")
+    .max(100, "Context name must be 100 characters or less")
+    .trim(),
+  tags: z.array(z.string()).default([]),
+  markdown: z.string().min(1, "Content cannot be empty"),
+});
+
+/**
+ * Inferred type from update context schema
+ */
+export type UpdateContextInput = z.infer<typeof updateContextSchema>;

@@ -7,6 +7,7 @@ import {
   createContextSchema,
   saveVersionSchema,
   contextIdSchema,
+  updateContextSchema,
 } from "../schemas";
 import {
   handleErrorResponse,
@@ -33,6 +34,7 @@ import {
   restoreVersion,
   saveVersion,
   deleteContext,
+  updateContext,
 } from "@/features/contexts/services";
 import { appRoutes } from "@/features/routes";
 
@@ -82,6 +84,29 @@ export async function createContextAction(
     }
 
     const result = await createContext(validation.data);
+
+    revalidatePath(appRoutes.home.path, "layout");
+
+    return successResponse(result);
+  } catch (error) {
+    return handleErrorResponse(error);
+  }
+}
+
+/**
+ * Action to update a context (name, tags, and content)
+ * Creates a new version on save
+ */
+export async function updateContextAction(
+  input: unknown,
+): Promise<ApiResponse<Context & { newVersion: ContextVersion }>> {
+  try {
+    const validation = updateContextSchema.safeParse(input);
+    if (!validation.success) {
+      return validationErrorResponse(validation.error);
+    }
+
+    const result = await updateContext(validation.data);
 
     revalidatePath(appRoutes.home.path, "layout");
 

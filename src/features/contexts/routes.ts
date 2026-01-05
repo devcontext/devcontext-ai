@@ -18,15 +18,23 @@ export const contextsRoutes = {
   detail: {
     path: "/app/projects/:projectSlug/contexts/:id",
     title: "Context Detail",
-    description: "View and edit context",
+    description: "View context details and version history",
     generatePath: (params: ContextParams) =>
       `/app/projects/${params.projectSlug}/contexts/${params.id}`,
   } satisfies DynamicRoute<ContextParams>,
 
+  edit: {
+    path: "/app/projects/:projectSlug/contexts/:id/edit",
+    title: "Edit Context",
+    description: "Edit an existing context",
+    generatePath: (params: ContextParams) =>
+      `/app/projects/${params.projectSlug}/contexts/${params.id}/edit`,
+  } satisfies DynamicRoute<ContextParams>,
+
   composer: {
     path: "/app/projects/:projectSlug/composer",
-    title: "Composer",
-    description: "Create or edit a context",
+    title: "Create Context",
+    description: "Create a new context",
     generatePath: (params: ProjectParams) =>
       `/app/projects/${params.projectSlug}/composer`,
   } satisfies DynamicRoute<ProjectParams>,

@@ -1,4 +1,7 @@
-import { resolve, ResolveContext } from "../../../../../src/features/core/domain/resolver/resolve";
+import {
+  resolve,
+  ResolveContext,
+} from "../../../../../src/features/core/domain/resolver/resolve";
 import { ResolveRequest } from "../../../../../src/features/core/domain/types/resolver";
 
 describe("Resolver Determinism (Strict)", () => {
@@ -13,6 +16,7 @@ describe("Resolver Determinism (Strict)", () => {
       id: "p1",
       ownerUserId: "u1",
       name: "Project 1",
+      slug: "project-1",
       stackPresetId: "nextjs",
       activeRulesetId: "default",
       ruleToggles: {
@@ -111,39 +115,39 @@ describe("Resolver Determinism (Strict)", () => {
 
   it("should resolve conflicts deterministically following the matrix", () => {
     const conflictContext: ResolveContext = {
-        ...context,
-        ruleCatalog: [
-          {
-            id: "b_rule",
-            title: "B",
-            description: "B",
-            severity: "warn",
-            appliesToIntents: ["generate"],
-            directive: "Directive B",
-            conflictsWith: ["a_rule"]
-          },
-          {
-            id: "a_rule",
-            title: "A",
-            description: "A",
-            severity: "warn",
-            appliesToIntents: ["generate"],
-            directive: "Directive A",
-            conflictsWith: ["b_rule"]
-          }
-        ],
-        ruleset: {
-          ...context.ruleset,
-          ruleIds: ["a_rule", "b_rule"],
-          optionalRuleIds: []
-        }
+      ...context,
+      ruleCatalog: [
+        {
+          id: "b_rule",
+          title: "B",
+          description: "B",
+          severity: "warn",
+          appliesToIntents: ["generate"],
+          directive: "Directive B",
+          conflictsWith: ["a_rule"],
+        },
+        {
+          id: "a_rule",
+          title: "A",
+          description: "A",
+          severity: "warn",
+          appliesToIntents: ["generate"],
+          directive: "Directive A",
+          conflictsWith: ["b_rule"],
+        },
+      ],
+      ruleset: {
+        ...context.ruleset,
+        ruleIds: ["a_rule", "b_rule"],
+        optionalRuleIds: [],
+      },
     };
 
     const result = resolve(request, conflictContext);
     if (result.status === "ok") {
-        // En warn vs warn, debe quedar la de ID menor lexicográficamente: "a_rule"
-        expect(result.contract.meta.rulesApplied.length).toBe(1);
-        expect(result.contract.meta.rulesApplied[0]?.id).toBe("a_rule");
+      // En warn vs warn, debe quedar la de ID menor lexicográficamente: "a_rule"
+      expect(result.contract.meta.rulesApplied.length).toBe(1);
+      expect(result.contract.meta.rulesApplied[0]?.id).toBe("a_rule");
     }
   });
 });

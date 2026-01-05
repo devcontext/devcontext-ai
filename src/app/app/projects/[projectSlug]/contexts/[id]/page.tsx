@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { getContextAction } from "@/features/contexts/actions/context-actions";
 import { ContextDetailContainer } from "@/features/contexts/components/viewer/context-detail-container";
 import { ContentContainer } from "@/features/shared/components/layout/content-container";
-import { ArrowLeft, ExternalLink } from "lucide-react";
+import { ArrowLeft, Pencil } from "lucide-react";
 import Link from "next/link";
 import { appRoutes } from "@/features/routes";
 
@@ -51,11 +51,11 @@ export default async function ContextDetailPage({
         </div>
 
         <Link
-          href={appRoutes.contexts.composer.generatePath({ projectSlug })}
-          className="text-xs font-semibold text-muted-foreground hover:text-foreground flex items-center gap-1.5 transition-colors"
+          href={appRoutes.contexts.edit.generatePath({ projectSlug, id })}
+          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-foreground bg-muted hover:bg-muted/80 border border-border rounded-lg transition-colors"
         >
-          Open Composer
-          <ExternalLink className="w-3.5 h-3.5" />
+          <Pencil className="w-4 h-4" />
+          Edit Context
         </Link>
       </div>
 
