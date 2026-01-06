@@ -28,6 +28,8 @@ function toVersionDomain(row: Record<string, unknown>): ContextVersion {
   return {
     id: row.id as string,
     contextId: row.context_id as string,
+    name: (row.name as string) || null,
+    tags: (row.tags as string[]) || null,
     markdown: row.markdown as string,
     createdAt: row.created_at as string,
   };
@@ -50,6 +52,8 @@ function contextToDb(input: ContextInput): Record<string, unknown> {
 function versionToDb(input: ContextVersionInput): Record<string, unknown> {
   return {
     context_id: input.contextId,
+    name: input.name ?? null,
+    tags: input.tags ?? null,
     markdown: input.markdown,
   };
 }

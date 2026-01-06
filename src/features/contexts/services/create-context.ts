@@ -39,6 +39,8 @@ export async function createContext(
 
     const version = await contextRepo.createContextVersion({
       contextId: context.id,
+      name: context.name,
+      tags: context.tags,
       markdown: input.markdown,
     });
 

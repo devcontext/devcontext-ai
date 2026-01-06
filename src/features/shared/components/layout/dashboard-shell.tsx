@@ -2,9 +2,7 @@
 
 import { Header } from "./header";
 import { Sidebar } from "./sidebar";
-import { Menu } from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger } from "@/features/shared/ui/sheet";
-import { Button } from "@/features/shared/ui/button";
+import { Sheet, SheetContent } from "@/features/shared/ui/sheet";
 import { useApp } from "@/features/shared/providers/app-provider";
 
 interface DashboardShellProps {
@@ -38,8 +36,8 @@ export function DashboardShell({ children }: DashboardShellProps) {
         </Sheet>
 
         {/* Main Content Area */}
-        <main className="flex-1 w-full min-w-0">
-          <div className="h-full min-h-[calc(100vh-4rem)]">{children}</div>
+        <main className="flex-1 w-full min-w-0 overflow-hidden">
+          <div className="h-[calc(100vh-4rem)] overflow-auto">{children}</div>
         </main>
       </div>
     </div>

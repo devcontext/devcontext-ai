@@ -29,6 +29,8 @@ export type CreateContextInput = z.infer<typeof createContextSchema>;
  */
 export const saveVersionSchema = z.object({
   contextId: z.string().uuid("Invalid context ID format"),
+  name: z.string().nullable().default(null),
+  tags: z.array(z.string()).nullable().default(null),
   markdown: z.string().min(1, "Content cannot be empty"),
 });
 
@@ -56,3 +58,21 @@ export const updateContextSchema = z.object({
  * Inferred type from update context schema
  */
 export type UpdateContextInput = z.infer<typeof updateContextSchema>;
+
+/**
+ * Client-side validation schema for context editor form
+ * Used for RHF validation before submitting to server
+ */
+export const contextEditorFormSchema = z.object({
+  name: z
+    .string()
+    .min(1, "Context name is required")
+    .max(100, "Context name must be 100 characters or less"),
+  tagsInput: z.string().transform((val) => val || ""),
+  markdown: z.string().min(1, "Content cannot be empty"),
+});
+
+/**
+ * Inferred type from context editor form schema
+ */
+export type ContextEditorFormData = z.infer<typeof contextEditorFormSchema>;

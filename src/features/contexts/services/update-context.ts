@@ -42,9 +42,11 @@ export async function updateContext(
       tags: input.tags,
     });
 
-    // Create new version with the markdown content
+    // Create new version with the markdown content and metadata
     const newVersion = await contextRepo.createContextVersion({
       contextId: input.contextId,
+      name: input.name,
+      tags: input.tags,
       markdown: input.markdown,
     });
 

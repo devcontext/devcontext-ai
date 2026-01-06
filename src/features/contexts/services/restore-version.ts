@@ -28,9 +28,20 @@ export async function restoreVersion(
       );
     }
 
-    // PRD Decision: Restore creates a new version entry (linear history)
+    // 1. Sync the parent context metadata if the version has it
+    // If name/tags are null (old versions), we keep the current ones
+    if (sourceVersion.name || sourceVersion.tags) {
+      await contextRepo.updateContext(sourceVersion.contextId, {
+        name: sourceVersion.name ?? context.name,
+        tags: sourceVersion.tags ?? context.tags,
+      });
+    }
+
+    // 2. PRD Decision: Restore creates a new version entry (linear history)
     return contextRepo.createContextVersion({
       contextId: sourceVersion.contextId,
+      name: sourceVersion.name ?? context.name,
+      tags: sourceVersion.tags ?? context.tags,
       markdown: sourceVersion.markdown,
     });
   });

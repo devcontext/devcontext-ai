@@ -161,7 +161,7 @@ export function ContextTable({ contexts, projectSlug }: ContextTableProps) {
                   icon: Edit,
                   onClick: (data) =>
                     router.push(
-                      appRoutes.contexts.edit.generatePath({
+                      appRoutes.contexts.detail.generatePath({
                         projectSlug,
                         id: data.id,
                       }),
