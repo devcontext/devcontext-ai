@@ -22,6 +22,11 @@ const tabs: Tab[] = [
     label: settingsRoutes.accessTokens.title,
     href: settingsRoutes.accessTokens.path,
   },
+  {
+    id: "mcp-integration",
+    label: settingsRoutes.mcpIntegration.title,
+    href: settingsRoutes.mcpIntegration.path,
+  },
 ];
 
 export function SettingsTabs() {
@@ -40,7 +45,7 @@ export function SettingsTabs() {
             key={tab.id}
             href={tab.href}
             className={cn(
-              "relative py-3 text-sm font-medium transition-colors",
+              "relative py-3 text-sm font-medium transition-colors cursor-pointer",
               isActive
                 ? "text-foreground"
                 : "text-muted-foreground hover:text-foreground",

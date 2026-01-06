@@ -62,6 +62,21 @@ export function TokenList({ tokens, onRevoke, onRegenerate }: TokenListProps) {
               onClick: async (token) => {
                 await onRegenerate(token.id, token.name);
               },
+              confirm: {
+                title: "Regenerate access token?",
+                description: (token) => (
+                  <>
+                    This will permanently invalidate the current token and
+                    generate a new one. Any integrations using the token{" "}
+                    <strong className="font-semibold text-foreground">
+                      &quot;{token.name}&quot;
+                    </strong>{" "}
+                    will stop working until updated.
+                  </>
+                ),
+                confirmText: "Regenerate",
+                cancelText: "Cancel",
+              },
             },
             {
               label: "Revoke",
@@ -71,9 +86,16 @@ export function TokenList({ tokens, onRevoke, onRegenerate }: TokenListProps) {
                 await onRevoke(token.id);
               },
               confirm: {
-                title: "Revoke Access Token?",
-                description: (token) =>
-                  `This will permanently revoke the token "${token.name}". Any integrations using this token will stop working.`,
+                title: "Revoke access token?",
+                description: (token) => (
+                  <>
+                    The token{" "}
+                    <strong className="font-semibold text-foreground">
+                      &quot;{token.name}&quot;
+                    </strong>{" "}
+                    will be permanently revoked and cannot be used again.
+                  </>
+                ),
                 confirmText: "Revoke",
                 cancelText: "Cancel",
               },

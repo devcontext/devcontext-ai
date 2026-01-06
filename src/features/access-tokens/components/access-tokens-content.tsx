@@ -6,15 +6,17 @@ import { Plus, Key } from "lucide-react";
 import type { AccessTokenListItem } from "@/features/core/domain/types/access-tokens";
 import { TokenList } from "./token-list";
 import { GenerateTokenDialog } from "./generate-token-dialog";
-import { McpConfigSnippet } from "@/features/mcp/components/mcp-config-snippet";
 import { Button } from "@/features/shared/ui/button";
 import { EmptyState } from "@/features/shared/components/empty-state";
 import { useToast } from "@/features/shared/hooks/use-toast";
 import {
   generateAccessTokenAction,
   revokeAccessTokenAction,
+  regenerateAccessTokenAction,
 } from "../actions/token-actions";
 import type { GenerateTokenValues } from "../schemas";
+import { settingsRoutes } from "@/features/settings/routes";
+import { PageContainerHeader } from "@/features/shared/components/page-container/page-container-header";
 
 interface AccessTokensContentProps {
   tokens: AccessTokenListItem[];
@@ -28,27 +30,19 @@ export function AccessTokensContent({
   const [tokens, setTokens] = useState(initialTokens);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [dialogTokenName, setDialogTokenName] = useState("");
-  const [firstToken, setFirstToken] = useState<string | null>(
-    initialTokens.length > 0 ? "your-access-token-here" : null,
-  );
+  const [regeneratedToken, setRegeneratedToken] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   // Synchronize state with props when they change (e.g. after router.refresh())
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setTokens(initialTokens);
-    // If we have tokens now but didn't have a placeholder for firstToken, set it
-    if (initialTokens.length > 0 && !firstToken) {
-      setFirstToken("your-access-token-here");
-    }
-  }, [initialTokens, firstToken]);
+  }, [initialTokens]);
 
   const handleGenerate = async (values: GenerateTokenValues) => {
     setError(null);
     const result = await generateAccessTokenAction(values);
 
     if (result.success && result.data?.token) {
-      setFirstToken(result.data.token);
       toast({
         title: "Token generated",
         description: `Access token "${values.name}" has been created.`,
@@ -69,28 +63,32 @@ export function AccessTokensContent({
   const handleRegenerate = async (id: string, name: string) => {
     setError(null);
 
-    const revokeResult = await revokeAccessTokenAction(id);
+    const result = await regenerateAccessTokenAction(id, name);
 
-    if (!revokeResult.success) {
+    if (result.success && result.data?.token) {
+      setRegeneratedToken(result.data.token);
+      setDialogTokenName(name);
+      setIsDialogOpen(true);
+      toast({
+        title: "Token regenerated",
+        description: `Access token "${name}" has been replaced.`,
+        variant: "success",
+      });
+    } else {
+      const errorMsg = result.error || "Failed to regenerate access token";
       toast({
         title: "Error",
-        description: revokeResult.error || "Failed to revoke old token",
+        description: errorMsg,
         variant: "destructive",
       });
-      setError(revokeResult.error || "Failed to revoke old token");
-      return;
+      setError(errorMsg);
     }
-
-    setTokens((prev: AccessTokenListItem[]) =>
-      prev.filter((token: AccessTokenListItem) => token.id !== id),
-    );
-    setDialogTokenName(name);
-    setIsDialogOpen(true);
   };
 
   const handleDialogClose = () => {
     setIsDialogOpen(false);
     setDialogTokenName("");
+    setRegeneratedToken(null);
     router.refresh();
   };
 
@@ -143,20 +141,15 @@ export function AccessTokensContent({
       ) : (
         <div className="space-y-8 flex-1 flex flex-col">
           {/* Header with Generate Button */}
-          <div className="flex items-center justify-between shrink-0">
-            <div>
-              <h2 className="text-lg font-semibold text-foreground">
-                Your Access Tokens
-              </h2>
-              <p className="text-sm text-muted-foreground mt-1">
-                Create tokens to access your contexts via MCP
-              </p>
-            </div>
+          <PageContainerHeader
+            title={settingsRoutes.accessTokens.title}
+            description={settingsRoutes.accessTokens.description}
+          >
             <Button onClick={() => setIsDialogOpen(true)}>
               <Plus size={16} />
               Generate Token
             </Button>
-          </div>
+          </PageContainerHeader>
 
           {/* Error Display */}
           {error && (
@@ -174,23 +167,26 @@ export function AccessTokensContent({
             />
           </div>
 
-          {/* MCP Integration Section */}
-          {firstToken && (
-            <div className="space-y-4 shrink-0">
-              <div>
-                <h2 className="text-lg font-semibold text-foreground">
-                  MCP Integration
-                </h2>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Configure your IDE to connect to DevContext AI
-                </p>
-              </div>
-
-              <div className="rounded-lg border border-border bg-card p-6">
-                <McpConfigSnippet accessToken={firstToken} />
-              </div>
+          {/* MCP Integration Help Link */}
+          <div className="p-6 bg-muted/30 border border-border rounded-xl flex items-center justify-between shrink-0">
+            <div className="space-y-1">
+              <h3 className="font-medium text-foreground">
+                Need help setting this up?
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Follow our step-by-step guides to integrate DevContext AI with
+                your IDE.
+              </p>
             </div>
-          )}
+            <Button
+              variant="outline"
+              onClick={() => router.push("/app/settings/mcp-integration")}
+              className="gap-2"
+            >
+              MCP Integration
+              <Plus className="rotate-45" size={14} />
+            </Button>
+          </div>
         </div>
       )}
 
@@ -200,6 +196,7 @@ export function AccessTokensContent({
         onClose={handleDialogClose}
         onGenerate={handleGenerate}
         initialName={dialogTokenName}
+        initialToken={regeneratedToken}
       />
     </div>
   );

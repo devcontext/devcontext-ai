@@ -1,3 +1,4 @@
+import * as React from "react";
 import { ColumnDef, Column, Table, Row } from "@tanstack/react-table";
 
 export interface DataTableProps<TData, TValue> {
@@ -17,7 +18,7 @@ export interface DataTableProps<TData, TValue> {
 
 export interface ConfirmConfig<TData> {
   title: string;
-  description?: string | ((payload: TData) => string);
+  description?: React.ReactNode | ((payload: TData) => React.ReactNode);
   confirmText?: string;
   cancelText?: string;
 }

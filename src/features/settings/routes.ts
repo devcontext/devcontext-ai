@@ -13,6 +13,12 @@ export const settingsRoutes = {
   accessTokens: {
     path: "/app/settings/access-tokens",
     title: "Access Tokens",
-    description: "Tokens to access contexts via MCP",
+    description: "Manage your MCP access tokens",
+  } satisfies BaseRoute,
+
+  mcpIntegration: {
+    path: "/app/settings/mcp-integration",
+    title: "MCP Integration",
+    description: "Connect your IDE to DevContext AI",
   } satisfies BaseRoute,
 } as const;

@@ -10,7 +10,7 @@ import {
   validationErrorResponse,
 } from "@/features/shared/utils/error-handler";
 import type { ApiResponse } from "@/features/shared/types/api-response";
-import { accessTokensRoutes } from "../routes";
+import { settingsRoutes } from "@/features/settings/routes";
 import type { AccessTokenListItem } from "@/features/core/domain/types/access-tokens";
 import {
   generateTokenSchema,
@@ -48,7 +48,7 @@ export async function generateAccessTokenAction(
     const { name } = validation.data;
     const result = await generateUserToken(name);
 
-    revalidatePath(accessTokensRoutes.root.path);
+    revalidatePath(settingsRoutes.accessTokens.path);
     return successResponse({ token: result.accessToken });
   } catch (error) {
     return handleErrorResponse(error);
@@ -69,8 +69,36 @@ export async function revokeAccessTokenAction(
 
     await revokeUserToken(validation.data.tokenId);
 
-    revalidatePath(accessTokensRoutes.root.path);
+    revalidatePath(settingsRoutes.accessTokens.path);
     return successResponse(undefined);
+  } catch (error) {
+    return handleErrorResponse(error);
+  }
+}
+
+/**
+ * Server action to regenerate an access token
+ * Revokes the old token and generates a new one with the same name
+ */
+export async function regenerateAccessTokenAction(
+  tokenId: string,
+  name: string,
+): Promise<ApiResponse<{ token: string }>> {
+  try {
+    // Validate inputs
+    const validation = revokeTokenSchema.safeParse({ tokenId });
+    if (!validation.success) {
+      return validationErrorResponse(validation.error);
+    }
+
+    // Revoke old token
+    await revokeUserToken(validation.data.tokenId);
+
+    // Generate new token with same name
+    const result = await generateUserToken(name);
+
+    revalidatePath(settingsRoutes.accessTokens.path);
+    return successResponse({ token: result.accessToken });
   } catch (error) {
     return handleErrorResponse(error);
   }

@@ -29,7 +29,7 @@ export const PageContainerHeader: React.FC<PageContainerHeaderProps> = ({
     >
       <div>
         {title && (
-          <h1 className="text-2xl font-bold mb-1 tracking-tight bg-linear-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+          <h1 className="text-xl font-bold mb-1 tracking-tight bg-linear-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
             {title}
           </h1>
         )}

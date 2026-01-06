@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 import { Copy, Check } from "lucide-react";
+import { Button } from "@/features/shared/ui/button";
+import { useToast } from "@/features/shared/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 interface McpConfigSnippetProps {
   accessToken: string;
@@ -10,6 +13,7 @@ interface McpConfigSnippetProps {
 const projectUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
 export function McpConfigSnippet({ accessToken }: McpConfigSnippetProps) {
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<
     "cursor" | "claude" | "antigravity"
   >("cursor");
@@ -98,48 +102,56 @@ export function McpConfigSnippet({ accessToken }: McpConfigSnippetProps) {
   const handleCopy = async () => {
     await navigator.clipboard.writeText(currentConfig.config);
     setCopied(true);
+    toast({
+      title: "Config copied",
+      description: "MCP configuration copied to clipboard.",
+      variant: "success",
+    });
     setTimeout(() => setCopied(false), 2000);
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700">
+    <div className="space-y-6">
+      <div className="flex gap-2 border-b border-border">
         {(Object.keys(configs) as Array<keyof typeof configs>).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 font-medium text-sm border-b-2 transition-colors ${
+            className={cn(
+              "px-4 py-2 font-medium text-sm border-b-2 transition-all -mb-0.5 cursor-pointer",
               activeTab === tab
-                ? "border-blue-600 text-blue-600 dark:text-blue-400"
-                : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
-            }`}
+                ? "border-primary text-primary"
+                : "border-transparent text-muted-foreground hover:text-foreground",
+            )}
           >
             {configs[tab].title}
           </button>
         ))}
       </div>
 
-      <div>
-        <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+      <div className="space-y-3">
+        <h4 className="text-sm font-semibold text-foreground">
           Setup Instructions
         </h4>
-        <ol className="list-decimal list-inside space-y-1 text-sm text-gray-600 dark:text-gray-400">
+        <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground bg-muted/30 p-4 rounded-lg border border-border/50">
           {currentConfig.instructions.map((instruction, index) => (
-            <li key={index} className="pl-2">
+            <li key={index} className="pl-1">
               {instruction}
             </li>
           ))}
         </ol>
       </div>
 
-      <div>
-        <div className="flex items-center justify-between mb-2">
-          <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            Configuration
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h4 className="text-sm font-semibold text-foreground">
+            Configuration Snippet
           </h4>
-          <button
+          <Button
+            size="sm"
+            variant="secondary"
             onClick={handleCopy}
-            className="flex items-center gap-2 px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600"
+            className="h-8 gap-2"
           >
             {copied ? (
               <>
@@ -149,16 +161,26 @@ export function McpConfigSnippet({ accessToken }: McpConfigSnippetProps) {
             ) : (
               <>
                 <Copy size={14} />
-                Copy
+                Copy JSON
               </>
             )}
-          </button>
+          </Button>
         </div>
-        <pre className="p-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md overflow-x-auto text-sm">
-          <code className="text-gray-800 dark:text-gray-200">
-            {currentConfig.config}
-          </code>
-        </pre>
+        <div className="relative group">
+          <pre className="p-4 bg-muted/50 border border-border rounded-xl overflow-x-auto text-xs font-mono leading-relaxed max-h-[400px]">
+            <code className="text-foreground/90">{currentConfig.config}</code>
+          </pre>
+          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-8 w-8 text-muted-foreground hover:text-foreground"
+              onClick={handleCopy}
+            >
+              <Copy size={14} />
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   );

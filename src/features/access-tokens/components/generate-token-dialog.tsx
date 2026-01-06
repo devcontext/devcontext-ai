@@ -28,6 +28,7 @@ interface GenerateTokenDialogProps {
     values: GenerateTokenValues,
   ) => Promise<ApiResponse<{ token: string }>>;
   initialName?: string;
+  initialToken?: string | null;
 }
 
 export function GenerateTokenDialog({
@@ -35,9 +36,12 @@ export function GenerateTokenDialog({
   onClose,
   onGenerate,
   initialName = "",
+  initialToken = null,
 }: GenerateTokenDialogProps) {
   const { toast } = useToast();
-  const [generatedToken, setGeneratedToken] = useState<string | null>(null);
+  const [generatedToken, setGeneratedToken] = useState<string | null>(
+    initialToken,
+  );
   const [copied, setCopied] = useState(false);
   const [globalError, setGlobalError] = useState<string | null>(null);
 
@@ -46,7 +50,7 @@ export function GenerateTokenDialog({
     defaultValues: {
       name: initialName,
     },
-    mode: "onTouched",
+    mode: "onSubmit",
   });
 
   const {
@@ -56,10 +60,16 @@ export function GenerateTokenDialog({
   } = methods;
 
   useEffect(() => {
-    if (isOpen && !generatedToken) {
+    if (isOpen && !generatedToken && !initialToken) {
       reset({ name: initialName });
     }
-  }, [isOpen, initialName, reset, generatedToken]);
+  }, [isOpen, initialName, reset, generatedToken, initialToken]);
+
+  useEffect(() => {
+    if (isOpen && initialToken) {
+      setGeneratedToken(initialToken);
+    }
+  }, [isOpen, initialToken]);
 
   const onSubmit = async (values: GenerateTokenValues) => {
     setGlobalError(null);
@@ -152,7 +162,7 @@ export function GenerateTokenDialog({
               </div>
               <div className="space-y-1">
                 <h3 className="text-xl font-bold text-foreground">
-                  Token successfully generated!
+                  Token successfully generated
                 </h3>
                 <p className="text-sm text-muted-foreground max-w-xs">
                   Copy your token now. You won&apos;t be able to see it again.
@@ -170,8 +180,8 @@ export function GenerateTokenDialog({
                   Security Warning
                 </p>
                 <p className="text-xs text-amber-600/80 dark:text-amber-400/70 leading-relaxed">
-                  Treat this token as carefully as your password. Store it
-                  securely in a password manager.
+                  Treat this token like a password. Store it securely (e.g.
+                  password manager).
                 </p>
               </div>
             </div>
