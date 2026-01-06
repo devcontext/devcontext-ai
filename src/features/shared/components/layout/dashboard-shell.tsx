@@ -1,50 +1,45 @@
-"use client"
+"use client";
 
-import { Sidebar } from "./sidebar"
-import { Menu } from "lucide-react"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Button } from "@/components/ui/button"
-import { useState } from "react"
-import { usePathname } from "next/navigation"
-import { useEffect } from "react"
+import { Header } from "./header";
+import { Sidebar } from "./sidebar";
+import { Sheet, SheetContent } from "@/features/shared/ui/sheet";
+import { useApp } from "@/features/shared/providers/app-provider";
 
 interface DashboardShellProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 export function DashboardShell({ children }: DashboardShellProps) {
-  const [isOpen, setIsOpen] = useState(false)
-  const pathname = usePathname()
-
-  // Close mobile menu on navigation
-  useEffect(() => {
-    setIsOpen(false)
-  }, [pathname])
+  const {
+    ui: { isMobileMenuOpen, setIsMobileMenuOpen },
+  } = useApp();
 
   return (
-    <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary/30">
-      {/* Desktop Sidebar (Fixed) */}
-      <Sidebar />
+    <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary/30 flex flex-col">
+      {/* Top Header */}
+      <Header />
 
-      {/* Mobile Header */}
-      <div className="md:hidden h-16 border-b border-border flex items-center px-4 bg-background sticky top-0 z-50">
-        <Sheet open={isOpen} onOpenChange={setIsOpen}>
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
-              <Menu className="w-5 h-5" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="p-0 border-r border-sidebar-border w-64 bg-sidebar">
-            <Sidebar />
+      <div className="flex flex-1">
+        {/* Persistent Sidebar (Vertical) - Desktop */}
+        <Sidebar />
+
+        {/* Mobile Menu - Side Drawer */}
+        <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+          <SheetContent
+            side="left"
+            className="p-0 border-r w-80 bg-background flex flex-col"
+          >
+            <div className="flex-1 overflow-y-auto">
+              <Sidebar isMobile />
+            </div>
           </SheetContent>
         </Sheet>
-        <span className="ml-3 font-bold text-foreground tracking-tight">Context AI</span>
-      </div>
 
-      {/* Main Content Area */}
-      <div className="md:pl-64 min-h-screen flex flex-col">
-        {children}
+        {/* Main Content Area */}
+        <main className="flex-1 w-full min-w-0 overflow-hidden">
+          <div className="h-[calc(100vh-4rem)] overflow-auto">{children}</div>
+        </main>
       </div>
     </div>
-  )
+  );
 }

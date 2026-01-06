@@ -109,103 +109,107 @@ Update the file after completing each sub-task, not just after completing an ent
 
 ### Phase 0: Setup
 
-- [ ] 0.0 Create feature branch
-  - [ ] 0.1 Create and checkout `feature/critical-mvp-features`
+- [x] 0.0 Create feature branch
+  - [x] 0.1 Create and checkout `feature/critical-mvp-features`
 
 ---
 
 ### Phase 1: API Key Management (Day 1 - 4-6 hours)
 
-- [ ] 1.0 Feature 1: API Key Management - Database Setup
-  - [ ] 1.1 Create migration file `supabase/migrations/20260101_create_api_keys_table.sql`
-  - [ ] 1.2 Define table schema with all required fields (id, user_id, key_hash, name, last_used_at, revoked_at, created_at, updated_at)
-  - [ ] 1.3 Add foreign key constraint to auth.users
-  - [ ] 1.4 Create index on user_id for listing performance
-  - [ ] 1.5 Create index on key_hash for authentication lookups
-  - [ ] 1.6 Add RLS policies for user ownership
-  - [ ] 1.7 Run migration locally and verify schema
+- [x] 1.0 Feature 1: API Key Management - Database Setup
+  - [x] 1.1 Create migration file `supabase/migrations/20260101_create_api_keys_table.sql`
+  - [x] 1.2 Define table schema with all required fields (id, user_id, key_hash, name, last_used_at, revoked_at, created_at, updated_at)
+  - [x] 1.3 Add foreign key constraint to auth.users
+  - [x] 1.4 Create index on user_id for listing performance
+  - [x] 1.5 Create index on key_hash for authentication lookups
+  - [x] 1.6 Add RLS policies for user ownership
+  - [x] 1.7 Run migration locally and verify schema
 
-- [ ] 2.0 Feature 1: API Key Management - Domain Layer
-  - [ ] 2.1 Create `src/features/core/domain/api-keys/types.ts` with ApiKey interface
-  - [ ] 2.2 Create `src/features/core/domain/api-keys/generate-api-key.ts`
+- [x] 2.0 Feature 1: API Key Management - Domain Layer
+  - [x] 2.1 Create `src/features/core/domain/api-keys/types.ts` with ApiKey interface
+  - [x] 2.2 Create `src/features/core/domain/api-keys/generate-api-key.ts`
     - Pure function using crypto.randomBytes(32)
     - Return key with `dctx_` prefix
-  - [ ] 2.3 Create `src/features/core/domain/api-keys/hash-api-key.ts`
+  - [x] 2.3 Create `src/features/core/domain/api-keys/hash-api-key.ts`
     - Pure function using SHA-256
     - Return hex string hash
-  - [ ] 2.4 Create `src/features/core/domain/api-keys/validate-api-key-format.ts`
+  - [x] 2.4 Create `src/features/core/domain/api-keys/validate-api-key-format.ts`
     - Validate key format (prefix + length)
 
-- [ ] 3.0 Feature 1: API Key Management - Infrastructure Layer
-  - [ ] 3.1 Create `src/features/core/infra/db/api-key-repository.ts`
-  - [ ] 3.2 Implement `createApiKey(userId, name, keyHash)` method
-  - [ ] 3.3 Implement `listUserApiKeys(userId)` method (only active keys)
-  - [ ] 3.4 Implement `findByKeyHash(keyHash)` method for authentication
-  - [ ] 3.5 Implement `revokeApiKey(id, userId)` method (soft delete)
-  - [ ] 3.6 Implement `updateLastUsed(id)` method
-  - [ ] 3.7 Add proper error handling and type safety
+- [x] 3.0 Feature 1: API Key Management - Infrastructure Layer
+  - [x] 3.1 Create `src/features/core/infra/db/api-key-repository.ts`
+  - [x] 3.2 Implement `createApiKey(userId, name, keyHash)` method
+  - [x] 3.3 Implement `listUserApiKeys(userId)` method (only active keys)
+  - [x] 3.4 Implement `findByKeyHash(keyHash)` method for authentication
+  - [x] 3.5 Implement `revokeApiKey(id, userId)` method (soft delete)
+  - [x] 3.6 Implement `updateLastUsed(id)` method
+  - [x] 3.7 Add proper error handling and type safety
 
-- [ ] 4.0 Feature 1: API Key Management - App Layer
-  - [ ] 4.1 Create `src/features/core/app/api-keys/generate-user-api-key.ts`
+- [x] 4.0 Feature 1: API Key Management - App Layer
+  - [x] 4.1 Create `src/features/core/app/api-keys/generate-user-api-key.ts`
     - Call domain generateApiKey()
     - Call domain hashApiKey()
     - Call repository createApiKey()
     - Return plain key (only time it's visible)
-  - [ ] 4.2 Create `src/features/core/app/api-keys/list-user-api-keys.ts`
+  - [x] 4.2 Create `src/features/core/app/api-keys/list-user-api-keys.ts`
     - Call repository listUserApiKeys()
     - Return formatted list with metadata
-  - [ ] 4.3 Create `src/features/core/app/api-keys/revoke-user-api-key.ts`
+  - [x] 4.3 Create `src/features/core/app/api-keys/revoke-user-api-key.ts`
     - Validate ownership
     - Call repository revokeApiKey()
-  - [ ] 4.4 Create `src/features/core/app/api-keys/validate-api-key.ts`
+  - [x] 4.4 Create `src/features/core/app/api-keys/validate-api-key.ts`
     - Hash provided key
     - Call repository findByKeyHash()
     - Update last_used_at if valid
 
-- [ ] 5.0 Feature 1: API Key Management - UI Components
-  - [ ] 5.1 Create `src/features/settings/types/index.ts` with component prop types
-  - [ ] 5.2 Create `src/features/settings/components/api-key-list.tsx`
+- [x] 5.0 Feature 1: API Key Management - UI Components
+  - [x] 5.1 Create `src/features/settings/types/index.ts` with component prop types
+  - [x] 5.2 Create `src/features/settings/components/api-key-list.tsx`
     - Display table of API keys
     - Show name, created date, last used date
     - Include revoke button for each key
-  - [ ] 5.3 Create `src/features/settings/components/api-key-item.tsx`
+  - [x] 5.3 Create `src/features/settings/components/api-key-item.tsx`
     - Individual row component
     - Copy button for key name
     - Revoke button with confirmation
-  - [ ] 5.4 Create `src/features/settings/components/generate-key-dialog.tsx`
+  - [x] 5.4 Create `src/features/settings/components/generate-key-dialog.tsx`
     - Modal with key name input
     - Generate button
     - Show generated key once with copy button
     - Warning message about saving key
-  - [ ] 5.5 Create `src/features/settings/components/mcp-config-snippet.tsx`
+  - [x] 5.5 Create `src/features/settings/components/mcp-config-snippet.tsx`
     - Tabs for Cursor, Claude Desktop, Antigravity
     - Auto-populate with user's API key
     - Copy button for each snippet
     - Syntax highlighting for JSON
 
-- [ ] 6.0 Feature 1: API Key Management - Settings Page & Integration
-  - [ ] 6.1 Create `src/features/settings/actions/api-key-actions.ts`
+- [x] 6.0 Feature 1: API Key Management - Settings Page & Integration
+  - [x] 6.1 Create `src/features/settings/actions/api-key-actions.ts`
     - `generateApiKeyAction(name: string)` server action
     - `revokeApiKeyAction(id: string)` server action
     - Proper error handling and validation
-  - [ ] 6.2 Create `src/app/dashboard/settings/page.tsx`
+  - [x] 6.2 Create `src/app/dashboard/settings/page.tsx`
     - Fetch user's API keys
     - Render ApiKeyList component
     - Render GenerateKeyDialog
     - Render McpConfigSnippet
-  - [ ] 6.3 Update `src/features/shared/components/layout/sidebar.tsx`
+  - [x] 6.3 Update `src/features/shared/components/layout/sidebar.tsx`
     - Make Settings link functional (href="/dashboard/settings")
     - Add active state for Settings route
-  - [ ] 6.4 Add proper loading states and error handling
+  - [x] 6.4 Add proper loading states and error handling
+    - Try-catch blocks in server actions
+    - Input validation
+    - Error display in UI
+    - State management for revoke without full page reload
 
 - [ ] 7.0 Feature 1: API Key Management - Testing & Verification
-  - [ ] 7.1 Create `tests/features/core/domain/api-keys/generate-api-key.test.ts`
+  - [x] 7.1 Create `tests/features/core/domain/api-keys/generate-api-key.test.ts`
     - Test key format (prefix + length)
     - Test uniqueness
-  - [ ] 7.2 Create `tests/features/core/domain/api-keys/hash-api-key.test.ts`
+  - [x] 7.2 Create `tests/features/core/domain/api-keys/hash-api-key.test.ts`
     - Test deterministic hashing
     - Test same input = same output
-  - [ ] 7.3 Create `tests/features/core/app/api-keys/generate-user-api-key.test.ts`
+  - [x] 7.3 Create `tests/features/core/app/api-keys/generate-user-api-key.test.ts`
     - Test full flow
     - Test error handling
   - [ ] 7.4 Manual testing: Generate key, list keys, revoke key

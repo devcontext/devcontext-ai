@@ -1,4 +1,5 @@
-import { contextsRepository } from "../../infra/db/contexts-repository";
+import { type SupabaseClient } from "@supabase/supabase-js";
+import { ContextsRepository } from "../../infra/db/contexts-repository";
 
 export type McpResourceEntry = {
   uri: string;
@@ -15,8 +16,10 @@ export type McpResourceEntry = {
  */
 export async function listMcpResources(
   userId: string,
+  supabase: SupabaseClient,
 ): Promise<{ resources: McpResourceEntry[] }> {
-  const contexts = await contextsRepository.getContextsByUserId(userId);
+  const repository = new ContextsRepository(supabase);
+  const contexts = await repository.searchContexts({ userId });
 
   const resources: McpResourceEntry[] = contexts.map((ctx) => ({
     uri: `context://${ctx.id}`,

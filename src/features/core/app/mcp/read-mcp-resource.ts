@@ -1,4 +1,5 @@
-import { contextsRepository } from "../../infra/db/contexts-repository";
+import { type SupabaseClient } from "@supabase/supabase-js";
+import { ContextsRepository } from "../../infra/db/contexts-repository";
 
 export type McpResourceContent = {
   uri: string;
@@ -15,6 +16,7 @@ export type McpResourceContent = {
 export async function readMcpResource(
   userId: string,
   resourceUri: string,
+  supabase: SupabaseClient,
 ): Promise<{ contents: McpResourceContent[] }> {
   // 1. Extract contextId from URI (context://{id})
   const contextId = resourceUri.replace("context://", "").split("?")[0];
@@ -23,26 +25,19 @@ export async function readMcpResource(
     throw new Error("Invalid resource URI");
   }
 
-  // 2. Fetch context to verify ownership
-  const context = await contextsRepository.getContextById(contextId);
+  const repository = new ContextsRepository(supabase);
+
+  // 2. Fetch contexts for user and check if contextId is among them
+  // This is a robust way to verify ownership in a single call.
+  const contexts = await repository.searchContexts({ userId });
+  const context = contexts.find((ctx) => ctx.id === contextId);
+
   if (!context) {
-    throw new Error("Context not found");
-  }
-
-  // Double check ownership (infra join check in repository would be better,
-  // but for now we have getContextById which returns the context object).
-  // We need to verify if this project belongs to the user.
-  // getContextById doesn't return the owner_user_id directly, but it has projectId.
-
-  const contextsForUser = await contextsRepository.getContextsByUserId(userId);
-  const isOwner = contextsForUser.some((c) => c.id === contextId);
-
-  if (!isOwner) {
-    throw new Error("Unauthorized access to resource");
+    throw new Error("Context not found or unauthorized access to resource");
   }
 
   // 3. Get latest version
-  const latestVersion = await contextsRepository.getLatestVersion(contextId);
+  const latestVersion = await repository.getLatestVersion(contextId);
   if (!latestVersion) {
     throw new Error("No versions found for this context");
   }

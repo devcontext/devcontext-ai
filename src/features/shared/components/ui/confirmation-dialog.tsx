@@ -11,7 +11,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from "@/features/shared/ui/alert-dialog";
 import { cn } from "@/lib/utils";
 
 interface ConfirmationDialogProps {

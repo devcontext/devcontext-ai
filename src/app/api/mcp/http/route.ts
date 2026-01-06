@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
-import { requireApiKey } from "@/features/shared/lib/mcp-auth";
+import { requireApiKey } from "@/features/shared/utils/mcp-auth";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 import { mcpExecute } from "@/features/core/app/mcp-execute";
 import { listMcpResources } from "@/features/core/app/mcp/list-mcp-resources";
 import { readMcpResource } from "@/features/core/app/mcp/read-mcp-resource";
@@ -104,13 +105,16 @@ export async function POST(request: NextRequest) {
       const { name, arguments: args } = params;
 
       if (name === "execute_project_context") {
-        const result = await mcpExecute({
-          projectId: args.projectId,
-          commandId: args.commandId,
-          userInput: args.userInput,
-          target: args.target,
-          contextHints: args.contextHints,
-        });
+        const result = await mcpExecute(
+          {
+            projectId: args.projectId,
+            commandId: args.commandId,
+            userInput: args.userInput,
+            target: args.target,
+            contextHints: args.contextHints,
+          },
+          supabaseAdmin,
+        );
 
         if (result.status === "blocked") {
           return NextResponse.json({
@@ -145,7 +149,7 @@ export async function POST(request: NextRequest) {
 
     // Handle resources/list
     if (method === "resources/list") {
-      const { resources } = await listMcpResources(auth.userId);
+      const { resources } = await listMcpResources(auth.userId, supabaseAdmin);
       return NextResponse.json({
         jsonrpc: "2.0",
         id,
@@ -156,7 +160,11 @@ export async function POST(request: NextRequest) {
     // Handle resources/read
     if (method === "resources/read") {
       const { uri } = params;
-      const { contents } = await readMcpResource(auth.userId, uri);
+      const { contents } = await readMcpResource(
+        auth.userId,
+        uri,
+        supabaseAdmin,
+      );
       return NextResponse.json({
         jsonrpc: "2.0",
         id,
