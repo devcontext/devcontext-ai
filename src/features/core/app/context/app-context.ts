@@ -1,5 +1,5 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-import { requireUser } from "@/features/auth/utils/get-user";
+import { requireUser } from "../../../auth/utils/get-user";
 import { createSupabaseServerClient } from "../../infra/supabase-server";
 
 /**

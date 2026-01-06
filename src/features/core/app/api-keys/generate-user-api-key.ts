@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import crypto from "crypto";
 import { generateApiKey } from "../../domain/api-keys/generate-api-key";
 import { hashApiKey } from "../../domain/api-keys/hash-api-key";
 import { ApiKeyRepository } from "../../infra/db/api-key-repository";
@@ -39,8 +40,9 @@ export async function generateUserApiKey(
       };
     }
 
-    // Generate secure random key
-    const plainKey = generateApiKey();
+    // Generate secure random key (Entropy generated in App layer)
+    const entropy = crypto.randomBytes(32);
+    const plainKey = generateApiKey(entropy);
 
     // Hash the key for storage
     const keyHash = hashApiKey(plainKey);

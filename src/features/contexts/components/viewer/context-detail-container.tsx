@@ -69,28 +69,19 @@ export function ContextDetailContainer({
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
       {/* Sidebar: Timeline */}
       <div className="lg:col-span-4 xl:col-span-3 space-y-8">
-        <ConfirmationDialog
-          title="Restore Version"
-          description="Are you sure you want to restore this version? This will create a new entry in the history."
-          confirmText="Restore"
-          onConfirm={() =>
-            selectedVersionId && handleRestore(selectedVersionId)
-          }
-        >
-          <VersionTimeline
-            versions={details.versions}
-            selectedVersionId={selectedVersionId}
-            onSelectVersion={setSelectedVersionId}
-            onRestore={handleRestore}
-            isRestoring={isRestoring}
-          />
-        </ConfirmationDialog>
+        <VersionTimeline
+          versions={details.versions}
+          selectedVersionId={selectedVersionId}
+          onSelectVersion={setSelectedVersionId}
+          onRestore={handleRestore}
+          isRestoring={isRestoring}
+        />
 
         <div className="pt-8 border-t border-zinc-900">
           <ConfirmationDialog
             title="Delete Context"
-            description="Are you sure you want to delete this context? This action cannot be undone."
-            confirmText="Delete"
+            description={`Are you sure you want to delete the context "${details.name}"? This action is permanent and will remove all version history for this context. This cannot be undone.`}
+            confirmText="Delete Context"
             variant="destructive"
             onConfirm={handleDelete}
           >

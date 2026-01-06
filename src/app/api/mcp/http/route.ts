@@ -1,18 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { z } from "zod";
-import { requireApiKey } from "@/features/shared/utils/mcp-auth";
+import { requireApiKey } from "@/features/mcp/utils/mcp-auth";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { mcpExecute } from "@/features/core/app/mcp-execute";
-import { listMcpResources } from "@/features/core/app/mcp/list-mcp-resources";
-import { readMcpResource } from "@/features/core/app/mcp/read-mcp-resource";
+import { McpService } from "@/features/mcp/services/mcp-service";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
 
 /**
- * Simple MCP HTTP Handler
+ * Simple MCP HTTP Handler (Read-Only MVP)
  *
  * Handles JSON-RPC 2.0 requests for Model Context Protocol
  */
@@ -25,6 +20,9 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { method, params, id } = body;
 
+    // Use Service pattern
+    const mcpService = new McpService(supabaseAdmin);
+
     // Handle initialize
     if (method === "initialize") {
       return NextResponse.json({
@@ -33,8 +31,8 @@ export async function POST(request: NextRequest) {
         result: {
           protocolVersion: "2024-11-05",
           capabilities: {
-            tools: {},
             resources: {},
+            // tools: {}, // DISABLED for MVP compliance
           },
           serverInfo: {
             name: "DevContext AI Server",
@@ -44,112 +42,20 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Handle tools/list
+    // Handle tools/list (Compliant with Read-Only MVP: return empty list or error)
     if (method === "tools/list") {
       return NextResponse.json({
         jsonrpc: "2.0",
         id,
         result: {
-          tools: [
-            {
-              name: "execute_project_context",
-              description:
-                "Resolves project context and returns a specialized prompt/contract for AI agents.",
-              inputSchema: {
-                type: "object",
-                properties: {
-                  projectId: {
-                    type: "string",
-                    description: "The UUID of the project",
-                  },
-                  commandId: {
-                    type: "string",
-                    description:
-                      "The command to execute (e.g., 'create-component', 'refactor')",
-                  },
-                  userInput: {
-                    type: "string",
-                    description: "The natural language input from the user",
-                  },
-                  target: {
-                    type: "object",
-                    properties: {
-                      pathHint: { type: "string" },
-                      files: {
-                        type: "array",
-                        items: { type: "string" },
-                      },
-                    },
-                  },
-                  contextHints: {
-                    type: "object",
-                    properties: {
-                      currentBranch: { type: "string" },
-                      tool: {
-                        type: "string",
-                        enum: ["cursor", "chatgpt", "gemini", "unknown"],
-                      },
-                    },
-                  },
-                },
-                required: ["projectId", "commandId", "userInput"],
-              },
-            },
-          ],
+          tools: [],
         },
       });
     }
 
-    // Handle tools/call
-    if (method === "tools/call") {
-      const { name, arguments: args } = params;
-
-      if (name === "execute_project_context") {
-        const result = await mcpExecute(
-          {
-            projectId: args.projectId,
-            commandId: args.commandId,
-            userInput: args.userInput,
-            target: args.target,
-            contextHints: args.contextHints,
-          },
-          supabaseAdmin,
-        );
-
-        if (result.status === "blocked") {
-          return NextResponse.json({
-            jsonrpc: "2.0",
-            id,
-            result: {
-              content: [
-                {
-                  type: "text",
-                  text: `Execution blocked: ${result.blocked.reason}\\nDetails: ${result.blocked.details}`,
-                },
-              ],
-              isError: true,
-            },
-          });
-        }
-
-        return NextResponse.json({
-          jsonrpc: "2.0",
-          id,
-          result: {
-            content: [
-              {
-                type: "text",
-                text: result.contract.contractText,
-              },
-            ],
-          },
-        });
-      }
-    }
-
     // Handle resources/list
     if (method === "resources/list") {
-      const { resources } = await listMcpResources(auth.userId, supabaseAdmin);
+      const resources = await mcpService.listResources(auth.userId);
       return NextResponse.json({
         jsonrpc: "2.0",
         id,
@@ -160,11 +66,7 @@ export async function POST(request: NextRequest) {
     // Handle resources/read
     if (method === "resources/read") {
       const { uri } = params;
-      const { contents } = await readMcpResource(
-        auth.userId,
-        uri,
-        supabaseAdmin,
-      );
+      const contents = await mcpService.readResource(auth.userId, uri);
       return NextResponse.json({
         jsonrpc: "2.0",
         id,
@@ -172,17 +74,17 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Method not found
+    // Method not found or not supported in MVP
     return NextResponse.json(
       {
         jsonrpc: "2.0",
         id,
         error: {
           code: -32601,
-          message: `Method not found: ${method}`,
+          message: `Method not found or disabled in MVP: ${method}`,
         },
       },
-      { status: 200 }, // JSON-RPC errors use 200 status
+      { status: 200 },
     );
   } catch (error: any) {
     // Authentication or other errors

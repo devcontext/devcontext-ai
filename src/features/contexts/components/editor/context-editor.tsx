@@ -25,6 +25,7 @@ import {
 } from "@/features/contexts/actions/context-actions";
 import Link from "next/link";
 import { useToast } from "@/features/shared/hooks/use-toast";
+import { ConfirmationDialog } from "@/features/shared/components/ui/confirmation-dialog";
 import {
   contextEditorFormSchema,
   type ContextEditorFormData,
@@ -189,9 +190,6 @@ export function ContextEditor({
 
   const handleDelete = async () => {
     if (!initialData) return;
-
-    if (!confirm(`Are you sure you want to delete "${initialData.name}"?`))
-      return;
 
     setIsDeleting(true);
     try {
@@ -398,30 +396,37 @@ export function ContextEditor({
                 <div className="flex items-center justify-between px-3 md:px-4 py-2 md:py-3 border-t border-border bg-muted/30">
                   <div>
                     {isEdit && (
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={handleDelete}
-                        disabled={isDeleting}
-                        className="text-destructive hover:text-destructive hover:bg-destructive/10 px-2 md:px-3"
+                      <ConfirmationDialog
+                        title="Delete Context"
+                        description={`Are you sure you want to delete "${initialData?.name}"? This action is permanent and will remove all version history. This cannot be undone.`}
+                        confirmText="Delete Context"
+                        variant="destructive"
+                        onConfirm={handleDelete}
                       >
-                        {isDeleting ? (
-                          <>
-                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                            <span className="hidden md:inline">
-                              Deleting...
-                            </span>
-                          </>
-                        ) : (
-                          <>
-                            <Trash2 className="w-3.5 h-3.5" />
-                            <span className="hidden md:inline">
-                              Delete Context
-                            </span>
-                          </>
-                        )}
-                      </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          disabled={isDeleting}
+                          className="text-destructive hover:text-destructive hover:bg-destructive/10 px-2 md:px-3"
+                        >
+                          {isDeleting ? (
+                            <>
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                              <span className="hidden md:inline">
+                                Deleting...
+                              </span>
+                            </>
+                          ) : (
+                            <>
+                              <Trash2 className="w-3.5 h-3.5" />
+                              <span className="hidden md:inline">
+                                Delete Context
+                              </span>
+                            </>
+                          )}
+                        </Button>
+                      </ConfirmationDialog>
                     )}
                   </div>
                   <Button

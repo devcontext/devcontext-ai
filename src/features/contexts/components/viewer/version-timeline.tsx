@@ -1,7 +1,8 @@
-import { ContextVersion } from "../../../core/domain/types/contexts";
 import { formatDistanceToNow } from "date-fns";
-import { CheckCircle2, History, Trash2, RotateCcw } from "lucide-react";
+import { CheckCircle2, History, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ConfirmationDialog } from "@/features/shared/components/ui/confirmation-dialog";
+import type { ContextVersion } from "@/features/core/domain/types/contexts";
 
 interface VersionTimelineProps {
   versions: ContextVersion[];
@@ -83,19 +84,25 @@ export function VersionTimeline({
                 </div>
 
                 {isSelected && !isLatest && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onRestore(version.id);
-                    }}
-                    disabled={isRestoring}
-                    className="flex items-center gap-1.5 text-[10px] font-bold text-primary hover:text-primary/80 transition-colors uppercase tracking-widest"
+                  <ConfirmationDialog
+                    title="Restore Version"
+                    description={`Are you sure you want to restore version v${versionNumber}? This will create a new latest version with this content. You can always go back to the current version if needed.`}
+                    confirmText="Restore Version"
+                    onConfirm={() => onRestore(version.id)}
                   >
-                    <RotateCcw
-                      className={cn("w-3 h-3", isRestoring && "animate-spin")}
-                    />
-                    {isRestoring ? "Restoring..." : "Restore this version"}
-                  </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                      disabled={isRestoring}
+                      className="flex items-center gap-1.5 text-[10px] font-bold text-primary hover:text-primary/80 transition-colors uppercase tracking-widest"
+                    >
+                      <RotateCcw
+                        className={cn("w-3 h-3", isRestoring && "animate-spin")}
+                      />
+                      {isRestoring ? "Restoring..." : "Restore this version"}
+                    </button>
+                  </ConfirmationDialog>
                 )}
               </div>
             </div>

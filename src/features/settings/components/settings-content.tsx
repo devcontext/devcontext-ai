@@ -5,7 +5,7 @@ import { Plus } from "lucide-react";
 import type { McpKeyListItem } from "@/features/core/domain/api-keys/types";
 import { ApiKeyList } from "./api-key-list";
 import { GenerateKeyDialog } from "./generate-key-dialog";
-import { McpConfigSnippet } from "./mcp-config-snippet";
+import { McpConfigSnippet } from "@/features/mcp/components/mcp-config-snippet";
 import {
   generateApiKeyAction,
   revokeApiKeyAction,
