@@ -1,6 +1,10 @@
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { hashAccessTokenHmac } from "@/features/access-tokens/utils/token-crypto";
 import { AccessTokenRepository } from "@/features/core/infra/db/access-tokens-repository";
+import {
+  UnauthorizedError,
+  ForbiddenError,
+} from "@/features/core/domain/errors";
 
 export type AuthenticatedMcpRequest = {
   userId: string;
@@ -16,7 +20,8 @@ export type AuthenticatedMcpRequest = {
  * 1. Authorization: Bearer <token> (PREFERRED)
  * 2. x-access-token (legacy fallback)
  *
- * @throws Error if token is missing or invalid
+ * @throws UnauthorizedError if token is missing
+ * @throws ForbiddenError if token is invalid or revoked
  */
 export async function requireAccessToken(
   request: Request,
@@ -39,7 +44,9 @@ export async function requireAccessToken(
   }
 
   if (!accessToken) {
-    throw new Error("Missing Access Token");
+    throw new UnauthorizedError(
+      "Authentication required: Missing Access Token",
+    );
   }
 
   // Hash using HMAC-SHA256 with server secret
@@ -50,12 +57,16 @@ export async function requireAccessToken(
   const tokenRecord = await repository.findByTokenHash(tokenHash);
 
   if (!tokenRecord) {
-    throw new Error("Invalid Access Token");
+    throw new ForbiddenError("Access denied: Invalid or revoked token");
   }
 
   // Update last_used_at (fire and forget for MVP)
   repository.updateLastUsed(tokenRecord.id).catch((err: Error) => {
-    console.error("Failed to update last_used_at:", err.message);
+    // DO NOT log the token or sensitive data here
+    console.error(
+      `[MCP] Failed to update usage for token ${tokenRecord.id}:`,
+      err.message,
+    );
   });
 
   return {

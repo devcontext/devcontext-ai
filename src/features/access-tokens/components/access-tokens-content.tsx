@@ -126,8 +126,8 @@ export function AccessTokensContent({
       {tokens.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center -mt-12">
           <EmptyState
-            title="No access tokens"
-            description="Generate your first token to start using the MCP integration with your IDE."
+            title="No access tokens yet"
+            description="Create one to connect your IDE or tools via MCP."
             icon={Key}
             fullHeight
             actions={[
