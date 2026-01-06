@@ -1,16 +1,10 @@
 import { BaseRoute } from "@/features/shared/types/routes";
 
 /**
- * Settings routes
+ * Access Tokens routes
  */
-export const settingsRoutes = {
+export const accessTokensRoutes = {
   root: {
-    path: "/app/settings",
-    title: "Settings",
-    description: "Manage your settings",
-  } satisfies BaseRoute,
-
-  accessTokens: {
     path: "/app/settings/access-tokens",
     title: "Access Tokens",
     description: "Tokens to access contexts via MCP",

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireApiKey } from "@/features/mcp/utils/mcp-auth";
+import { requireAccessToken } from "@/features/mcp/utils/mcp-auth";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { McpService } from "@/features/mcp/services/mcp-service";
 
@@ -14,7 +14,7 @@ export const maxDuration = 30;
 export async function POST(request: NextRequest) {
   try {
     // Authenticate
-    const auth = await requireApiKey(request);
+    const auth = await requireAccessToken(request);
 
     // Parse JSON-RPC request
     const body = await request.json();
@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
     );
   } catch (error: any) {
     // Authentication or other errors
-    if (error.message?.includes("API Key")) {
+    if (error.message?.includes("Access Token")) {
       return NextResponse.json(
         {
           error: "invalid_token",

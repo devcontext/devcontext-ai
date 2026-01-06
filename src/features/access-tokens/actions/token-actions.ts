@@ -1,8 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { generateUserApiKey } from "@/features/core/app/api-keys/generate-user-api-key";
-import { revokeUserApiKey } from "@/features/core/app/api-keys/revoke-user-api-key";
+import { generateUserToken } from "../services/generate-user-token";
+import { revokeUserToken } from "../services/revoke-user-token";
 import { requireUser } from "@/features/auth/utils/get-user";
 import { createSupabaseServerClient } from "@/features/core/infra/supabase-server";
 import {
@@ -11,65 +11,65 @@ import {
   successResponse,
 } from "@/features/shared/utils/error-handler";
 import type { ApiResponse } from "@/features/shared/types/api-response";
-import { appRoutes } from "@/features/routes";
+import { accessTokensRoutes } from "../routes";
 
 /**
- * Server action to generate a new API key
+ * Server action to generate a new access token
  */
-export async function generateApiKeyAction(
+export async function generateAccessTokenAction(
   name: string,
-): Promise<ApiResponse<{ key: string }>> {
+): Promise<ApiResponse<{ token: string }>> {
   try {
     // Get authenticated user (redirects to login if not authenticated)
     const user = await requireUser();
 
     // Validate input
     if (!name || name.trim().length === 0) {
-      return errorResponse("API key name is required");
+      return errorResponse("Access token name is required");
     }
 
     // Create authenticated Supabase client
     const supabase = await createSupabaseServerClient();
 
-    const result = await generateUserApiKey(supabase, user.id, name.trim());
+    const result = await generateUserToken(supabase, user.id, name.trim());
 
     if (result.success) {
-      revalidatePath(appRoutes.settings.root.path);
-      return successResponse({ key: result.apiKey });
+      revalidatePath(accessTokensRoutes.root.path);
+      return successResponse({ token: result.accessToken });
     }
 
-    return errorResponse(result.error || "Failed to generate API key");
+    return errorResponse(result.error || "Failed to generate access token");
   } catch (error) {
     return handleErrorResponse(error);
   }
 }
 
 /**
- * Server action to revoke an API key
+ * Server action to revoke an access token
  */
-export async function revokeApiKeyAction(
-  keyId: string,
+export async function revokeAccessTokenAction(
+  tokenId: string,
 ): Promise<ApiResponse<void>> {
   try {
     // Get authenticated user (redirects to login if not authenticated)
     const user = await requireUser();
 
     // Validate input
-    if (!keyId || keyId.trim().length === 0) {
-      return errorResponse("API key ID is required");
+    if (!tokenId || tokenId.trim().length === 0) {
+      return errorResponse("Access token ID is required");
     }
 
     // Create authenticated Supabase client
     const supabase = await createSupabaseServerClient();
 
-    const result = await revokeUserApiKey(supabase, keyId, user.id);
+    const result = await revokeUserToken(supabase, tokenId, user.id);
 
     if (result.success) {
-      revalidatePath(appRoutes.settings.root.path);
+      revalidatePath(accessTokensRoutes.root.path);
       return successResponse(undefined);
     }
 
-    return errorResponse(result.error || "Failed to revoke API key");
+    return errorResponse(result.error || "Failed to revoke access token");
   } catch (error) {
     return handleErrorResponse(error);
   }

@@ -18,9 +18,9 @@ const tabs: Tab[] = [
     href: settingsRoutes.root.path,
   },
   {
-    id: "api-keys",
-    label: settingsRoutes.apiKeys.title,
-    href: settingsRoutes.apiKeys.path,
+    id: "access-tokens",
+    label: settingsRoutes.accessTokens.title,
+    href: settingsRoutes.accessTokens.path,
   },
 ];
 

@@ -1,7 +1,7 @@
-export interface ApiKey {
+export interface AccessToken {
   id: string;
   userId: string;
-  keyHash: string;
+  tokenHash: string;
   name: string;
   lastUsedAt: Date | null;
   revokedAt: Date | null;
@@ -9,13 +9,13 @@ export interface ApiKey {
   updatedAt: Date;
 }
 
-export interface ApiKeyCreateInput {
+export interface AccessTokenCreateInput {
   userId: string;
   name: string;
-  keyHash: string;
+  tokenHash: string;
 }
 
-export interface McpKeyListItem {
+export interface AccessTokenListItem {
   id: string;
   name: string;
   createdAt: Date;

@@ -1,48 +1,48 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type {
-  ApiKey,
-  ApiKeyCreateInput,
-  McpKeyListItem,
-} from "../../domain/api-keys/types";
+  AccessToken,
+  AccessTokenCreateInput,
+  AccessTokenListItem,
+} from "../types";
 
-export class ApiKeyRepository {
+export class AccessTokenRepository {
   constructor(private supabase: SupabaseClient) {}
 
   /**
-   * Creates a new API key in the database
+   * Creates a new access token in the database
    */
-  async createApiKey(input: ApiKeyCreateInput): Promise<ApiKey> {
+  async createToken(input: AccessTokenCreateInput): Promise<AccessToken> {
     const { data, error } = await this.supabase
-      .from("api_keys")
+      .from("access_tokens")
       .insert({
         user_id: input.userId,
         name: input.name,
-        key_hash: input.keyHash,
+        token_hash: input.tokenHash,
       })
       .select()
       .single();
 
     if (error) {
-      console.error("[ApiKeyRepository] Insert error:", error);
-      throw new Error(`Failed to create API key: ${error.message}`);
+      console.error("[AccessTokenRepository] Insert error:", error);
+      throw new Error(`Failed to create access token: ${error.message}`);
     }
 
-    return this.mapToApiKey(data);
+    return this.mapToAccessToken(data);
   }
 
   /**
-   * Lists all active (non-revoked) API keys for a user
+   * Lists all active (non-revoked) access tokens for a user
    */
-  async listUserApiKeys(userId: string): Promise<McpKeyListItem[]> {
+  async listUserTokens(userId: string): Promise<AccessTokenListItem[]> {
     const { data, error } = await this.supabase
-      .from("api_keys")
+      .from("access_tokens")
       .select("id, name, created_at, last_used_at")
       .eq("user_id", userId)
       .is("revoked_at", null)
       .order("created_at", { ascending: false });
 
     if (error) {
-      throw new Error(`Failed to list API keys: ${error.message}`);
+      throw new Error(`Failed to list access tokens: ${error.message}`);
     }
 
     return (data || []).map((item) => ({
@@ -54,13 +54,13 @@ export class ApiKeyRepository {
   }
 
   /**
-   * Finds an API key by its hash (for authentication)
+   * Finds an access token by its hash (for authentication)
    */
-  async findByKeyHash(keyHash: string): Promise<ApiKey | null> {
+  async findByTokenHash(tokenHash: string): Promise<AccessToken | null> {
     const { data, error } = await this.supabase
-      .from("api_keys")
+      .from("access_tokens")
       .select()
-      .eq("key_hash", keyHash)
+      .eq("token_hash", tokenHash)
       .is("revoked_at", null)
       .single();
 
@@ -69,33 +69,33 @@ export class ApiKeyRepository {
         // Not found
         return null;
       }
-      throw new Error(`Failed to find API key: ${error.message}`);
+      throw new Error(`Failed to find access token: ${error.message}`);
     }
 
-    return this.mapToApiKey(data);
+    return this.mapToAccessToken(data);
   }
 
   /**
-   * Revokes an API key (soft delete)
+   * Revokes an access token (soft delete)
    */
-  async revokeApiKey(id: string, userId: string): Promise<void> {
+  async revokeToken(id: string, userId: string): Promise<void> {
     const { error } = await this.supabase
-      .from("api_keys")
+      .from("access_tokens")
       .update({ revoked_at: new Date().toISOString() })
       .eq("id", id)
       .eq("user_id", userId);
 
     if (error) {
-      throw new Error(`Failed to revoke API key: ${error.message}`);
+      throw new Error(`Failed to revoke access token: ${error.message}`);
     }
   }
 
   /**
-   * Updates the last_used_at timestamp for an API key
+   * Updates the last_used_at timestamp for an access token
    */
   async updateLastUsed(id: string): Promise<void> {
     const { error } = await this.supabase
-      .from("api_keys")
+      .from("access_tokens")
       .update({ last_used_at: new Date().toISOString() })
       .eq("id", id);
 
@@ -106,13 +106,13 @@ export class ApiKeyRepository {
   }
 
   /**
-   * Maps database row to ApiKey domain type
+   * Maps database row to AccessToken domain type
    */
-  private mapToApiKey(data: any): ApiKey {
+  private mapToAccessToken(data: any): AccessToken {
     return {
       id: data.id,
       userId: data.user_id,
-      keyHash: data.key_hash,
+      tokenHash: data.token_hash,
       name: data.name,
       lastUsedAt: data.last_used_at ? new Date(data.last_used_at) : null,
       revokedAt: data.revoked_at ? new Date(data.revoked_at) : null,

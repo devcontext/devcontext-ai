@@ -1,15 +1,15 @@
 import crypto from "crypto";
 
 /**
- * Generates a secure random API key with the dctx_ prefix
+ * Generates a secure random access token with the dctx_ prefix
  * @param randomBytes - 32 bytes of entropy (Side effect must be handled by caller)
- * @returns A secure random API key string
+ * @returns A secure random access token string
  * @example
  * const entropy = crypto.randomBytes(32);
- * const key = generateApiKey(entropy);
+ * const token = generateAccessToken(entropy);
  * // Returns: "dctx_..."
  */
-export function generateApiKey(randomBytes: Buffer): string {
+export function generateAccessToken(randomBytes: Buffer): string {
   // Convert to base64url (URL-safe base64)
   const base64url = randomBytes
     .toString("base64")

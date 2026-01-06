@@ -3,24 +3,24 @@
 import { useState, useEffect } from "react";
 import { X, Copy, Check, AlertTriangle } from "lucide-react";
 
-interface GenerateKeyDialogProps {
+interface GenerateTokenDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onGenerate: (
     name: string,
-  ) => Promise<{ success: boolean; data?: { key: string }; error?: string }>;
+  ) => Promise<{ success: boolean; data?: { token: string }; error?: string }>;
   initialName?: string;
 }
 
-export function GenerateKeyDialog({
+export function GenerateTokenDialog({
   isOpen,
   onClose,
   onGenerate,
   initialName = "",
-}: GenerateKeyDialogProps) {
+}: GenerateTokenDialogProps) {
   const [name, setName] = useState(initialName);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [generatedKey, setGeneratedKey] = useState<string | null>(null);
+  const [generatedToken, setGeneratedToken] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -33,7 +33,7 @@ export function GenerateKeyDialog({
 
   const handleGenerate = async () => {
     if (!name.trim()) {
-      setError("Please enter a name for your API key");
+      setError("Please enter a name for your access token");
       return;
     }
 
@@ -44,16 +44,16 @@ export function GenerateKeyDialog({
 
     setIsGenerating(false);
 
-    if (result.success && result.data?.key) {
-      setGeneratedKey(result.data.key);
+    if (result.success && result.data?.token) {
+      setGeneratedToken(result.data.token);
     } else {
-      setError(result.error || "Failed to generate API key");
+      setError(result.error || "Failed to generate access token");
     }
   };
 
   const handleCopy = async () => {
-    if (generatedKey) {
-      await navigator.clipboard.writeText(generatedKey);
+    if (generatedToken) {
+      await navigator.clipboard.writeText(generatedToken);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
@@ -61,7 +61,7 @@ export function GenerateKeyDialog({
 
   const handleClose = () => {
     setName("");
-    setGeneratedKey(null);
+    setGeneratedToken(null);
     setError(null);
     setCopied(false);
     onClose();
@@ -74,7 +74,9 @@ export function GenerateKeyDialog({
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4">
         <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-            {generatedKey ? "API Key Generated" : "Generate New API Key"}
+            {generatedToken
+              ? "Access Token Generated"
+              : "Generate New Access Token"}
           </h2>
           <button
             onClick={handleClose}
@@ -85,17 +87,17 @@ export function GenerateKeyDialog({
         </div>
 
         <div className="p-6">
-          {!generatedKey ? (
+          {!generatedToken ? (
             <>
               <div className="mb-4">
                 <label
-                  htmlFor="key-name"
+                  htmlFor="token-name"
                   className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
                 >
-                  Key Name
+                  Token Name
                 </label>
                 <input
-                  id="key-name"
+                  id="token-name"
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -116,7 +118,7 @@ export function GenerateKeyDialog({
                 disabled={isGenerating || !name.trim()}
                 className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isGenerating ? "Generating..." : "Generate API Key"}
+                {isGenerating ? "Generating..." : "Generate Access Token"}
               </button>
             </>
           ) : (
@@ -128,23 +130,23 @@ export function GenerateKeyDialog({
                     size={20}
                   />
                   <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
-                    Save this key now!
+                    Save this token now!
                   </p>
                 </div>
                 <p className="text-sm text-yellow-700 dark:text-yellow-300">
-                  This is the only time you'll see this key. Make sure to copy
+                  This is the only time you'll see this token. Make sure to copy
                   it and store it securely.
                 </p>
               </div>
 
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Your API Key
+                  Your Access Token
                 </label>
                 <div className="flex gap-2">
                   <input
                     type="text"
-                    value={generatedKey}
+                    value={generatedToken}
                     readOnly
                     className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-mono text-sm"
                   />

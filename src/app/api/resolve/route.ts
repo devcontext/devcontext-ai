@@ -20,7 +20,7 @@ type ResolveRequestDTO = {
 export async function POST(request: Request) {
   try {
     // 1. Auth check
-    const apiKey = request.headers.get("x-api-key");
+    const apiKey = request.headers.get("x-access-token");
     if (!apiKey) {
       return NextResponse.json(
         { error: "Unauthorized", message: "Missing API Key" },

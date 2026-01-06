@@ -152,8 +152,10 @@ describe("Routing System Contract", () => {
       expect(appRoutes.settings.root.path).toBe("/app/settings");
     });
 
-    it("appRoutes.settings.apiKeys should have correct path", () => {
-      expect(appRoutes.settings.apiKeys.path).toBe("/app/settings/api-keys");
+    it("appRoutes.settings.accessTokens should have correct path", () => {
+      expect(appRoutes.settings.accessTokens.path).toBe(
+        "/app/settings/access-tokens",
+      );
     });
 
     it("appRoutes.projects.list should have correct path", () => {

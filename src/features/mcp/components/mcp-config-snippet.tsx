@@ -4,12 +4,12 @@ import { useState } from "react";
 import { Copy, Check } from "lucide-react";
 
 interface McpConfigSnippetProps {
-  apiKey: string;
+  accessToken: string;
   projectUrl: string;
 }
 
 export function McpConfigSnippet({
-  apiKey,
+  accessToken,
   projectUrl,
 }: McpConfigSnippetProps) {
   const [activeTab, setActiveTab] = useState<
@@ -27,7 +27,7 @@ export function McpConfigSnippet({
               url: `${projectUrl}/api/mcp/http`,
               transport: "http",
               headers: {
-                Authorization: `Bearer ${apiKey}`,
+                Authorization: `Bearer ${accessToken}`,
               },
             },
           },
@@ -52,7 +52,7 @@ export function McpConfigSnippet({
               url: `${projectUrl}/api/mcp/http`,
               transport: "http",
               headers: {
-                Authorization: `Bearer ${apiKey}`,
+                Authorization: `Bearer ${accessToken}`,
               },
             },
           },
@@ -77,7 +77,7 @@ export function McpConfigSnippet({
             "devcontext-ai": {
               serverUrl: `${projectUrl}/api/mcp/http`,
               headers: {
-                Authorization: `Bearer ${apiKey}`,
+                Authorization: `Bearer ${accessToken}`,
               },
             },
           },

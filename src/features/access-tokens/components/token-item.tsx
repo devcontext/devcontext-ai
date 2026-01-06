@@ -2,7 +2,7 @@
 
 import { Trash2, RotateCw } from "lucide-react";
 
-interface ApiKeyItemProps {
+interface TokenItemProps {
   id: string;
   name: string;
   createdAt: Date;
@@ -13,7 +13,7 @@ interface ApiKeyItemProps {
   isRegenerating: boolean;
 }
 
-export function ApiKeyItem({
+export function TokenItem({
   id,
   name,
   createdAt,
@@ -22,7 +22,7 @@ export function ApiKeyItem({
   onRegenerate,
   isRevoking,
   isRegenerating,
-}: ApiKeyItemProps) {
+}: TokenItemProps) {
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat("en-US", {
       month: "short",
@@ -45,7 +45,7 @@ export function ApiKeyItem({
           onClick={() => onRegenerate(id, name)}
           disabled={isRegenerating || isRevoking}
           className="flex items-center gap-2 px-3 py-2 text-sm text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          title="Regenerate this API key"
+          title="Regenerate this access token"
         >
           <RotateCw
             size={16}
@@ -57,7 +57,7 @@ export function ApiKeyItem({
           onClick={() => onRevoke(id)}
           disabled={isRevoking || isRegenerating}
           className="flex items-center gap-2 px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          title="Revoke this API key"
+          title="Revoke this access token"
         >
           <Trash2 size={16} />
           {isRevoking ? "Revoking..." : "Revoke"}
