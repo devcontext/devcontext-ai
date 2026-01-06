@@ -5,13 +5,11 @@ import { Copy, Check } from "lucide-react";
 
 interface McpConfigSnippetProps {
   accessToken: string;
-  projectUrl: string;
 }
 
-export function McpConfigSnippet({
-  accessToken,
-  projectUrl,
-}: McpConfigSnippetProps) {
+const projectUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+
+export function McpConfigSnippet({ accessToken }: McpConfigSnippetProps) {
   const [activeTab, setActiveTab] = useState<
     "cursor" | "claude" | "antigravity"
   >("cursor");

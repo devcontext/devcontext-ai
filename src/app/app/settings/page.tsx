@@ -6,12 +6,13 @@ export default async function SettingsPage() {
 
   return (
     <PageContainer
-      title="Settings"
-      description="Manage your settings and integrations."
+      title="General"
+      description="General account settings"
+      size="lg"
     >
-      <div className="space-y-6">
-        <p className="text-gray-600 dark:text-gray-400">
-          Select a section from the tabs above to manage your settings.
+      <div className="rounded-lg border border-border bg-card p-6">
+        <p className="text-muted-foreground text-sm">
+          General settings and preferences will be available here.
         </p>
       </div>
     </PageContainer>

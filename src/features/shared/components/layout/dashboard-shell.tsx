@@ -36,8 +36,10 @@ export function DashboardShell({ children }: DashboardShellProps) {
         </Sheet>
 
         {/* Main Content Area */}
-        <main className="flex-1 w-full min-w-0 overflow-hidden">
-          <div className="h-[calc(100vh-4rem)] overflow-auto">{children}</div>
+        <main className="flex-1 w-full min-w-0 overflow-hidden flex flex-col">
+          <div className="h-[calc(100vh-4rem)] overflow-auto flex flex-col">
+            {children}
+          </div>
         </main>
       </div>
     </div>

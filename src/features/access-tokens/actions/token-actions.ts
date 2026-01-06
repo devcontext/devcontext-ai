@@ -3,42 +3,53 @@
 import { revalidatePath } from "next/cache";
 import { generateUserToken } from "../services/generate-user-token";
 import { revokeUserToken } from "../services/revoke-user-token";
-import { requireUser } from "@/features/auth/utils/get-user";
-import { createSupabaseServerClient } from "@/features/core/infra/supabase-server";
+import { listUserTokens } from "../services/list-user-tokens";
 import {
-  errorResponse,
   handleErrorResponse,
   successResponse,
+  validationErrorResponse,
 } from "@/features/shared/utils/error-handler";
 import type { ApiResponse } from "@/features/shared/types/api-response";
 import { accessTokensRoutes } from "../routes";
+import type { AccessTokenListItem } from "@/features/core/domain/types/access-tokens";
+import {
+  generateTokenSchema,
+  revokeTokenSchema,
+  type GenerateTokenValues,
+} from "../schemas";
+
+/**
+ * Server action to list all access tokens for the current user
+ */
+export async function listAccessTokensAction(): Promise<
+  ApiResponse<AccessTokenListItem[]>
+> {
+  try {
+    const tokens = await listUserTokens();
+    return successResponse(tokens);
+  } catch (error) {
+    return handleErrorResponse(error);
+  }
+}
 
 /**
  * Server action to generate a new access token
  */
 export async function generateAccessTokenAction(
-  name: string,
+  input: GenerateTokenValues,
 ): Promise<ApiResponse<{ token: string }>> {
   try {
-    // Get authenticated user (redirects to login if not authenticated)
-    const user = await requireUser();
-
-    // Validate input
-    if (!name || name.trim().length === 0) {
-      return errorResponse("Access token name is required");
+    // Validate input with schema
+    const validation = generateTokenSchema.safeParse(input);
+    if (!validation.success) {
+      return validationErrorResponse(validation.error);
     }
 
-    // Create authenticated Supabase client
-    const supabase = await createSupabaseServerClient();
+    const { name } = validation.data;
+    const result = await generateUserToken(name);
 
-    const result = await generateUserToken(supabase, user.id, name.trim());
-
-    if (result.success) {
-      revalidatePath(accessTokensRoutes.root.path);
-      return successResponse({ token: result.accessToken });
-    }
-
-    return errorResponse(result.error || "Failed to generate access token");
+    revalidatePath(accessTokensRoutes.root.path);
+    return successResponse({ token: result.accessToken });
   } catch (error) {
     return handleErrorResponse(error);
   }
@@ -51,25 +62,15 @@ export async function revokeAccessTokenAction(
   tokenId: string,
 ): Promise<ApiResponse<void>> {
   try {
-    // Get authenticated user (redirects to login if not authenticated)
-    const user = await requireUser();
-
-    // Validate input
-    if (!tokenId || tokenId.trim().length === 0) {
-      return errorResponse("Access token ID is required");
+    const validation = revokeTokenSchema.safeParse({ tokenId });
+    if (!validation.success) {
+      return validationErrorResponse(validation.error);
     }
 
-    // Create authenticated Supabase client
-    const supabase = await createSupabaseServerClient();
+    await revokeUserToken(validation.data.tokenId);
 
-    const result = await revokeUserToken(supabase, tokenId, user.id);
-
-    if (result.success) {
-      revalidatePath(accessTokensRoutes.root.path);
-      return successResponse(undefined);
-    }
-
-    return errorResponse(result.error || "Failed to revoke access token");
+    revalidatePath(accessTokensRoutes.root.path);
+    return successResponse(undefined);
   } catch (error) {
     return handleErrorResponse(error);
   }

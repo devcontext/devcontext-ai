@@ -1,77 +1,61 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
-import crypto from "crypto";
-import { generateAccessToken } from "./generate-token";
-import { hashAccessToken } from "./hash-token";
-import { AccessTokenRepository } from "./token-repository";
+import {
+  generateAccessTokenPlain,
+  hashAccessTokenHmac,
+} from "../utils/token-crypto";
+import { AccessTokenRepository } from "@/features/core/infra/db/access-tokens-repository";
+import { withAppContext } from "@/features/core/app/context/app-context";
+import { ValidationError } from "@/features/core/domain/errors";
 
 export interface GenerateTokenResult {
-  success: true;
   accessToken: string; // Plain text token - only time it's visible
   tokenId: string;
   name: string;
 }
 
-export interface GenerateTokenError {
-  success: false;
-  error: string;
-}
-
-export type GenerateTokenResponse = GenerateTokenResult | GenerateTokenError;
-
 /**
  * Generates a new access token for a user
  * This is the ONLY place where the plain text token is returned
- * @param supabase - Authenticated Supabase client with user session
- * @param userId - The user ID
+ *
+ * SECURITY NOTES:
+ * - Token is generated with CSPRNG (32 bytes)
+ * - Only the HMAC-SHA256 hash is stored in DB
+ * - Plain token is returned ONCE and never logged
+ *
  * @param name - A descriptive name for the token
- * @returns The generated token and metadata, or an error
+ * @returns The generated token and metadata
+ * @throws {ValidationError} If name is missing
+ * @throws {UnexpectedError} If database operation fails
  */
 export async function generateUserToken(
-  supabase: SupabaseClient,
-  userId: string,
   name: string,
-): Promise<GenerateTokenResponse> {
-  try {
+): Promise<GenerateTokenResult> {
+  return withAppContext(async ({ supabase, userId }) => {
     // Validate inputs
-    if (!userId || !name.trim()) {
-      return {
-        success: false,
-        error: "User ID and name are required",
-      };
+    if (!name.trim()) {
+      throw new ValidationError("Access token name is required", "name");
     }
 
-    // Generate secure random token (Entropy generated in service layer)
-    const entropy = crypto.randomBytes(32);
-    const plainToken = generateAccessToken(entropy);
+    // Generate secure random token (CSPRNG internally)
+    const plainToken = generateAccessTokenPlain();
 
-    // Hash the token for storage
-    const tokenHash = hashAccessToken(plainToken);
+    // Hash the token with HMAC-SHA256 for storage
+    const tokenHash = hashAccessTokenHmac(plainToken);
 
     // Create repository with authenticated client
     const repository = new AccessTokenRepository(supabase);
 
-    // Store in database
+    // Store in database (only hash, never plain token)
     const token = await repository.createToken({
       userId,
       name: name.trim(),
       tokenHash,
     });
 
-    // Return plain token (only time it's visible)
+    // Return plain token (only time it's visible - NEVER logged)
     return {
-      success: true,
       accessToken: plainToken,
       tokenId: token.id,
       name: token.name,
     };
-  } catch (error) {
-    console.error("Error generating access token:", error);
-    return {
-      success: false,
-      error:
-        error instanceof Error
-          ? error.message
-          : "Failed to generate access token",
-    };
-  }
+  });
 }

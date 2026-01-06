@@ -29,19 +29,19 @@ export const PageContainer: React.FC<PageContainerProps> = ({
   return (
     <div
       className={cn(
-        "container mx-auto px-6 py-8",
+        "container mx-auto px-6 py-8 flex flex-col",
         sizeClasses[size],
         className,
       )}
     >
-      <div className="w-full">
+      <div className="w-full shrink-0">
         <PageContainerHeader title={title} description={description}>
           {rightContent}
         </PageContainerHeader>
       </div>
 
-      <div className="flex justify-center">
-        <div className="w-full space-y-6">{children}</div>
+      <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col">{children}</div>
       </div>
     </div>
   );

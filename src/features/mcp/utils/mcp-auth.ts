@@ -1,5 +1,6 @@
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { hashAccessToken } from "@/features/access-tokens/services/hash-token";
+import { hashAccessTokenHmac } from "@/features/access-tokens/utils/token-crypto";
+import { AccessTokenRepository } from "@/features/core/infra/db/access-tokens-repository";
 
 export type AuthenticatedMcpRequest = {
   userId: string;
@@ -9,42 +10,56 @@ export type AuthenticatedMcpRequest = {
 /**
  * requireAccessToken
  *
- * Validates the x-access-token header and returns the associated userId.
- * Throws an error if invalid.
+ * Validates the access token from request headers and returns the associated userId.
+ *
+ * Supported headers (in order of preference):
+ * 1. Authorization: Bearer <token> (PREFERRED)
+ * 2. x-access-token (legacy fallback)
+ *
+ * @throws Error if token is missing or invalid
  */
 export async function requireAccessToken(
   request: Request,
 ): Promise<AuthenticatedMcpRequest> {
   const url = new URL(request.url);
-  let accessToken =
-    request.headers.get("x-access-token") ||
-    url.searchParams.get("x-access-token");
 
-  // Support standard Authorization: Bearer <token>
+  // Prefer Authorization: Bearer header
   const authHeader = request.headers.get("authorization");
-  if (!accessToken && authHeader?.startsWith("Bearer ")) {
+  let accessToken: string | null = null;
+
+  if (authHeader?.startsWith("Bearer ")) {
     accessToken = authHeader.substring(7);
+  }
+
+  // Fallback to x-access-token (legacy)
+  if (!accessToken) {
+    accessToken =
+      request.headers.get("x-access-token") ||
+      url.searchParams.get("x-access-token");
   }
 
   if (!accessToken) {
     throw new Error("Missing Access Token");
   }
 
-  const tokenHash = hashAccessToken(accessToken);
+  // Hash using HMAC-SHA256 with server secret
+  const tokenHash = hashAccessTokenHmac(accessToken);
 
-  const { data, error } = await supabaseAdmin
-    .from("access_tokens")
-    .select("user_id, name, revoked_at, token_hash")
-    .eq("token_hash", tokenHash)
-    .is("revoked_at", null)
-    .single();
+  // Use Repository for abstraction
+  const repository = new AccessTokenRepository(supabaseAdmin);
+  const tokenRecord = await repository.findByTokenHash(tokenHash);
 
-  if (error || !data) {
+  if (!tokenRecord) {
     throw new Error("Invalid Access Token");
   }
 
+  // Update last_used_at (fire and forget for MVP)
+  repository.updateLastUsed(tokenRecord.id).catch((err: Error) => {
+    console.error("Failed to update last_used_at:", err.message);
+  });
+
   return {
-    userId: data.user_id,
-    tokenName: data.name,
+    userId: tokenRecord.userId,
+    tokenName: tokenRecord.name,
   };
 }
